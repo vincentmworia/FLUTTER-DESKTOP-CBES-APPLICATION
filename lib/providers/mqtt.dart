@@ -85,9 +85,11 @@ class MqttProvider with ChangeNotifier {
 
   // todo If disconnected, nullify the token and forcefully logout the user
 
-  String _duration(DateTime time) =>
-      DateFormat('HH:mm:ss').format(/*time.subtract(Duration(minutes: delay))*/
-          time);
+  // todo Add the date in the format over here
+  String _duration(DateTime time) => DateFormat('dd-MMM-yyyy HH:mm:ss')
+      .format(time /*time.subtract(Duration(minutes: delay))*/);
+
+  // DateFormat('dd-MMM-yyyy HH:mm:ss').format( time/*time.subtract(Duration(minutes: delay))*/ );
 
   Future<ConnectionStatus> initializeMqttClient() async {
     _deviceId =
@@ -132,7 +134,9 @@ class MqttProvider with ChangeNotifier {
     if (_connStatus == ConnectionStatus.connected) {
       _mqttClient.subscribe("cbes/dekut/#", MqttQos.exactlyOnce);
       void removeFirstElement(List list) {
-        if (list.length >= 370) {
+        // todo, get the data for the past 24 hours
+
+        if (list.length >= 8640) {
           list.removeAt(0);
         }
       }
@@ -192,6 +196,7 @@ class MqttProvider with ChangeNotifier {
           // removeFirstElement(outputVoltageGraphData);
 
           final time = DateTime.now();
+
           temp1GraphData.add(GraphAxis(
               _duration(time), double.parse(_heatingUnitData!.tank1!)));
           temp2GraphData.add(GraphAxis(

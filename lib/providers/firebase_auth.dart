@@ -120,7 +120,8 @@ class FirebaseAuthentication {
       message = e.toString();
       if (message != null &&
           (message!.contains('identity') ||
-              message!.contains('Connection closed before full'))) {
+              message!.contains('Connection closed before full') ||
+              message!.contains('Connection terminated during handshake'))) {
         message = 'Please check your internet connection';
       }
       return message ?? 'Login error';

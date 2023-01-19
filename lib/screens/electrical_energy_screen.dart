@@ -13,6 +13,9 @@ class ElectricalEnergyScreen extends StatelessWidget {
     return const Center(
       child: Text("""
      Electrical Energy SCREEN
+     - PV Power
+     - Output Power 
+     - Grid Power =Output Power - PV Power
       """),
     );
   }

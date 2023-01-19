@@ -8,6 +8,7 @@ class ThermalEnergyScreen extends StatelessWidget {
     return const Center(
       child: Text("""
      Thermal Energy SCREEN
+     -
       """),
     );
   }

@@ -7,7 +7,9 @@ class ShedMeterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Center(
       child: Text("""
-     SHED METER SCREEN
+     Shed Meter
+     - Shed Temperature
+     - Shed Irradiance
       """),
     );
   }

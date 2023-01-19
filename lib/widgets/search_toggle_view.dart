@@ -2,15 +2,19 @@ import 'package:datetime_picker_formfield_new/datetime_picker_formfield_new.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class ToggleOnlineView extends StatefulWidget {
-  const ToggleOnlineView({Key? key, required this.toggleOnlineStatus}) : super(key: key);
+
+class SearchToggleView extends StatefulWidget {
+  const SearchToggleView({Key? key, required this.toggleOnlineStatus, required this.generateExcel})
+      : super(key: key);
 
   final Function toggleOnlineStatus;
+  final Function generateExcel;
+
   @override
-  State<ToggleOnlineView> createState() => _ToggleOnlineViewState();
+  State<SearchToggleView> createState() => _SearchToggleViewState();
 }
 
-class _ToggleOnlineViewState extends State<ToggleOnlineView> {
+class _SearchToggleViewState extends State<SearchToggleView> {
   var _online = true;
 
   // todo Break into a separate widget named SearchDateTime or rather this whole widget???
@@ -28,7 +32,9 @@ class _ToggleOnlineViewState extends State<ToggleOnlineView> {
                     .copyWith(color: Theme.of(context).colorScheme.primary),
               )),
           SizedBox(
-              width: MediaQuery.of(context).size.width <=170?170: MediaQuery.of(context).size.width*0.125 ,
+              width: MediaQuery.of(context).size.width <= 170
+                  ? 170
+                  : MediaQuery.of(context).size.width * 0.125,
               child: DateTimeField(
                 format: DateFormat("yyyy-MM-dd HH:mm"),
                 onShowPicker: (context, currentValue) async {
@@ -87,10 +93,8 @@ class _ToggleOnlineViewState extends State<ToggleOnlineView> {
             children: [
               ElevatedButton.icon(
                   icon: const Icon(Icons.file_copy),
-                  onPressed: () {
-                    // Create a new Excel document.
-                  },
-                  label: const Text('Generate Excel')),
+                  onPressed: ()=>widget.generateExcel(),
+                  label: const Text('Generate Excel Sheet')),
               // todo Generate PDF???
               // ElevatedButton.icon(
               //     icon: const Icon(Icons.picture_as_pdf),

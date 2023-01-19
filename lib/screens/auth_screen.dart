@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -28,8 +29,17 @@ class _AuthScreenState extends State<AuthScreen> {
   var _isLoading = false;
   var _initAutoLogin = true;
   var _authMode = AuthMode.login;
+  static const borderRadius = 15.0;
+  static const bdRadius = BorderRadius.only(
+    topLeft: Radius.circular(borderRadius),
+    topRight: Radius.circular(borderRadius),
+    bottomLeft: Radius.circular(borderRadius),
+    bottomRight: Radius.circular(borderRadius),
+  );
+  bool goodConnection = false;
 
-  ConnectivityResult _connectionStatus = ConnectivityResult.none    ;
+  ConnectivityResult _connectionStatus = ConnectivityResult.none;
+
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
 
@@ -60,8 +70,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> tryAutoLogin() async {
-    if (_initAutoLogin) {
-      print('attempt init');
+    if (_initAutoLogin && !_isLoading) {
       final prefs = await SharedPreferences.getInstance();
       if (prefs.containsKey(RememberMeBnState.rememberMePrefName)) {
         _initAutoLogin = false;
@@ -69,11 +78,15 @@ class _AuthScreenState extends State<AuthScreen> {
           _isLoading = true;
         });
         // todo To be triggered once!!!
-        print('contains');
+        if (kDebugMode) {
+          print('contains');
+        }
         final userData = User.fromLoginMap(
             json.decode(prefs.getString(RememberMeBnState.rememberMePrefName)!)
                 as Map<String, dynamic>);
-        _performLogin(userData, true);
+        if (goodConnection) {
+          _performLogin(userData, true);
+        }
       }
     }
   }
@@ -103,7 +116,7 @@ class _AuthScreenState extends State<AuthScreen> {
       Future.delayed(Duration.zero).then((value) async =>
           await FirebaseAuthentication.signIn(user, context)
               .then((message) async {
-            if (mounted) {
+            if (mounted && goodConnection) {
               if (message.startsWith("Welcome")) {
                 _initAutoLogin = false;
                 Future.delayed(Duration.zero).then((_) {
@@ -124,7 +137,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void _submit(User user) async {
-    _initAutoLogin=false;
+    _initAutoLogin = false;
     setState(() {
       _isLoading = true;
     });
@@ -146,26 +159,9 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('B');
-    const borderRadius = 15.0;
-
-    final goodConnection = _connectionStatus == ConnectivityResult.ethernet ||
+    goodConnection = _connectionStatus == ConnectivityResult.ethernet ||
         _connectionStatus == ConnectivityResult.mobile ||
         _connectionStatus == ConnectivityResult.wifi;
-
-    if (!goodConnection) {
-      _initAutoLogin = true;
-      print('conn off');
-      setState(() {
-        _isLoading = false;
-      });
-    }else{
-      tryAutoLogin();
-    }
-
-    // if (!goodConnection) {
-    //   init = true;
-    // }
     final deviceWidth = MediaQuery.of(context).size.width;
 
     final bgImage = Container(
@@ -184,12 +180,16 @@ class _AuthScreenState extends State<AuthScreen> {
       ),
     );
 
-    const bdRadius = BorderRadius.only(
-      topLeft: Radius.circular(borderRadius),
-      topRight: Radius.circular(borderRadius),
-      bottomLeft: Radius.circular(borderRadius),
-      bottomRight: Radius.circular(borderRadius),
-    );
+    if (!goodConnection) {
+      print('object');
+      _initAutoLogin = true;
+      setState(() {
+        _isLoading = false;
+      });
+    } else {
+      tryAutoLogin();
+    }
+
     return SafeArea(
       child: Scaffold(
         body: LayoutBuilder(
@@ -216,10 +216,12 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: AuthScreenForm(
-                          authMode: _authMode,
-                          isLoading: _isLoading,
-                          submit: _submit,
-                          switchAuthMode: _switchAuthMode),
+                        authMode: _authMode,
+                        isLoading: _isLoading,
+                        submit: _submit,
+                        switchAuthMode: _switchAuthMode,
+                        isOffline: !goodConnection,
+                      ),
                     ),
                   ),
                 ),
@@ -239,7 +241,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
               //todo  transition from offline to online: try autologin
-              if (!goodConnection)
+              if (false)
                 Container(
                   width: double.infinity,
                   height: double.infinity,
@@ -270,16 +272,6 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                       ],
                     ),
-                    // child: Text(
-                    //   "OFFLINE",
-                    //   textAlign: TextAlign.center,
-                    //   style: TextStyle(
-                    //       color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
-                    //       letterSpacing:
-                    //           MediaQuery.of(context).size.width * 0.035,
-                    //       fontSize: MediaQuery.of(context).size.width * 0.075,
-                    //       fontWeight: FontWeight.bold),
-                    // ),
                   ),
                 ),
             ],

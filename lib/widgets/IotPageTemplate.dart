@@ -3,18 +3,20 @@ import 'package:provider/provider.dart';
 import '../widgets/linear_gauge.dart';
 import '../widgets/tank_graph.dart';
 import '../providers/mqtt.dart';
-import '../widgets/toggle_online_view.dart';
+import '../widgets/search_toggle_view.dart';
 
 class IotPageTemplate extends StatefulWidget {
   const IotPageTemplate(
       {Key? key,
       required this.gaugePart,
       required this.graphPart,
-      required this.onlineBnStatus})
+      required this.onlineBnStatus,
+      required this.generateExcel})
       : super(key: key);
   final Widget gaugePart;
   final Widget graphPart;
   final Function onlineBnStatus;
+  final Function generateExcel;
 
   @override
   State<IotPageTemplate> createState() => _IotPageTemplateState();
@@ -45,7 +47,10 @@ class _IotPageTemplateState extends State<IotPageTemplate> {
                     // todo Break the child into a widget
                     child: widget.gaugePart,
                   ),
-                  ToggleOnlineView(toggleOnlineStatus: widget.onlineBnStatus),
+                  SearchToggleView(
+                    toggleOnlineStatus: widget.onlineBnStatus,
+                    generateExcel: widget.generateExcel,
+                  ),
                 ],
               ),
             ),

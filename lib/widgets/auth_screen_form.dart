@@ -18,11 +18,13 @@ class AuthScreenForm extends StatefulWidget {
     required this.submit,
     required this.isLoading,
     required this.switchAuthMode,
+    required this.isOffline,
   }) : super(key: key);
   final AuthMode authMode;
   final Function submit;
   final Function switchAuthMode;
   final bool isLoading;
+  final bool isOffline;
 
   @override
   State<AuthScreenForm> createState() => _AuthScreenFormState();
@@ -344,7 +346,9 @@ class _AuthScreenFormState extends State<AuthScreenForm> {
                     elevation: 3,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0))),
-                onPressed: () async {
+                onPressed:
+                widget.isOffline
+                    ? null:() async {
                   FocusScope.of(context).unfocus();
                   if (_formKey.currentState == null ||
                       !(_formKey.currentState!.validate())) {
@@ -361,16 +365,19 @@ class _AuthScreenFormState extends State<AuthScreenForm> {
                   widget.submit(user);
                 },
                 child:
-                // widget.isLoading
-                //     ? const Center(
-                //         child: CircularProgressIndicator(color: Colors.white),
-                //       )
-                //     :
-                Text(_authMode == AuthMode.login ? "Login" : "Register")),
+                    widget.isOffline
+                        ?
+                    const Center(
+                            child:Icon(Icons.not_interested),
+                          )
+                        :
+                    Text(_authMode == AuthMode.login ? "Login" : "Register")),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 28.0),
               child: TextButton(
                 child: Text(
+                  widget.isOffline
+                      ?"No Internet Connection":
                   "Click to ${_authMode == AuthMode.login ? "Register" : "Login"}",
                   style: TextStyle(
                       color: Theme.of(context).colorScheme.secondary,

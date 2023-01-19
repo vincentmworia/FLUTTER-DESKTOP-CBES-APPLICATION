@@ -12,7 +12,9 @@ class EnvironmentMeterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Center(
       child: Text("""
-    Environment Energy SCREEN
+    Environment Meter
+    - Ambient Temperature
+    - Ambient Irradiance
       """),
     );
   }
