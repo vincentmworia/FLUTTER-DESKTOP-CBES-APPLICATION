@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
-import '../models/environment_meter.dart';
+import '../models/duct_meter.dart';
 import '../models/graph_axis.dart';
 import '../models/heating_unit.dart';
 import '../models/power_unit.dart';
@@ -35,8 +35,8 @@ class MqttProvider with ChangeNotifier {
   HeatingUnit? get heatingUnitData => _heatingUnitData;
   HeatingUnit? _heatingUnitData;
 
-  EnvironmentMeter? get environmentMeterData => _environmentMeterData;
-  EnvironmentMeter? _environmentMeterData;
+  DuctMeter? get environmentMeterData => _environmentMeterData;
+  DuctMeter? _environmentMeterData;
 
   PowerUnit? get powerUnitData => _powerUnitData;
   PowerUnit? _powerUnitData;
@@ -49,7 +49,6 @@ class MqttProvider with ChangeNotifier {
 
   final List<GraphAxis> temperatureGraphData = [];
   final List<GraphAxis> humidityGraphData = [];
-  final List<GraphAxis> illuminanceGraphData = [];
 
   final List<GraphAxis> outputActivePowerGraphData = [];
   final List<GraphAxis> pvPowerGraphData = [];
@@ -96,20 +95,6 @@ class MqttProvider with ChangeNotifier {
     _devicesClient = 'cbes/dekut/devices/$platform/$_deviceId';
 
     _loginTime = DateTime.now().toIso8601String();
-
-    _mqttClient = MqttServerClient.withPort(
-        mqttHost, 'flutter_client/$_deviceId', mqttPort);
-    _mqttClient.secure = true;
-    _mqttClient.securityContext = SecurityContext.defaultContext;
-    _mqttClient.keepAlivePeriod = 20;
-    _mqttClient.onConnected = onConnected;
-    _mqttClient.onDisconnected = onDisconnected;
-    // _mqttClient.onSubscribed = onSubscribed;
-    // _mqttClient.onUnsubscribed = onUnsubscribed;
-    // _mqttClient.onSubscribeFail = onSubscribeFail;
-    // _mqttClient.pongCallback = pong;
-    _mqttClient.keepAlivePeriod = 60;
-
     final connMessage = MqttConnectMessage()
       ..authenticateAs(mqttUsername, mqttPassword)
       ..withWillTopic(_devicesClient!)
@@ -117,10 +102,20 @@ class MqttProvider with ChangeNotifier {
       ..withWillRetain()
       ..startClean()
       ..withWillQos(MqttQos.exactlyOnce);
-    _mqttClient.connectionMessage = connMessage;
 
-    _mqttClient.secure = true;
-    _mqttClient.securityContext = SecurityContext.defaultContext;
+    _mqttClient = MqttServerClient.withPort(
+        mqttHost, 'flutter_client/$_deviceId', mqttPort)
+      ..secure = true
+      ..securityContext = SecurityContext.defaultContext
+      ..keepAlivePeriod = 30
+      ..securityContext = SecurityContext.defaultContext
+      ..connectionMessage = connMessage
+      ..onConnected = onConnected
+      ..onDisconnected = onDisconnected;
+    // _mqttClient.onSubscribed = onSubscribed;`
+    // _mqttClient.onUnsubscribed = onUnsubscribed;
+    // _mqttClient.onSubscribeFail = onSubscribeFail;
+    // _mqttClient.pongCallback = pong;
 
     try {
       await _mqttClient.connect();
@@ -130,7 +125,7 @@ class MqttProvider with ChangeNotifier {
       }
       // Exception: mqtt-client::NoConnectionException: The maximum allowed connection attempts ({3}) were exceeded. The broker is not responding to the connection request message (Missing Connection Acknowledgement?
 
-    _mqttClient.disconnect();
+      _mqttClient.disconnect();
       _connStatus = ConnectionStatus.disconnected;
       // Notify listeners to de-activate UI todo;
     }
@@ -142,8 +137,8 @@ class MqttProvider with ChangeNotifier {
         }
       }
 
-      double randomDouble(int min, int max) =>
-          (Random().nextDouble() * (max - min)) + min;
+      // double randomDouble(int min, int max) =>
+      //     (Random().nextDouble() * (max - min)) + min;
 
       // todo REMOVE THIS PART
       // timerDummyData = Timer.periodic(const Duration(seconds: 30), (_) async {
@@ -192,7 +187,6 @@ class MqttProvider with ChangeNotifier {
           removeFirstElement(flow2GraphData);
           removeFirstElement(temperatureGraphData);
           removeFirstElement(humidityGraphData);
-          removeFirstElement(illuminanceGraphData);
           removeFirstElement(outputActivePowerGraphData);
           removeFirstElement(pvPowerGraphData);
           // removeFirstElement(outputVoltageGraphData);
@@ -213,8 +207,6 @@ class MqttProvider with ChangeNotifier {
                 double.parse(_environmentMeterData!.temperature!)));
             humidityGraphData.add(GraphAxis(_duration(time),
                 double.parse(_environmentMeterData!.humidity!)));
-            illuminanceGraphData.add(GraphAxis(_duration(time),
-                double.parse(_environmentMeterData!.illuminance!)));
           }
 
           outputActivePowerGraphData.add(GraphAxis(_duration(time),
@@ -240,8 +232,8 @@ class MqttProvider with ChangeNotifier {
 
         if (topic == "cbes/dekut/data/environment_meter") {
           print(json.decode(message) as Map<String, dynamic>);
-          _environmentMeterData = EnvironmentMeter.fromMap(
-              json.decode(message) as Map<String, dynamic>);
+          _environmentMeterData =
+              DuctMeter.fromMap(json.decode(message) as Map<String, dynamic>);
           notifyListeners();
         }
         if (topic == "cbes/dekut/data/power_unit") {

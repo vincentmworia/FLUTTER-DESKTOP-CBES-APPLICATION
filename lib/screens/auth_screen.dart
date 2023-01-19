@@ -26,10 +26,10 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   var _isLoading = false;
-  var init = true;
+  var _initAutoLogin = true;
   var _authMode = AuthMode.login;
 
-  ConnectivityResult _connectionStatus = ConnectivityResult.ethernet;
+  ConnectivityResult _connectionStatus = ConnectivityResult.none    ;
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
 
@@ -59,34 +59,21 @@ class _AuthScreenState extends State<AuthScreen> {
     });
   }
 
-  // @override
-  // Future<void> didChangeDependencies() async {
-  //   super.didChangeDependencies();
-  //   tryAutoLogin();
-  // }
-
-  var workOnce=true;
   Future<void> tryAutoLogin() async {
-    if (init) {
-      // print('pref');
+    if (_initAutoLogin) {
+      print('attempt init');
       final prefs = await SharedPreferences.getInstance();
       if (prefs.containsKey(RememberMeBnState.rememberMePrefName)) {
-        if(workOnce){
-          workOnce=false;
-          setState(() {
-            _isLoading = true;
-          });
-          // todo To be triggered once!!!
-          print('contains');
-          final userData = User.fromLoginMap(
-              json.decode(prefs.getString(RememberMeBnState.rememberMePrefName)!)
-              as Map<String, dynamic>);
-          _performLogin(userData, true);
-
-          workOnce =true;
-          init = false;
-
-        }
+        _initAutoLogin = false;
+        setState(() {
+          _isLoading = true;
+        });
+        // todo To be triggered once!!!
+        print('contains');
+        final userData = User.fromLoginMap(
+            json.decode(prefs.getString(RememberMeBnState.rememberMePrefName)!)
+                as Map<String, dynamic>);
+        _performLogin(userData, true);
       }
     }
   }
@@ -116,15 +103,16 @@ class _AuthScreenState extends State<AuthScreen> {
       Future.delayed(Duration.zero).then((value) async =>
           await FirebaseAuthentication.signIn(user, context)
               .then((message) async {
-            // setState(() {
-            //   _isLoading = false;
-            // });
             if (mounted) {
               if (message.startsWith("Welcome")) {
+                _initAutoLogin = false;
                 Future.delayed(Duration.zero).then((_) {
                   Navigator.pushReplacementNamed(context, HomeScreen.routeName);
                 });
               } else {
+                setState(() {
+                  _isLoading = false;
+                });
                 await customDialog(context, message);
               }
             }
@@ -136,6 +124,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void _submit(User user) async {
+    _initAutoLogin=false;
     setState(() {
       _isLoading = true;
     });
@@ -157,16 +146,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('Building');
-    // todo make sure that the try auto login occurs only once when there is internet connection
-    // todo, after a disconnection, do re-autologin
-    // IMPORTANT
-    tryAutoLogin();
-    if (_connectionStatus == ConnectivityResult.none) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    print('B');
     const borderRadius = 15.0;
 
     final goodConnection = _connectionStatus == ConnectivityResult.ethernet ||
@@ -174,8 +154,18 @@ class _AuthScreenState extends State<AuthScreen> {
         _connectionStatus == ConnectivityResult.wifi;
 
     if (!goodConnection) {
-      init = true;
+      _initAutoLogin = true;
+      print('conn off');
+      setState(() {
+        _isLoading = false;
+      });
+    }else{
+      tryAutoLogin();
     }
+
+    // if (!goodConnection) {
+    //   init = true;
+    // }
     final deviceWidth = MediaQuery.of(context).size.width;
 
     final bgImage = Container(
