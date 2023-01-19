@@ -1,0 +1,32 @@
+{
+"status":1,
+  "device_mode": "Line Mode",
+  "time": "2022-12-06 15:24:12",
+
+  "ac_voltage": 234,
+  "ac_frequency": 49.9,
+
+  "pv_input_voltage": 245,
+  "pv_input_power": 0,
+
+  "output_apparent_power": 0,
+  "output_active_power": 0,
+
+  "battery_voltage": 27,
+  "battery_capacity": 100,
+
+  "charging_current": 0,
+  "battery_discharge_current": 0,
+
+  "output_voltage": 234,
+  "output_frequency": 49.9
+}
+
+
+{
+  "status": 1,
+  "temperature": 31.3,
+  "humidity": 42,
+  "lux": 114.7,
+  "usage": 10
+}
