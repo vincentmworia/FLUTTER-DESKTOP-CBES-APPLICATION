@@ -1,3 +1,4 @@
+import 'package:cbesdesktop/widgets/radial_gauge_kd.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +20,7 @@ class DashboardScreenEnvironmentMeterConsumer extends StatelessWidget {
             {
               'title': 'Temperature',
               'units': '°C',
-              'data': mqttProv.environmentMeterData?.temperature ?? '0.0',
+              'data': mqttProv.ductMeterData?.temperature ?? '0.0',
               'minValue': 0.0,
               'maxValue': 100.0,
               'range1Value': 25.0,
@@ -28,32 +29,38 @@ class DashboardScreenEnvironmentMeterConsumer extends StatelessWidget {
             {
               'title': 'Humidity',
               'units': '%',
-              'data': mqttProv.environmentMeterData?.humidity ?? '0.0',
+              'data': mqttProv.ductMeterData?.humidity ?? '0.0',
               'minValue': 0.0,
               'maxValue': 100.0,
               'range1Value': 25.0,
               'range2Value': 55.0,
             },
           ];
-          return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: environmentData
-                  .map(
-                    (e) => Expanded(
-                        child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: SyncfusionRadialGauge(
-                        title: e['title'],
-                        units: e['units'],
-                        data: e['data'],
-                        minValue: e['minValue'],
-                        maxValue: e['maxValue'],
-                        range1Value: e['range1Value'],
-                        range2Value: e['range2Value'],
-                      ),
-                    )),
-                  )
-                  .toList());
+          // return Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //     children: environmentData
+          //         .map(
+          //           (e) => Expanded(
+          //               child: Padding(
+          //             padding: const EdgeInsets.all(10.0),
+          //             child:
+          //             KdRadialGauge(
+          //                 title: e['title'],
+          //                 data: e['data'],
+          //                 gaugeHeight: height * 0.15,units: 'lpm')
+          //             // SyncfusionRadialGauge(
+          //             //   title: e['title'],
+          //             //   units: e['units'],
+          //             //   data: e['data'],
+          //             //   minValue: e['minValue'],
+          //             //   maxValue: e['maxValue'],
+          //             //   range1Value: e['range1Value'],
+          //             //   range2Value: e['range2Value'],
+          //             // ),
+          //           )),
+          //         )
+          //         .toList());
+          return Container();
         },
       );
 }

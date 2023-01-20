@@ -15,6 +15,7 @@ class DashboardScreenHeatingUnitConsumer extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Consumer<MqttProvider>(
         builder: (context, mqttProv, child) => Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             LinearGauge(
                 title: 'Tank 1',
@@ -28,20 +29,20 @@ class DashboardScreenHeatingUnitConsumer extends StatelessWidget {
                 title: 'Tank 3',
                 data: mqttProv.heatingUnitData?.tank3,
                 gaugeWidth: width * 0.075),
-            Expanded(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                KdRadialGauge(
-                    title: 'Tank 1',
-                    data: mqttProv.heatingUnitData?.flow1,
-                    gaugeHeight: height * 0.15,units: 'lpm'),
-                KdRadialGauge(
-                    title: 'Tank 2',
-                    data: mqttProv.heatingUnitData?.flow2,
-                    gaugeHeight: height * 0.15,units: 'lpm'),
-              ],
-            ))
+            // Expanded(
+            //     child: Column(
+            //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //   children: [
+            //     KdRadialGauge(
+            //         title: 'Tank 1',
+            //         data: mqttProv.heatingUnitData?.flow1,
+            //         gaugeHeight: height * 0.15,units: 'lpm'),
+            //     KdRadialGauge(
+            //         title: 'Tank 2',
+            //         data: mqttProv.heatingUnitData?.flow2,
+            //         gaugeHeight: height * 0.15,units: 'lpm'),
+            //   ],
+            // ))
           ],
         ),
       );

@@ -9,14 +9,19 @@ class KdRadialGauge extends StatefulWidget {
       required this.title,
       required this.data,
       required this.gaugeHeight,
-      required this.units})
+      required this.units,
+      required this.minValue,
+      required this.maxValue, required this.range1Value, required this.range2Value})
       : super(key: key);
   final String? title;
   final double? gaugeHeight;
   final String? data;
   final String units;
-  static const minValue = 0.0;
-  static const maxValue = 30.0;
+  final double minValue;
+  final double range1Value;
+  final double range2Value;
+
+  final double maxValue;
 
   @override
   State<KdRadialGauge> createState() => _KdRadialGaugeState();
@@ -45,7 +50,7 @@ class _KdRadialGaugeState extends State<KdRadialGauge> {
             Padding(
               padding: const EdgeInsets.all(3.0),
               child: Text(
-                widget.title == null ? '' : widget.title!/*.toUpperCase()*/,
+                widget.title == null ? '' : widget.title! /*.toUpperCase()*/,
                 style: TextStyle(
                     color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold),
@@ -54,8 +59,8 @@ class _KdRadialGaugeState extends State<KdRadialGauge> {
             Expanded(
               child: KdGaugeView(
                 key: key,
-                minSpeed: KdRadialGauge.minValue,
-                maxSpeed: KdRadialGauge.maxValue,
+                minSpeed: widget.minValue,
+                maxSpeed: widget.maxValue,
                 speed: value,
                 // animate: true,
                 duration: const Duration(seconds: 1),
@@ -79,7 +84,7 @@ class _KdRadialGaugeState extends State<KdRadialGauge> {
                 fractionDigits: 1,
 
                 alertColorArray: const [lowColor, mediumColor, highColor],
-                alertSpeedArray: const [0, 10,20],
+                alertSpeedArray: const [0, range1Value, range2Value],
               ),
             ),
           ],

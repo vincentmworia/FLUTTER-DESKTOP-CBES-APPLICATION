@@ -35,7 +35,7 @@ class MqttProvider with ChangeNotifier {
   HeatingUnit? get heatingUnitData => _heatingUnitData;
   HeatingUnit? _heatingUnitData;
 
-  DuctMeter? get environmentMeterData => _environmentMeterData;
+  DuctMeter? get ductMeterData => _environmentMeterData;
   DuctMeter? _environmentMeterData;
 
   PowerUnit? get powerUnitData => _powerUnitData;
@@ -207,7 +207,7 @@ class MqttProvider with ChangeNotifier {
               _duration(time), double.parse(_heatingUnitData!.flow1!)));
           flow2GraphData.add(GraphAxis(
               _duration(time), double.parse(_heatingUnitData!.flow2!)));
-          if (environmentMeterData != null) {
+          if (ductMeterData != null) {
             temperatureGraphData.add(GraphAxis(_duration(time),
                 double.parse(_environmentMeterData!.temperature!)));
             humidityGraphData.add(GraphAxis(_duration(time),

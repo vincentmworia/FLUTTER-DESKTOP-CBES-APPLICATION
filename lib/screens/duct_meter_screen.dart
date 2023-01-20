@@ -48,13 +48,13 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
           {
             'title': 'Temperature',
             'units': '°C',
-            'data': mqttProv.environmentMeterData?.temperature ?? '0.0',
+            'data': mqttProv.ductMeterData?.temperature ?? '0.0',
             ...range100Data
           },
           {
             'title': 'Humidity',
             'units': '%',
-            'data': mqttProv.environmentMeterData?.humidity ?? '0.0',
+            'data': mqttProv.ductMeterData?.humidity ?? '0.0',
             ...range100Data
           },
         ];
