@@ -11,7 +11,9 @@ class KdRadialGauge extends StatefulWidget {
       required this.gaugeHeight,
       required this.units,
       required this.minValue,
-      required this.maxValue, required this.range1Value, required this.range2Value})
+      required this.maxValue,
+      required this.range1Value,
+      required this.range2Value})
       : super(key: key);
   final String? title;
   final double? gaugeHeight;
@@ -84,7 +86,7 @@ class _KdRadialGaugeState extends State<KdRadialGauge> {
                 fractionDigits: 1,
 
                 alertColorArray: const [lowColor, mediumColor, highColor],
-                alertSpeedArray: const [0, range1Value, range2Value],
+                alertSpeedArray: [0, widget.range1Value, widget.range2Value],
               ),
             ),
           ],

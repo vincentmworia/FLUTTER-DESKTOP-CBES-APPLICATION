@@ -59,8 +59,8 @@ class LinearGauge extends StatelessWidget {
                   LinearWidgetPointer(
                     value: value,
                     child: Container(
-                      width: 50,
-                      height: 13,
+                      width: 20,
+                      height: 15,
                       decoration:
                           BoxDecoration(shape: BoxShape.circle, color: color),
                     ),

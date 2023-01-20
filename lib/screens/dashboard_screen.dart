@@ -1,8 +1,10 @@
 import 'package:cbesdesktop/providers/mqtt.dart';
+import 'package:cbesdesktop/widgets/linear_gauge.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/radial_gauge_kd.dart';
+import '../widgets/radial_gauge_sf.dart';
 import './home_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -82,7 +84,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           shape: RoundedRectangleBorder(borderRadius: bdRadius),
           child: SizedBox(
             width: cons.maxWidth * 0.275,
-            height: cons.maxHeight * 0.25,
+            height: cons.maxHeight * 0.45,
             child: Column(
               children: [
                 Container(
@@ -108,33 +110,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       );
 
-  Widget _gaugeView(List listData, double height) => Row(
+  Widget _gaugeView(List listData, double width) => Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: listData
           .map(
             (e) => Expanded(
                 child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: KdRadialGauge(
+              padding: const EdgeInsets.all(10.0),
+              child: e['title'].toString().contains('Tank')
+                  ? LinearGauge(
                       title: e['title'],
                       data: e['data'],
-                      gaugeHeight: height * 0.15,
+                      gaugeWidth: width * 0.1,
+                    )
+                  // KdRadialGauge(
+                  //   title: e['title'],
+                  //   data: e['data'],
+                  //   gaugeHeight: height * 0.15,
+                  //   units: e['units'],
+                  //   minValue: e['minValue'],
+                  //   maxValue: e['maxValue'],
+                  //   range1Value: e['range1Value'],
+                  //   range2Value: e['range2Value'],
+                  // )
+                  : SyncfusionRadialGauge(
+                      title: e['title'],
                       units: e['units'],
+                      data: e['data'],
                       minValue: e['minValue'],
                       maxValue: e['maxValue'],
                       range1Value: e['range1Value'],
                       range2Value: e['range2Value'],
-                    )
-                    // SyncfusionRadialGauge(
-                    //   title: e['title'],
-                    //   units: e['units'],
-                    //   data: e['data'],
-                    //   minValue: e['minValue'],
-                    //   maxValue: e['maxValue'],
-                    //   range1Value: e['range1Value'],
-                    //   range2Value: e['range2Value'],
-                    // ),
-                    )),
+                    ),
+            )),
           )
           .toList());
 
@@ -196,7 +204,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     'title': 'Tank 3',
                                     ...temperatureHumidityConfig
                                   },
-                                ], cons.maxHeight),
+                                ], cons.maxWidth),
                                 cons),
                             cardView(
                                 HomeScreen.pageTitle(PageTitle.flowMeter),
@@ -213,7 +221,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     'title': 'Flow (H.E)',
                                     ...flowConfig
                                   },
-                                ], cons.maxHeight),
+                                ],cons.maxWidth),
                                 cons),
                             cardView(
                                 HomeScreen.pageTitle(
@@ -229,7 +237,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     'title': 'Output Power',
                                     ...powerConfig
                                   },
-                                ], cons.maxHeight),
+                                ], cons.maxWidth),
                                 cons),
                           ],
                         ),
@@ -255,7 +263,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     'title': 'Humidity',
                                     ...temperatureHumidityConfig
                                   },
-                                ], cons.maxHeight),
+                                ],  cons.maxWidth),
                                 cons),
                             cardView(
                                 HomeScreen.pageTitle(PageTitle.shedMeter),
@@ -270,10 +278,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     'title': 'Humidity',
                                     ...temperatureHumidityConfig
                                   },
-                                ], cons.maxHeight),
+                                ], cons.maxWidth),
                                 cons),
                             cardView(
-                                HomeScreen.pageTitle(PageTitle.environmentMeter),
+                                HomeScreen.pageTitle(
+                                    PageTitle.environmentMeter),
                                 _gaugeView([
                                   {
                                     'data': '0.0',
@@ -285,7 +294,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     'title': 'Irradiance',
                                     ...irradianceConfig
                                   },
-                                ], cons.maxHeight),
+                                ], cons.maxWidth),
                                 cons),
                           ],
                         ),
