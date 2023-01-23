@@ -50,8 +50,8 @@ class MqttProvider with ChangeNotifier {
   final List<GraphAxis> temperatureGraphData = [];
   final List<GraphAxis> humidityGraphData = [];
 
-  final List<GraphAxis> outputActivePowerGraphData = [];
-  final List<GraphAxis> pvPowerGraphData = [];
+  // final List<GraphAxis> outputActivePowerGraphData = [];
+  // final List<GraphAxis> pvPowerGraphData = [];
 
   // final List<GraphAxis> outputVoltageGraphData = [];
 
@@ -86,7 +86,7 @@ class MqttProvider with ChangeNotifier {
   // todo If disconnected, nullify the token and forcefully logout the user
 
   // todo Add the date in the format over here
-  String _duration(DateTime time) => DateFormat('dd-MMM-yyyy HH:mm:ss')
+  String _duration(DateTime time) => DateFormat('HH:mm:ss')
       .format(time /*time.subtract(Duration(minutes: delay))*/);
 
   // DateFormat('dd-MMM-yyyy HH:mm:ss').format( time/*time.subtract(Duration(minutes: delay))*/ );
@@ -191,8 +191,8 @@ class MqttProvider with ChangeNotifier {
           removeFirstElement(flow2GraphData);
           removeFirstElement(temperatureGraphData);
           removeFirstElement(humidityGraphData);
-          removeFirstElement(outputActivePowerGraphData);
-          removeFirstElement(pvPowerGraphData);
+          // removeFirstElement(outputActivePowerGraphData);
+          // removeFirstElement(pvPowerGraphData);
           // removeFirstElement(outputVoltageGraphData);
 
           final time = DateTime.now();
@@ -214,10 +214,10 @@ class MqttProvider with ChangeNotifier {
                 double.parse(_environmentMeterData!.humidity!)));
           }
 
-          outputActivePowerGraphData.add(GraphAxis(_duration(time),
-              double.parse(_powerUnitData!.outputActivePower!)));
-          pvPowerGraphData.add(GraphAxis(
-              _duration(time), double.parse(_powerUnitData!.pvInputPower!)));
+          // outputActivePowerGraphData.add(GraphAxis(_duration(time),
+          //     double.parse(_powerUnitData!.outputActivePower!)));
+          // pvPowerGraphData.add(GraphAxis(
+          //     _duration(time), double.parse(_powerUnitData!.pvInputPower!)));
           // outputVoltageGraphData.add(GraphAxis(
           //     _duration(time), double.parse(_powerUnitData!.outputVoltage!)));
         }
@@ -263,6 +263,9 @@ class MqttProvider with ChangeNotifier {
     return _connStatus;
   }
 
+  void refresh(){
+    notifyListeners();
+  }
   void publishMsg(String topic, String message) {
     final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
     builder.addString(message);

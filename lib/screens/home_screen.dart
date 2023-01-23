@@ -12,7 +12,7 @@ import './admin_screen.dart';
 import './solar_heater_screen.dart';
 import './settings_screen.dart';
 import './electrical_energy_screen.dart';
-import './environment_meter_screen.dart';
+import './ambient_meter_screen.dart';
 import './flow_meter_screen.dart';
 import './thermal_energy_screen.dart';
 import './shed_meter_screen.dart';
@@ -22,7 +22,7 @@ enum PageTitle {
   dashboard,
   solarHeaterMeter,
   flowMeter,
-  environmentMeter,
+  ambientMeter,
   shedMeter,
   ductMeter,
   electricalEnergyMeter,
@@ -35,14 +35,17 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
   static const routeName = '/home_screen';
 
+  // todo Add Firewood Moisture Meter Dashboard to feed in moisture data
+  // todo request for the moisture meter API
+
   static String pageTitle(PageTitle page) {
     switch (page) {
       case PageTitle.dashboard:
         return "Dashboard";
       case PageTitle.solarHeaterMeter:
         return "Solar Heater";
-      case PageTitle.environmentMeter:
-        return "Environment Meter";
+      case PageTitle.ambientMeter:
+        return "Ambient Meter";
       case PageTitle.electricalEnergyMeter:
         return "Electrical Energy";
       case PageTitle.admin:
@@ -112,8 +115,8 @@ class _HomeScreenState extends State<HomeScreen> {
         return DashboardScreen(switchDashboardPage: _switchPage);
       case PageTitle.solarHeaterMeter:
         return const HeatingUnitScreen();
-      case PageTitle.environmentMeter:
-        return const EnvironmentMeterScreen();
+      case PageTitle.ambientMeter:
+        return const AmbientMeterScreen();
       case PageTitle.electricalEnergyMeter:
         return const ElectricalEnergyScreen();
       case PageTitle.admin:
@@ -133,32 +136,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final goodConnection = _connectionStatus == ConnectivityResult.ethernet ||
-    //     _connectionStatus == ConnectivityResult.mobile ||
-    //     _connectionStatus == ConnectivityResult.wifi;
-
-    // print(_connectionStatus);
-    // if (!goodConnection) {
-    //   return const SafeArea(
-    //       child: Scaffold(
-    //     body: OfflineScreen(),
-    //   ));
-    // }
-
     const duration = Duration(milliseconds: 20);
 
     const txtStyle = TextStyle(
-        color: Colors.white,
-        // fontSize: 16,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 3.0);
+        color: Colors.white, fontWeight: FontWeight.w600, letterSpacing: 3.0);
     return SafeArea(
       child: Scaffold(
+
         appBar: AppBar(
           title: AnimatedContainer(
             duration: duration,
             child: Padding(
-                padding:  EdgeInsets.only(left: _deCompressNavPlane?20:60),
+                padding: EdgeInsets.only(left: _deCompressNavPlane ? 20 : 60),
                 child: Text(_pageTitle)),
           ),
           actions: [
@@ -196,7 +185,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -215,63 +203,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   )
-
-                  // GestureDetector(
-                  //   onDoubleTap: () {
-                  //     _switchPage(PageTitle.dashboard,
-                  //         HomeScreen.pageTitle(PageTitle.dashboard));
-                  //   },
-                  //   child: ClipRRect(
-                  //     borderRadius: BorderRadius.circular(5),
-                  //     child: Image.asset(
-                  //       'images/cbes_logo_cropped.PNG',
-                  //       fit: BoxFit.cover,
-                  //       width: 40,
-                  //       // height: 50,
-                  //     ),
-                  //   ),
-                  // ),
-                  // const Text(
-                  //   'DeKUT\tCBES',
-                  //   style: TextStyle(
-                  //       fontWeight: FontWeight.w600,
-                  //       color: Colors.white,
-                  //       fontSize: 20.0,
-                  //       letterSpacing: 1.0),
-                  // ),
                 ],
               ),
             ),
-            // Padding(
-            //     padding: const EdgeInsets.only(right: 10),
-            //     child: Icon(
-            //       _connectionStatus == ConnectivityResult.wifi
-            //           ? Icons.wifi
-            //           : _connectionStatus == ConnectivityResult.mobile
-            //               ? Icons.signal_cellular_alt
-            //               : _connectionStatus == ConnectivityResult.ethernet
-            //                   ? Icons.cable
-            //                   : Icons.signal_cellular_0_bar,
-            //       size: 30,
-            //       color: Colors.white,
-            //     )),
-            // const Padding(
-            //     padding: EdgeInsets.symmetric(horizontal: 10),
-            //     child: Icon(
-            //       Icons.person,
-            //       size: 30,
-            //       color: Colors.white,
-            //     )),
-            // Center(
-            //   child: Padding(
-            //     padding: const EdgeInsets.only(right: 25),
-            //     child: Text(
-            //       '${LoginUserData.getLoggedUser!.firstname} ${LoginUserData.getLoggedUser!.lastname}',
-            //       overflow: TextOverflow.clip,
-            //       style: txtStyle,
-            //     ),
-            //   ),
-            // ),
           ],
           leading: Padding(
             padding: const EdgeInsets.only(left: 25),
@@ -287,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _showNavPlane = false;
                     _deCompressNavPlane = !_deCompressNavPlane;
                   });
-                   Future.delayed(duration).then((value) => setState(() {
+                  Future.delayed(duration).then((value) => setState(() {
                         _showNavPlane = true;
                       }));
                 } else {
@@ -306,6 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         backgroundColor: Colors.white,
+        // backgroundColor: Theme.of(context).colorScheme.secondary ,
         body: Row(
           children: [
             AnimatedContainer(

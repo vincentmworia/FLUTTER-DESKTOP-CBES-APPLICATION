@@ -29,7 +29,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  static const appTitle = 'Centre For Biomass Energy Studies Desktop Application';
+  static const appTitle = 'Centre For Biomass Energy Studies';
   static const appPrimaryColor = Color(0xff0b6623);
   static const appSecondaryColor2 = Color(0xff708238);
   static const appSecondaryColor = Color(0xff8A9A5B);

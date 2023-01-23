@@ -2,13 +2,21 @@ import 'package:datetime_picker_formfield_new/datetime_picker_formfield_new.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-
 class SearchToggleView extends StatefulWidget {
-  const SearchToggleView({Key? key, required this.toggleOnlineStatus, required this.generateExcel})
+  const SearchToggleView(
+      {Key? key,
+      required this.toggleOnlineStatus,
+      required this.generateExcel,
+      required this.fromController,
+      required this.toController,
+      required this.searchDatabase})
       : super(key: key);
 
   final Function toggleOnlineStatus;
   final Function generateExcel;
+  final Function? searchDatabase;
+  final TextEditingController fromController;
+  final TextEditingController toController;
 
   @override
   State<SearchToggleView> createState() => _SearchToggleViewState();
@@ -18,46 +26,66 @@ class _SearchToggleViewState extends State<SearchToggleView> {
   var _online = true;
 
   // todo Break into a separate widget named SearchDateTime or rather this whole widget???
-  Widget _searchDateTime({required String title}) => Row(
+  Widget _searchDateTime(
+          {required String title, required TextEditingController controller}) =>
+      Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-              margin: const EdgeInsets.only(top: 12, right: 6),
-              child: Text(
-                title,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(color: Theme.of(context).colorScheme.primary),
-              )),
-          SizedBox(
-              width: MediaQuery.of(context).size.width <= 170
-                  ? 170
-                  : MediaQuery.of(context).size.width * 0.125,
-              child: DateTimeField(
-                format: DateFormat("yyyy-MM-dd HH:mm"),
-                onShowPicker: (context, currentValue) async {
-                  final date = await showDatePicker(
-                      context: context,
-                      firstDate: DateTime(1900),
-                      initialDate: currentValue ?? DateTime.now(),
-                      lastDate: DateTime(2100));
-                  if (date != null) {
-                    TimeOfDay? time;
-                    Future.delayed(Duration.zero).then((value) async {
-                      time = await showTimePicker(
+          if (title.contains('From') ||
+              (title.contains('To') && widget.fromController.text != ""))
+            Container(
+                margin: const EdgeInsets.only(top: 12, right: 6),
+                child: Text(
+                  title,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(color: Theme.of(context).colorScheme.primary),
+                )),
+          if (title.contains('From') ||
+              (title.contains('To') && widget.fromController.text != ""))
+            SizedBox(
+                width: MediaQuery.of(context).size.width <= 170
+                    ? 170
+                    : MediaQuery.of(context).size.width * 0.125,
+                child: DateTimeField(
+                  format: DateFormat("yyyy-MM-dd HH:mm"),
+                  controller: controller,
+                  // validator: ,
+
+                  // cursorRadius: Radius.circular(200),
+                  showCursor: false,
+
+                  onShowPicker: (context, currentValue) async {
+                    final currentTime = DateTime.now();
+                    final date = await showDatePicker(
                         context: context,
-                        initialTime: TimeOfDay.fromDateTime(
-                            currentValue ?? DateTime.now()),
-                      );
-                    });
-                    return DateTimeField.combine(date, time);
-                  } else {
-                    return currentValue;
-                  }
-                },
-              ))
+                        firstDate: title.contains('To')
+                            ? DateTime.parse(widget.fromController.text)
+                            : DateTime(2023, 1, 10, 0, 0),
+                        initialDate: currentValue ?? DateTime.now(),
+                        lastDate: DateTime(
+                          currentTime.year,
+                          currentTime.month,
+                          currentTime.day,
+                          currentTime.hour,
+                          currentTime.minute,
+                        ));
+                    if (date != null) {
+                      TimeOfDay? time;
+                      await Future.delayed(Duration.zero)
+                          .then((value) async => time = await showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay.fromDateTime(
+                                    currentValue ?? DateTime.now()),
+                              ));
+                      return DateTimeField.combine(date, time);
+                    } else {
+                      return currentValue;
+                    }
+                  },
+                ))
         ],
       );
 
@@ -76,13 +104,19 @@ class _SearchToggleViewState extends State<SearchToggleView> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      _searchDateTime(title: 'From:\t'),
-                      _searchDateTime(title: 'To:\t'),
+                      _searchDateTime(
+                          title: 'From:\t', controller: widget.fromController),
+                      _searchDateTime(
+                          title: 'To:\t', controller: widget.toController),
                       IconButton(
-                          onPressed: () {},
+                          onPressed: widget.searchDatabase == null
+                              ? null
+                              : () => widget.searchDatabase!(),
                           icon: Icon(
                             Icons.search,
-                            color: Theme.of(context).colorScheme.primary,
+                            color: widget.searchDatabase == null
+                                ? Colors.grey
+                                : Theme.of(context).colorScheme.primary,
                             size: 30,
                           )),
                     ],
@@ -93,7 +127,9 @@ class _SearchToggleViewState extends State<SearchToggleView> {
             children: [
               ElevatedButton.icon(
                   icon: const Icon(Icons.file_copy),
-                  onPressed: ()=>widget.generateExcel(),
+                  onPressed: (!_online && widget.searchDatabase == null)
+                      ? null
+                      : () => widget.generateExcel(),
                   label: const Text('Generate Excel Sheet')),
               // todo Generate PDF???
               // ElevatedButton.icon(

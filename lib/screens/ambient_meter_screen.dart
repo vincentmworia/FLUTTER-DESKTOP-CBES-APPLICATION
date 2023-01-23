@@ -5,14 +5,14 @@ import '../widgets/radial_gauge_sf.dart';
 import '../widgets/tank_graph.dart';
 import '../providers/mqtt.dart';
 
-class EnvironmentMeterScreen extends StatelessWidget {
-  const EnvironmentMeterScreen({Key? key}) : super(key: key);
+class AmbientMeterScreen extends StatelessWidget {
+  const AmbientMeterScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return const Center(
       child: Text("""
-    Environment Meter
+    Ambient Meter
     - Ambient Temperature
     - Ambient Irradiance
       """),

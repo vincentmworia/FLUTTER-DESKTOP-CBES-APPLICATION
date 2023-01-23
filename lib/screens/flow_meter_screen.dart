@@ -22,6 +22,15 @@ class FlowMeterScreen extends StatefulWidget {
 
 class _FlowMeterScreenState extends State<FlowMeterScreen> {
   var _online = true;
+  final _fromDate = TextEditingController();
+  final _toDate = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    _fromDate.dispose();
+    _toDate.dispose();
+  }
 
   static const keyMain = "Datetime";
   static const key1 = "Flow Rate (To Solar Heater)";
@@ -119,66 +128,11 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
               await customDialog(context, "Error generating Excel file");
             }
           },
+          fromController: _fromDate,
+          toController: _toDate,
+          searchDatabase: () {},
         );
       });
     });
   }
 }
-
-// static const flowTitle = 'Flow Rate';
-
-// _parameterView(
-//     context: context,
-//     width: cons.maxWidth,
-//     height: cons.maxHeight,
-//     title: flowTitle,
-//     valueParams: Consumer<MqttProvider>(
-//       builder: (context, mqttProv, child) {
-//         final List<Map<String, String>> heatingUnitData = [
-//           {
-//             'title': 'Flow S.H',
-//             'data': mqttProv.heatingUnitData?.flow2 ?? '0.0'
-//           },
-//           {
-//             'title': 'Flow H.E',
-//             'data': mqttProv.heatingUnitData?.flow1 ?? '0.0'
-//           },
-//         ];
-//
-//         return Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//             children: heatingUnitData
-//                 .map((e) => Card(
-//                       elevation: 8,
-//                       shape: RoundedRectangleBorder(
-//                           borderRadius: BorderRadius.circular(10)),
-//                       color: Colors.white.withOpacity(0.85),
-//                       shadowColor:
-//                           Theme.of(context).colorScheme.primary,
-//                       child: SizedBox(
-//                         width: 175,
-//                         height: double.infinity,
-//                         child: SyncfusionRadialGauge(
-//                           title: e['title']!,
-//                           data: e['data']!,
-//                           minValue: 0.0,
-//                           maxValue: 30.0,
-//                           range1Value: 10.0,
-//                           range2Value: 20.0,
-//                           units: 'lpm',
-//                         ),
-//                       ),
-//                     ))
-//                 .toList());
-//       },
-//     ),
-//     graphParams:
-//     TankGraph(
-//       axisTitle: "Flow (lpm)",
-//       spline1Title: "Flow (To Solar Heater)",
-//       spline1DataSource: mqttProv.flow2GraphData,
-//       spline2Title: "Flow (To Heat Exchanger)",
-//       spline2DataSource: mqttProv.flow1GraphData,
-//     )
-// ),
-// graphParams:const TankGraph()),

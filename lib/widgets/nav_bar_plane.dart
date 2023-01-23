@@ -69,7 +69,7 @@ class _NavBarPlaneState extends State<NavBarPlane> {
       {PageTitle.solarHeaterMeter: Icons.heat_pump},
       {PageTitle.flowMeter: Icons.water_drop},
       {PageTitle.ductMeter: Icons.device_thermostat},
-      {PageTitle.environmentMeter: Icons.device_thermostat},
+      {PageTitle.ambientMeter: Icons.device_thermostat},
       {PageTitle.shedMeter: Icons.device_thermostat},
       {PageTitle.electricalEnergyMeter: Icons.power_input},
       {PageTitle.thermalEnergyMeter: Icons.power_input},

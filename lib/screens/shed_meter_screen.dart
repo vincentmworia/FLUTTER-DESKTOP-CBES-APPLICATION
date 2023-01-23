@@ -9,7 +9,7 @@ class ShedMeterScreen extends StatelessWidget {
       child: Text("""
      Shed Meter
      - Shed Temperature
-     - Shed Irradiance
+     - Shed Humidity
       """),
     );
   }

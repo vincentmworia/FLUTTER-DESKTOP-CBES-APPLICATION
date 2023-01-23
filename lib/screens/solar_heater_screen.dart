@@ -1,18 +1,18 @@
 import 'dart:io';
 
-import 'package:cbesdesktop/models/graph_axis.dart';
-import 'package:cbesdesktop/screens/home_screen.dart';
-import 'package:cbesdesktop/widgets/generate_excel_from_list.dart';
+import 'package:cbesdesktop/providers/https_protocol.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import '../helpers/custom_data.dart';
+import '../models/graph_axis.dart';
 import '../widgets/IotPageTemplate.dart';
 import '../widgets/linear_gauge.dart';
 import '../widgets/tank_graph.dart';
 import '../providers/mqtt.dart';
-import '../widgets/search_toggle_view.dart';
+import './home_screen.dart';
+import '../widgets/generate_excel_from_list.dart';
 
 class HeatingUnitScreen extends StatefulWidget {
   const HeatingUnitScreen({Key? key}) : super(key: key);
@@ -23,6 +23,19 @@ class HeatingUnitScreen extends StatefulWidget {
 
 class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
   var _online = true;
+  final _fromDate = TextEditingController();
+  final _toDate = TextEditingController();
+
+  final List<GraphAxis> temp1HistoryGraphData = [];
+  final List<GraphAxis> temp2HistoryGraphData = [];
+  final List<GraphAxis> temp3HistoryGraphData = [];
+
+  @override
+  void dispose() {
+    super.dispose();
+    _fromDate.dispose();
+    _toDate.dispose();
+  }
 
   bool _onlineBnStatus(bool isOnline) {
     setState(() {
@@ -65,26 +78,41 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
           graphPart: TankGraph(
             graphTitle: 'Graph of Temperature against Time',
             axisTitle: "Temp (°C)",
-            spline1DataSource: !_online ? [
-              // todo Get data from HTTP, get past data for temp1, temp2, temp3
-            ] : mqttProv.temp1GraphData,
+            spline1DataSource:
+                !_online ? temp1HistoryGraphData : mqttProv.temp1GraphData,
             spline1Title: "Tank 1",
-            spline2DataSource: !_online ? [] : mqttProv.temp2GraphData,
+            spline2DataSource:
+                !_online ? temp2HistoryGraphData : mqttProv.temp2GraphData,
             spline2Title: "Tank 2",
-            spline3DataSource: !_online ? [] : mqttProv.temp3GraphData,
+            spline3DataSource:
+                !_online ? temp3HistoryGraphData : mqttProv.temp3GraphData,
             spline3Title: "Tank 3",
           ),
           generateExcel: () async {
+            // todo Branch between online and offline
+            //todo if(online)
             List tempDataCombination = [];
             int i = 0;
-            for (var data in mqttProv.temp1GraphData) {
-              tempDataCombination.add({
-                keyMain: data.x,
-                key1: data.y,
-                key2: mqttProv.temp2GraphData[i].y,
-                key3: mqttProv.temp3GraphData[i].y
-              });
-              i += 1;
+            if (_online) {
+              for (var data in mqttProv.temp1GraphData) {
+                tempDataCombination.add({
+                  keyMain: data.x,
+                  key1: data.y,
+                  key2: mqttProv.temp2GraphData[i].y,
+                  key3: mqttProv.temp3GraphData[i].y
+                });
+                i += 1;
+              }
+            } else {
+              for (var data in temp1HistoryGraphData) {
+                tempDataCombination.add({
+                  keyMain: data.x,
+                  key1: data.y,
+                  key2: temp2HistoryGraphData[i].y,
+                  key3: temp3HistoryGraphData[i].y
+                });
+                i += 1;
+              }
             }
 
             try {
@@ -107,6 +135,46 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
               await customDialog(context, "Error generating Excel file");
             }
           },
+          fromController: _fromDate,
+          toController: _toDate,
+          searchDatabase: (_fromDate.text == "" ||
+                  _toDate.text == "" ||
+                  DateTime.parse(_fromDate.text)
+                      .isAfter(DateTime.parse(_toDate.text)))
+              ? null
+              : () async {
+                  // todo Loading
+                  if (DateTime.parse(_fromDate.text)
+                      .isAfter(DateTime.parse(_toDate.text))) {
+                    await customDialog(
+                        context, "Make sure the time in 'To' is after 'From'");
+                    return;
+                  }
+
+                  print('''
+            Search from ${_fromDate.text} to ${_toDate.text}
+            ''');
+                  try {
+                    final solarHeaterHistoricalData =
+                        await HttpProtocol.querySolarHeater(
+                            fromDate: _fromDate.text, toDate: _toDate.text);
+                    temp1HistoryGraphData.clear();
+                    temp2HistoryGraphData.clear();
+                    temp3HistoryGraphData.clear();
+
+                    for (Map data in solarHeaterHistoricalData) {
+                      temp1HistoryGraphData.add(GraphAxis(data.keys.toList()[0],
+                          data.values.toList()[0]['Tank1']));
+                      temp2HistoryGraphData.add(GraphAxis(data.keys.toList()[0],
+                          data.values.toList()[0]['Tank2']));
+                      temp3HistoryGraphData.add(GraphAxis(data.keys.toList()[0],
+                          data.values.toList()[0]['Tank3']));
+                    }
+                    mqttProv.refresh();
+                  } catch (e) {
+                    print(e.toString());
+                  }
+                },
         );
       });
     });

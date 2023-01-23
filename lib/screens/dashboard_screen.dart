@@ -56,9 +56,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             widget.switchDashboardPage(PageTitle.solarHeaterMeter,
                 HomeScreen.pageTitle(PageTitle.solarHeaterMeter));
           }
-          if (title == HomeScreen.pageTitle(PageTitle.environmentMeter)) {
-            widget.switchDashboardPage(PageTitle.environmentMeter,
-                HomeScreen.pageTitle(PageTitle.environmentMeter));
+          if (title == HomeScreen.pageTitle(PageTitle.ambientMeter)) {
+            widget.switchDashboardPage(PageTitle.ambientMeter,
+                HomeScreen.pageTitle(PageTitle.ambientMeter));
           }
           if (title == HomeScreen.pageTitle(PageTitle.flowMeter)) {
             widget.switchDashboardPage(
@@ -84,7 +84,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           shape: RoundedRectangleBorder(borderRadius: bdRadius),
           child: SizedBox(
             width: cons.maxWidth * 0.275,
-            height: cons.maxHeight * 0.45,
+            height: cons.maxHeight * 0.4,
             child: Column(
               children: [
                 Container(
@@ -282,7 +282,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 cons),
                             cardView(
                                 HomeScreen.pageTitle(
-                                    PageTitle.environmentMeter),
+                                    PageTitle.ambientMeter),
                                 _gaugeView([
                                   {
                                     'data': '0.0',

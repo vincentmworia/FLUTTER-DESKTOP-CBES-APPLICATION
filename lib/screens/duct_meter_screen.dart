@@ -22,6 +22,16 @@ class DuctMeterScreen extends StatefulWidget {
 
 class _DuctMeterScreenState extends State<DuctMeterScreen> {
   var _online = true;
+  final _fromDate = TextEditingController();
+  final _toDate = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    _fromDate.dispose();
+    _toDate.dispose();
+  }
+
   static const keyMain = "Datetime";
   static const key1 = "Duct Temperature";
   static const key2 = "Duct Humidity";
@@ -130,6 +140,9 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
               await customDialog(context, "Error generating Excel file");
             }
           },
+          fromController: _fromDate,
+          toController: _toDate,
+          searchDatabase: () {},
         );
       });
     });

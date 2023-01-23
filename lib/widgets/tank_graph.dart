@@ -67,12 +67,12 @@ class TankGraph extends StatelessWidget {
               tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
               tooltipAlignment: ChartAlignment.far,
               shouldAlwaysShow: true,
-              // hideDelay: 10000, // shouldAlwaysShow: false,
+              hideDelay: 10000, // shouldAlwaysShow: false,
             ),
             tooltipBehavior: TooltipBehavior(
                 enable: true,
                 activationMode: ActivationMode.singleTap,
-                duration: 300),
+                duration: 3000),
             plotAreaBackgroundImage:
                 const AssetImage('images/graph_background.PNG'),
             primaryYAxis: NumericAxis(
