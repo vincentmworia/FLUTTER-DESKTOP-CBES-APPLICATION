@@ -158,6 +158,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Switch.adaptive(
+                    activeColor: Theme.of(context).colorScheme.primary,
                     value: _threeDView,
                     onChanged: (val) {
                       setState(() {
@@ -221,7 +222,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     'title': 'Flow (H.E)',
                                     ...flowConfig
                                   },
-                                ],cons.maxWidth),
+                                ], cons.maxWidth),
                                 cons),
                             cardView(
                                 HomeScreen.pageTitle(
@@ -263,7 +264,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     'title': 'Humidity',
                                     ...temperatureHumidityConfig
                                   },
-                                ],  cons.maxWidth),
+                                ], cons.maxWidth),
                                 cons),
                             cardView(
                                 HomeScreen.pageTitle(PageTitle.shedMeter),
@@ -281,8 +282,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ], cons.maxWidth),
                                 cons),
                             cardView(
-                                HomeScreen.pageTitle(
-                                    PageTitle.ambientMeter),
+                                HomeScreen.pageTitle(PageTitle.ambientMeter),
                                 _gaugeView([
                                   {
                                     'data': '0.0',

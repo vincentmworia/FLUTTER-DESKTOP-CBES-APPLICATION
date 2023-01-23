@@ -232,6 +232,18 @@ class MqttProvider with ChangeNotifier {
         if (topic == "cbes/dekut/data/heating_unit") {
           _heatingUnitData =
               HeatingUnit.fromMap(json.decode(message) as Map<String, dynamic>);
+          const capacitance = 4182.0;
+          const tankTemp = 22.0;
+
+          final flowRate = double.parse(heatingUnitData!.flow1!);
+          final temp1 = double.parse(heatingUnitData!.tank1!);
+          final temp2 = double.parse(heatingUnitData!.tank2!);
+          final temp3 = double.parse(heatingUnitData!.tank3!);
+
+          final mass = flowRate * 0.06 * 2;
+          final averageTemp = (temp1 + temp2 + temp3) / 3;
+          final enthalpy =
+              (mass * capacitance * (averageTemp - tankTemp)) / 1000;
           notifyListeners();
         }
 
@@ -263,9 +275,10 @@ class MqttProvider with ChangeNotifier {
     return _connStatus;
   }
 
-  void refresh(){
+  void refresh() {
     notifyListeners();
   }
+
   void publishMsg(String topic, String message) {
     final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
     builder.addString(message);
