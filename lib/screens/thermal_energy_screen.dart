@@ -111,8 +111,8 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
                       ))
                   .toList()),
           graphPart: TankGraph(
-            axisTitle: "Flow (lpm)",
-            spline1Title: "Flow (To Solar Heater)",
+            axisTitle: "Thermal Energy (KJ)",
+            spline1Title: "Thermal Energy (KJ)",
             spline1DataSource: !_online ? [] : mqttProv.enthalpyGraphData,
             graphTitle: 'Graph of Thermal Energy against Time',
           ),

@@ -43,11 +43,12 @@ class _SearchToggleViewState extends State<SearchToggleView> {
                       .titleMedium!
                       .copyWith(color: Theme.of(context).colorScheme.primary),
                 )),
+          // todo Work on this UI, Showing the from and to, and their lengths
           if (title.contains('From') ||
               (title.contains('To') && widget.fromController.text != ""))
             SizedBox(
-                width: MediaQuery.of(context).size.width <= 170
-                    ? 170
+                width: MediaQuery.of(context).size.width * 0.1 < 150
+                    ? MediaQuery.of(context).size.width * 0.1
                     : MediaQuery.of(context).size.width * 0.125,
                 child: DateTimeField(
                   format: DateFormat("yyyy-MM-dd HH:mm"),

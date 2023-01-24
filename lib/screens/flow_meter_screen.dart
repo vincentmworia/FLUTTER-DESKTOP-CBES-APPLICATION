@@ -106,6 +106,8 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
                 !_online ? flow2HistoryGraphData : mqttProv.flow1GraphData,
             graphTitle: 'Graph of Flow Rate against Time',
           ),
+          fromController: _fromDate,
+          toController: _toDate,
           generateExcel: () async {
             setState(() {
               _isLoading = true;
@@ -115,7 +117,7 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
             if (_online) {
               for (var data in mqttProv.flow1GraphData) {
                 flowDataCombination.add({
-                  keyMain: data.x.split(':'),
+                  keyMain: data.x,
                   key1: data.y,
                   key2: mqttProv.flow2GraphData[i].y,
                 });
@@ -123,11 +125,8 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
               }
             } else {
               for (var data in flow1HistoryGraphData) {
-                final subDate =
-                    (data.x.split(':')..removeRange(2, 4)).join(":");
-
                 flowDataCombination.add({
-                  keyMain: subDate,
+                  keyMain: data.x,
                   key1: data.y,
                   key2: flow2HistoryGraphData[i].y,
                 });
@@ -158,8 +157,6 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
               });
             }
           },
-          fromController: _fromDate,
-          toController: _toDate,
           searchDatabase: (_fromDate.text == "" ||
                   _toDate.text == "" ||
                   DateTime.parse(_fromDate.text)
@@ -183,14 +180,16 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
                     flow2HistoryGraphData.clear();
 
                     for (Map data in flowMeterHistoricalData) {
-                      flow1HistoryGraphData.add(GraphAxis(data.keys.toList()[0],
-                          data.values.toList()[0]['Flow_rate1']));
-                      flow2HistoryGraphData.add(GraphAxis(data.keys.toList()[0],
-                          data.values.toList()[0]['Flow_rate2']));
+                      final refinedDate = (data.keys.toList()[0].split(':')
+                            ..removeRange(2, 4))
+                          .join(":");
+                      flow1HistoryGraphData.add(GraphAxis(refinedDate,
+                          data.values.toList()[0][HttpProtocol.flow1]));
+                      flow2HistoryGraphData.add(GraphAxis(refinedDate,
+                          data.values.toList()[0][HttpProtocol.flow2]));
                     }
                     mqttProv.refresh();
                   } catch (e) {
-
                     await customDialog(
                         context, "Check data formatting from the database");
                   } finally {

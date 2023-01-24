@@ -35,8 +35,8 @@ class MqttProvider with ChangeNotifier {
   HeatingUnit? get heatingUnitData => _heatingUnitData;
   HeatingUnit? _heatingUnitData;
 
-  DuctMeter? get ductMeterData => _environmentMeterData;
-  DuctMeter? _environmentMeterData;
+  DuctMeter? get ductMeterData => _ductMeterData;
+  DuctMeter? _ductMeterData;
 
   PowerUnit? get powerUnitData => _powerUnitData;
   PowerUnit? _powerUnitData;
@@ -209,9 +209,9 @@ class MqttProvider with ChangeNotifier {
               _duration(time), double.parse(_heatingUnitData!.flow2!)));
           if (ductMeterData != null) {
             temperatureGraphData.add(GraphAxis(_duration(time),
-                double.parse(_environmentMeterData!.temperature!)));
+                double.parse(_ductMeterData!.temperature!)));
             humidityGraphData.add(GraphAxis(_duration(time),
-                double.parse(_environmentMeterData!.humidity!)));
+                double.parse(_ductMeterData!.humidity!)));
           }
           if (_heatingUnitData != null) {
             enthalpyGraphData
@@ -241,7 +241,7 @@ class MqttProvider with ChangeNotifier {
 
         if (topic == "cbes/dekut/data/environment_meter") {
           print(json.decode(message) as Map<String, dynamic>);
-          _environmentMeterData =
+          _ductMeterData =
               DuctMeter.fromMap(json.decode(message) as Map<String, dynamic>);
           notifyListeners();
         }

@@ -114,7 +114,7 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                   if (_online) {
                     for (var data in mqttProv.temp1GraphData) {
                       tempDataCombination.add({
-                        keyMain: data.x.split(':'),
+                        keyMain: data.x ,
                         key1: data.y,
                         key2: mqttProv.temp2GraphData[i].y,
                         key3: mqttProv.temp3GraphData[i].y
@@ -123,11 +123,8 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                     }
                   } else {
                     for (var data in temp1HistoryGraphData) {
-                      final subDate =
-                          (data.x.split(':')..removeRange(2, 4)).join(":");
-
                       tempDataCombination.add({
-                        keyMain: subDate,
+                        keyMain: data.x,
                         key1: data.y,
                         key2: temp2HistoryGraphData[i].y,
                         key3: temp3HistoryGraphData[i].y
@@ -185,20 +182,24 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                           temp3HistoryGraphData.clear();
 
                           for (Map data in solarHeaterHistoricalData) {
+
+                            final refinedDate = (data.keys.toList()[0].split(':')
+                              ..removeRange(2, 4))
+                                .join(":");
                             temp1HistoryGraphData.add(GraphAxis(
-                                data.keys.toList()[0],
-                                data.values.toList()[0]['Tank1']));
+                               refinedDate,
+                                data.values.toList()[0][HttpProtocol.tank1]));
                             temp2HistoryGraphData.add(GraphAxis(
-                                data.keys.toList()[0],
-                                data.values.toList()[0]['Tank2']));
+                                refinedDate,
+                                data.values.toList()[0][HttpProtocol.tank2]));
                             temp3HistoryGraphData.add(GraphAxis(
-                                data.keys.toList()[0],
-                                data.values.toList()[0]['Tank3']));
+                                refinedDate,
+                                data.values.toList()[0][HttpProtocol.tank3]));
                           }
                           mqttProv.refresh();
                         } catch (e) {
-                          await customDialog(
-                              context, "Check data formatting from the database");
+                          await customDialog(context,
+                              "Check data formatting from the database");
                         } finally {
                           setState(() {
                             _isLoading = false;
