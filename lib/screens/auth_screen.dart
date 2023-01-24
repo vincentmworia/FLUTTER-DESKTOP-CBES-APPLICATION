@@ -13,6 +13,7 @@ import '../models/user.dart';
 import '../widgets/auth_screen_form.dart';
 import '../helpers/custom_data.dart';
 import '../widgets/custom_check_box.dart';
+import '../widgets/loading_animation.dart';
 import './home_screen.dart';
 
 enum AuthMode { login, register }
@@ -228,17 +229,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               Visibility(
                 visible: _isLoading,
-                child: Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  color:
-                      Theme.of(context).colorScheme.secondary.withOpacity(0.25),
-                  child: Center(
-                    child: LoadingAnimationWidget.fourRotatingDots(
-                        color: Theme.of(context).colorScheme.secondary,
-                        size: 100),
-                  ),
-                ),
+                child:const MyLoadingAnimation(),
               ),
               //todo  transition from offline to online: try autologin
               if (false)

@@ -50,6 +50,8 @@ class MqttProvider with ChangeNotifier {
   final List<GraphAxis> temperatureGraphData = [];
   final List<GraphAxis> humidityGraphData = [];
 
+  final List<GraphAxis> enthalpyGraphData = [];
+
   // final List<GraphAxis> outputActivePowerGraphData = [];
   // final List<GraphAxis> pvPowerGraphData = [];
 
@@ -125,11 +127,8 @@ class MqttProvider with ChangeNotifier {
       if (kDebugMode) {
         print('\n\nException: $e');
       }
-      // Exception: mqtt-client::NoConnectionException: The maximum allowed connection attempts ({3}) were exceeded. The broker is not responding to the connection request message (Missing Connection Acknowledgement?
-
       _mqttClient.disconnect();
       _connStatus = ConnectionStatus.disconnected;
-      // Notify listeners to de-activate UI todo;
     }
     if (_connStatus == ConnectionStatus.connected) {
       _mqttClient.subscribe("cbes/dekut/#", MqttQos.exactlyOnce);
@@ -191,6 +190,7 @@ class MqttProvider with ChangeNotifier {
           removeFirstElement(flow2GraphData);
           removeFirstElement(temperatureGraphData);
           removeFirstElement(humidityGraphData);
+          removeFirstElement(enthalpyGraphData);
           // removeFirstElement(outputActivePowerGraphData);
           // removeFirstElement(pvPowerGraphData);
           // removeFirstElement(outputVoltageGraphData);
@@ -213,6 +213,10 @@ class MqttProvider with ChangeNotifier {
             humidityGraphData.add(GraphAxis(_duration(time),
                 double.parse(_environmentMeterData!.humidity!)));
           }
+          if (_heatingUnitData != null) {
+            enthalpyGraphData
+                .add(GraphAxis(_duration(time), _heatingUnitData!.enthalpy!));
+          }
 
           // outputActivePowerGraphData.add(GraphAxis(_duration(time),
           //     double.parse(_powerUnitData!.outputActivePower!)));
@@ -232,18 +236,6 @@ class MqttProvider with ChangeNotifier {
         if (topic == "cbes/dekut/data/heating_unit") {
           _heatingUnitData =
               HeatingUnit.fromMap(json.decode(message) as Map<String, dynamic>);
-          const capacitance = 4182.0;
-          const tankTemp = 22.0;
-
-          final flowRate = double.parse(heatingUnitData!.flow1!);
-          final temp1 = double.parse(heatingUnitData!.tank1!);
-          final temp2 = double.parse(heatingUnitData!.tank2!);
-          final temp3 = double.parse(heatingUnitData!.tank3!);
-
-          final mass = flowRate * 0.06 * 2;
-          final averageTemp = (temp1 + temp2 + temp3) / 3;
-          final enthalpy =
-              (mass * capacitance * (averageTemp - tankTemp)) / 1000;
           notifyListeners();
         }
 

@@ -57,7 +57,7 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
         final List<Map<String, dynamic>> heatingUnitData = [
           {
             'title': 'Thermal Energy',
-            'data': enthalpy.toStringAsFixed(1),
+            'data': mqttProv.heatingUnitData!.enthalpy!.toStringAsFixed(1),
             'units': 'KJ',
             'minValue': 0.0,
             'maxValue': 500.0,
@@ -66,7 +66,7 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
           },
           {
             'title': 'Average Temperature',
-            'data': (averageTemp).toStringAsFixed(1),
+            'data': mqttProv.heatingUnitData!.averageTemp!.toStringAsFixed(1),
             'units': '°C',
             'minValue': 0.0,
             'maxValue': 100.0,
@@ -109,10 +109,8 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
           graphPart: TankGraph(
             axisTitle: "Flow (lpm)",
             spline1Title: "Flow (To Solar Heater)",
-            spline1DataSource: !_online ? [] : mqttProv.flow2GraphData,
-            spline2Title: "Flow (To Heat Exchanger)",
-            spline2DataSource: !_online ? [] : mqttProv.flow1GraphData,
-            graphTitle: 'Graph of Flow Rate against Time',
+            spline1DataSource: !_online ? [] : mqttProv.enthalpyGraphData,
+            graphTitle: 'Graph of Thermal Energy against Time',
           ),
           generateExcel: () async {
             List tempDataCombination = [];

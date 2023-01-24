@@ -9,6 +9,7 @@ import '../helpers/custom_data.dart';
 import '../models/graph_axis.dart';
 import '../widgets/IotPageTemplate.dart';
 import '../widgets/linear_gauge.dart';
+import '../widgets/loading_animation.dart';
 import '../widgets/tank_graph.dart';
 import '../providers/mqtt.dart';
 import './home_screen.dart';
@@ -23,6 +24,7 @@ class HeatingUnitScreen extends StatefulWidget {
 
 class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
   var _online = true;
+  var _isLoading = false;
   final _fromDate = TextEditingController();
   final _toDate = TextEditingController();
 
@@ -41,6 +43,8 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
     setState(() {
       _online = isOnline;
     });
+    _fromDate.text = "";
+    _toDate.text = "";
     return isOnline;
   }
 
@@ -58,6 +62,9 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
           {'title': 'Tank 2', 'data': mqttProv.heatingUnitData?.tank2 ?? '0.0'},
           {'title': 'Tank 3', 'data': mqttProv.heatingUnitData?.tank3 ?? '0.0'},
         ];
+        if (_isLoading) {
+          return const MyLoadingAnimation();
+        }
         return IotPageTemplate(
           onlineBnStatus: _onlineBnStatus,
           gaugePart: Row(
@@ -89,8 +96,9 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
             spline3Title: "Tank 3",
           ),
           generateExcel: () async {
-            // todo Branch between online and offline
-            //todo if(online)
+            setState(() {
+              _isLoading = true;
+            });
             List tempDataCombination = [];
             int i = 0;
             if (_online) {
@@ -125,7 +133,7 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
               ).generateExcel();
               var directory = await getApplicationDocumentsDirectory();
               File(
-                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.solarHeaterMeter)}/${DateFormat('dd-MMM-yyyy HH-mm-ss').format(DateTime.now())}.xlsx"))
+                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.solarHeaterMeter)}/${DateFormat('dd-MMM-yyyy HH-mm').format(DateTime.now())}.xlsx"))
                 ..createSync(recursive: true)
                 ..writeAsBytesSync(fileBytes);
               Future.delayed(Duration.zero).then((value) async =>
@@ -133,6 +141,10 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                       context, "Excel file generated successfully"));
             } catch (e) {
               await customDialog(context, "Error generating Excel file");
+            } finally {
+              setState(() {
+                _isLoading = false;
+              });
             }
           },
           fromController: _fromDate,
@@ -154,6 +166,9 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                   print('''
             Search from ${_fromDate.text} to ${_toDate.text}
             ''');
+                  setState(() {
+                    _isLoading = true;
+                  });
                   try {
                     final solarHeaterHistoricalData =
                         await HttpProtocol.querySolarHeater(
@@ -173,6 +188,10 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                     mqttProv.refresh();
                   } catch (e) {
                     print(e.toString());
+                  } finally {
+                    setState(() {
+                      _isLoading = false;
+                    });
                   }
                 },
         );

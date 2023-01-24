@@ -4,6 +4,28 @@ class HeatingUnit {
   String? tank3;
   String? flow1;
   String? flow2;
+  static const capacitance = 4182.0;
+  static const tankTemp = 22.0;
+  static const periodOfData = 2.0;
+
+  double? averageTemp;
+
+  double? mass;
+
+  double? get enthalpy {
+    if ((tank1 == null) ||
+        (tank2 == null) ||
+        (tank3 == null) ||
+        (flow1 == null) ||
+        (flow2 == null)) {
+      return null;
+    }
+    mass = double.parse(flow1 ?? '0.0') * 0.06 * periodOfData;
+    averageTemp =
+        (double.parse(tank1!) + double.parse(tank2!)+ double.parse(tank3!)) /
+            3;
+    return ((mass! * capacitance * (averageTemp! - tankTemp)) / 1000);
+  }
 
   HeatingUnit({
     required this.tank1,
