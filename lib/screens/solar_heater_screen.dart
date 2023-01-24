@@ -23,6 +23,10 @@ class HeatingUnitScreen extends StatefulWidget {
 }
 
 class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
+  static const keyMain = "Datetime";
+  static const key1 = "Tank 1 temperature";
+  static const key2 = "Tank 2 temperature";
+  static const key3 = "Tank 3 temperature";
   var _online = true;
   var _isLoading = false;
   final _fromDate = TextEditingController();
@@ -43,15 +47,8 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
     setState(() {
       _online = isOnline;
     });
-    _fromDate.text = "";
-    _toDate.text = "";
     return isOnline;
   }
-
-  static const keyMain = "Datetime";
-  static const key1 = "Tank 1 temperature";
-  static const key2 = "Tank 2 temperature";
-  static const key3 = "Tank 3 temperature";
 
   @override
   Widget build(BuildContext context) {
@@ -62,11 +59,14 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
           {'title': 'Tank 2', 'data': mqttProv.heatingUnitData?.tank2 ?? '0.0'},
           {'title': 'Tank 3', 'data': mqttProv.heatingUnitData?.tank3 ?? '0.0'},
         ];
-        if (_isLoading) {
-          return const MyLoadingAnimation();
-        }
+        // if (_isLoading) {
+        //   return const MyLoadingAnimation();
+        // }
         return IotPageTemplate(
+          loadingStatus: _isLoading,
           onlineBnStatus: _onlineBnStatus,
+          fromController: _fromDate,
+          toController: _toDate,
           gaugePart: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: heatingUnitData
@@ -104,7 +104,7 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
             if (_online) {
               for (var data in mqttProv.temp1GraphData) {
                 tempDataCombination.add({
-                  keyMain: data.x,
+                  keyMain: data.x.split(':'),
                   key1: data.y,
                   key2: mqttProv.temp2GraphData[i].y,
                   key3: mqttProv.temp3GraphData[i].y
@@ -113,8 +113,12 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
               }
             } else {
               for (var data in temp1HistoryGraphData) {
+                final subDate = (data.x.split(':')
+                  ..removeRange(2, 4)
+                  ..join(":")) as String;
+
                 tempDataCombination.add({
-                  keyMain: data.x,
+                  keyMain: subDate,
                   key1: data.y,
                   key2: temp2HistoryGraphData[i].y,
                   key3: temp3HistoryGraphData[i].y
@@ -147,25 +151,18 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
               });
             }
           },
-          fromController: _fromDate,
-          toController: _toDate,
           searchDatabase: (_fromDate.text == "" ||
                   _toDate.text == "" ||
                   DateTime.parse(_fromDate.text)
                       .isAfter(DateTime.parse(_toDate.text)))
               ? null
               : () async {
-                  // todo Loading
                   if (DateTime.parse(_fromDate.text)
                       .isAfter(DateTime.parse(_toDate.text))) {
                     await customDialog(
                         context, "Make sure the time in 'To' is after 'From'");
                     return;
                   }
-
-                  print('''
-            Search from ${_fromDate.text} to ${_toDate.text}
-            ''');
                   setState(() {
                     _isLoading = true;
                   });

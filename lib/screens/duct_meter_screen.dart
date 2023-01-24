@@ -36,6 +36,7 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
   static const key1 = "Duct Temperature";
   static const key2 = "Duct Humidity";
 
+  var _isLoading = false;
   bool _onlineBnStatus(bool isOnline) {
     setState(() {
       _online = isOnline;
@@ -69,6 +70,7 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
           },
         ];
         return IotPageTemplate(
+          loadingStatus: _isLoading,
           onlineBnStatus: _onlineBnStatus,
           // gaugePart: Container(),
           gaugePart: Row(

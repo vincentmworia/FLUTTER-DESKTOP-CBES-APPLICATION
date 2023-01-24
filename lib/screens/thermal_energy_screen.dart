@@ -25,6 +25,7 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
   final _fromDate = TextEditingController();
   final _toDate = TextEditingController();
 
+  var _isLoading = false;
   @override
   void dispose() {
     super.dispose();
@@ -75,6 +76,8 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
           },
         ];
         return IotPageTemplate(
+
+          loadingStatus: _isLoading,
           onlineBnStatus: _onlineBnStatus,
           gaugePart: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

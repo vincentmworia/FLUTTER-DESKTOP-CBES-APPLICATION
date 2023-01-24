@@ -30,69 +30,72 @@ class SyncfusionRadialGauge extends StatelessWidget {
         : value > range1Value && value < range2Value
             ? mediumColor
             : highColor;
-    return SfRadialGauge(
-      title: GaugeTitle(
-        text: title ,
-        // text: title.toUpperCase(),
-        textStyle: TextStyle(
-            color: Theme.of(context).colorScheme.primary,
-            fontWeight: FontWeight.bold),
-      ),
-      animationDuration: 4000,
-      enableLoadingAnimation: true,
-      axes: <RadialAxis>[
-        RadialAxis(
-            minimum: minValue,
-            maximum: maxValue,
-            startAngle: 140,
-            endAngle: 40,
-            interval: maxValue/10,
-            useRangeColorForAxis: true,
-            axisLabelStyle:
-                GaugeTextStyle(color: Theme.of(context).colorScheme.primary),
-            labelOffset: 10,
-            majorTickStyle:
-                MajorTickStyle(color: Theme.of(context).colorScheme.primary),
-            minorTicksPerInterval: 5,
-            minorTickStyle: MinorTickStyle(
-                color:
-                    Theme.of(context).colorScheme.secondary.withOpacity(0.5)),
-            pointers: <GaugePointer>[
-              MarkerPointer(
-                value: value,
-                color: color,
-              ),
-              RangePointer(
-                color: color,
-                value: value,
-              ),
-              NeedlePointer(
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SfRadialGauge(
+        title: GaugeTitle(
+          text: title ,
+          // text: title.toUpperCase(),
+          textStyle: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold),
+        ),
+        animationDuration: 4000,
+        enableLoadingAnimation: true,
+        axes: <RadialAxis>[
+          RadialAxis(
+              minimum: minValue,
+              maximum: maxValue,
+              startAngle: 140,
+              endAngle: 40,
+              interval: maxValue/10,
+              useRangeColorForAxis: true,
+              axisLabelStyle:
+                  GaugeTextStyle(color: Theme.of(context).colorScheme.primary),
+              labelOffset: 10,
+              majorTickStyle:
+                  MajorTickStyle(color: Theme.of(context).colorScheme.primary),
+              minorTicksPerInterval: 5,
+              minorTickStyle: MinorTickStyle(
+                  color:
+                      Theme.of(context).colorScheme.secondary.withOpacity(0.5)),
+              pointers: <GaugePointer>[
+                MarkerPointer(
                   value: value,
-                  needleStartWidth: 1,
-                  needleEndWidth: 3,
-                  needleColor: color),
-            ],
-            annotations: <GaugeAnnotation>[
-              GaugeAnnotation(
-                  widget: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(4)),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                    child: Text(
-                      '$data\t$units',
-                      // child: Text('$data °C',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: color,
+                  color: color,
+                ),
+                RangePointer(
+                  color: color,
+                  value: value,
+                ),
+                NeedlePointer(
+                    value: value,
+                    needleStartWidth: 1,
+                    needleEndWidth: 3,
+                    needleColor: color),
+              ],
+              annotations: <GaugeAnnotation>[
+                GaugeAnnotation(
+                    widget: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4)),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      child: Text(
+                        '$data\t$units',
+                        // child: Text('$data °C',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: color,
+                        ),
                       ),
                     ),
-                  ),
-                  angle: 90,
-                  positionFactor: 0.8)
-            ]),
-      ],
+                    angle: 90,
+                    positionFactor: 0.8)
+              ]),
+        ],
+      ),
     );
   }
 }

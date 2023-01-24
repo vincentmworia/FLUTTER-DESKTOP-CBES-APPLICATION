@@ -25,6 +25,7 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
   final _fromDate = TextEditingController();
   final _toDate = TextEditingController();
 
+  var _isLoading = false;
   @override
   void dispose() {
     super.dispose();
@@ -58,6 +59,7 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
           },
         ];
         return IotPageTemplate(
+          loadingStatus: _isLoading,
           onlineBnStatus: _onlineBnStatus,
           gaugePart: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
