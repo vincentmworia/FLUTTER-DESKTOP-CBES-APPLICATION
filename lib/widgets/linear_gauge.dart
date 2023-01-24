@@ -28,7 +28,7 @@ class LinearGauge extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            title == null ? '' : title!/*.toUpperCase()*/,
+            title == null ? '' : title! /*.toUpperCase()*/,
             style: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold),
@@ -37,7 +37,7 @@ class LinearGauge extends StatelessWidget {
             child: SizedBox(
               width: gaugeWidth,
               child: SfLinearGauge(
-                animationDuration: 1000,
+                animationDuration: 2000,
                 minimum: 0,
                 maximum: 100,
                 orientation: LinearGaugeOrientation.vertical,

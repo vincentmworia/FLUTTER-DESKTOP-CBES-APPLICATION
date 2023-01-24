@@ -6,6 +6,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/custom_data.dart';
+import '../models/graph_axis.dart';
+import '../providers/https_protocol.dart';
 import '../providers/mqtt.dart';
 import '../widgets/IotPageTemplate.dart';
 import '../widgets/generate_excel_from_list.dart';
@@ -24,8 +26,11 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
   var _online = true;
   final _fromDate = TextEditingController();
   final _toDate = TextEditingController();
+  final List<GraphAxis> flow1HistoryGraphData = [];
+  final List<GraphAxis> flow2HistoryGraphData = [];
 
   var _isLoading = false;
+
   @override
   void dispose() {
     super.dispose();
@@ -94,33 +99,52 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
           graphPart: TankGraph(
             axisTitle: "Flow (lpm)",
             spline1Title: "Flow (To Solar Heater)",
-            spline1DataSource: !_online ? [] : mqttProv.flow2GraphData,
+            spline1DataSource:
+                !_online ? flow1HistoryGraphData : mqttProv.flow2GraphData,
             spline2Title: "Flow (To Heat Exchanger)",
-            spline2DataSource: !_online ? [] : mqttProv.flow1GraphData,
+            spline2DataSource:
+                !_online ? flow2HistoryGraphData : mqttProv.flow1GraphData,
             graphTitle: 'Graph of Flow Rate against Time',
           ),
           generateExcel: () async {
-            List tempDataCombination = [];
+            setState(() {
+              _isLoading = true;
+            });
+            List flowDataCombination = [];
             int i = 0;
-            for (var data in mqttProv.flow1GraphData) {
-              tempDataCombination.add({
-                keyMain: data.x,
-                key1: data.y,
-                key2: mqttProv.flow2GraphData[i].y,
-              });
-              i += 1;
+            if (_online) {
+              for (var data in mqttProv.flow1GraphData) {
+                flowDataCombination.add({
+                  keyMain: data.x.split(':'),
+                  key1: data.y,
+                  key2: mqttProv.flow2GraphData[i].y,
+                });
+                i += 1;
+              }
+            } else {
+              for (var data in flow1HistoryGraphData) {
+                final subDate =
+                    (data.x.split(':')..removeRange(2, 4)).join(":");
+
+                flowDataCombination.add({
+                  keyMain: subDate,
+                  key1: data.y,
+                  key2: flow2HistoryGraphData[i].y,
+                });
+                i += 1;
+              }
             }
 
             try {
               final fileBytes = await GenerateExcelFromList(
-                listData: tempDataCombination,
+                listData: flowDataCombination,
                 keyMain: keyMain,
                 key1: key1,
                 key2: key2,
               ).generateExcel();
               var directory = await getApplicationDocumentsDirectory();
               File(
-                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.flowMeter)}/${DateFormat('dd-MMM-yyyy HH-mm-ss').format(DateTime.now())}.xlsx"))
+                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.solarHeaterMeter)}/${DateFormat('dd-MMM-yyyy HH-mm').format(DateTime.now())}.xlsx"))
                 ..createSync(recursive: true)
                 ..writeAsBytesSync(fileBytes);
               Future.delayed(Duration.zero).then((value) async =>
@@ -128,11 +152,53 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
                       context, "Excel file generated successfully"));
             } catch (e) {
               await customDialog(context, "Error generating Excel file");
+            } finally {
+              setState(() {
+                _isLoading = false;
+              });
             }
           },
           fromController: _fromDate,
           toController: _toDate,
-          searchDatabase: () {},
+          searchDatabase: (_fromDate.text == "" ||
+                  _toDate.text == "" ||
+                  DateTime.parse(_fromDate.text)
+                      .isAfter(DateTime.parse(_toDate.text)))
+              ? null
+              : () async {
+                  if (DateTime.parse(_fromDate.text)
+                      .isAfter(DateTime.parse(_toDate.text))) {
+                    await customDialog(
+                        context, "Make sure the time in 'To' is after 'From'");
+                    return;
+                  }
+                  setState(() {
+                    _isLoading = true;
+                  });
+                  try {
+                    final flowMeterHistoricalData =
+                        await HttpProtocol.queryFlowData(
+                            fromDate: _fromDate.text, toDate: _toDate.text);
+                    flow1HistoryGraphData.clear();
+                    flow2HistoryGraphData.clear();
+
+                    for (Map data in flowMeterHistoricalData) {
+                      flow1HistoryGraphData.add(GraphAxis(data.keys.toList()[0],
+                          data.values.toList()[0]['Flow_rate1']));
+                      flow2HistoryGraphData.add(GraphAxis(data.keys.toList()[0],
+                          data.values.toList()[0]['Flow_rate2']));
+                    }
+                    mqttProv.refresh();
+                  } catch (e) {
+
+                    await customDialog(
+                        context, "Check data formatting from the database");
+                  } finally {
+                    setState(() {
+                      _isLoading = false;
+                    });
+                  }
+                },
         );
       });
     });

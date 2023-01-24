@@ -76,9 +76,10 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
           },
         ];
         return IotPageTemplate(
-
           loadingStatus: _isLoading,
           onlineBnStatus: _onlineBnStatus,
+          fromController: _fromDate,
+          toController: _toDate,
           gaugePart: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -142,8 +143,6 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
               await customDialog(context, "Error generating Excel file");
             }
           },
-          fromController: _fromDate,
-          toController: _toDate,
           searchDatabase: () {},
         );
       });

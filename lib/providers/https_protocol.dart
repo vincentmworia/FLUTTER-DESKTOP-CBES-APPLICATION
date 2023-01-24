@@ -13,10 +13,12 @@ class HttpProtocol {
     // await http.get(
     //   Uri.parse('http://34.219.126.46/cbes/tank_temp'),
     //   headers: {"fromDate": fromDate, "toDate": toDate});
-    print(solarHeaterResponse);
-    final solarHeaterData = json.decode(solarHeaterResponse.body) as List;
-
-    print(solarHeaterData);
-    return solarHeaterData;
+    return json.decode(solarHeaterResponse.body) as List;
+  }
+  static Future<List> queryFlowData(
+      {required String fromDate, required String toDate}) async {
+    final flowMeterResponse =
+        await http.get(Uri.parse('$firebaseDbUrl/cbes_data/flow.json'));
+    return json.decode(flowMeterResponse.body) as List;
   }
 }

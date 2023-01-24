@@ -72,7 +72,8 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
         return IotPageTemplate(
           loadingStatus: _isLoading,
           onlineBnStatus: _onlineBnStatus,
-          // gaugePart: Container(),
+          fromController: _fromDate,
+          toController: _toDate,
           gaugePart: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -142,8 +143,6 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
               await customDialog(context, "Error generating Excel file");
             }
           },
-          fromController: _fromDate,
-          toController: _toDate,
           searchDatabase: () {},
         );
       });
