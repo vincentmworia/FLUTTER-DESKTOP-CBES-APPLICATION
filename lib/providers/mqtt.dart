@@ -127,14 +127,13 @@ class MqttProvider with ChangeNotifier {
       if (kDebugMode) {
         print('\n\nException: $e');
       }
+      // todo FORCE THE USER OFFLINE UNTIL ERROR IS ACKNOWLEDGED
       _mqttClient.disconnect();
       _connStatus = ConnectionStatus.disconnected;
     }
     if (_connStatus == ConnectionStatus.connected) {
       _mqttClient.subscribe("cbes/dekut/#", MqttQos.exactlyOnce);
       void removeFirstElement(List list) {
-        // todo, get the data for the past 24 hours
-
         if (list.length >= 8640) {
           list.removeAt(0);
         }

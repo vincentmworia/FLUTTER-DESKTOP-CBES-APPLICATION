@@ -18,6 +18,7 @@ class HttpProtocol {
     // await http.get(
     //   Uri.parse('$josephDbUrl/cbes/tank_temp'),
     //   headers: {"fromDate": fromDate, "toDate": toDate});
+    print(solarHeaterResponse.body);
     return json.decode(solarHeaterResponse.body) as List;
   }
 

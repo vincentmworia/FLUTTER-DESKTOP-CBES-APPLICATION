@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "CBES DESKTOP APP"
-#define MyAppVersion "5.0.0.0"
+#define MyAppVersion "7.0.0.0"
 #define MyAppPublisher "Vincent Mwenda Mworia"
 #define MyAppExeName "cbesdesktop.exe"
 

@@ -59,7 +59,7 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
           {
             'title': 'Thermal Energy',
             'data': mqttProv.heatingUnitData!.enthalpy!.toStringAsFixed(1),
-            'units': 'KJ',
+            'units': 'MJ',
             'minValue': 0.0,
             'maxValue': 500.0,
             'range1Value': 100.0,
@@ -111,8 +111,8 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
                       ))
                   .toList()),
           graphPart: TankGraph(
-            axisTitle: "Thermal Energy (KJ)",
-            spline1Title: "Thermal Energy (KJ)",
+            axisTitle: "Thermal Energy (MJ)",
+            spline1Title: "Thermal Energy (MJ)",
             spline1DataSource: !_online ? [] : mqttProv.enthalpyGraphData,
             graphTitle: 'Graph of Thermal Energy against Time',
           ),
@@ -133,7 +133,7 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
               ).generateExcel();
               var directory = await getApplicationDocumentsDirectory();
               File(
-                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.flowMeter)}/${DateFormat('dd-MMM-yyyy HH-mm-ss').format(DateTime.now())}.xlsx"))
+                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.thermalEnergyMeter)}/${DateFormat('dd-MMM-yyyy HH-mm-ss').format(DateTime.now())}.xlsx"))
                 ..createSync(recursive: true)
                 ..writeAsBytesSync(fileBytes);
               Future.delayed(Duration.zero).then((value) async =>

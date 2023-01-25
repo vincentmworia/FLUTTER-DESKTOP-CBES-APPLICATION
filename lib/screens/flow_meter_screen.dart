@@ -143,7 +143,7 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
               ).generateExcel();
               var directory = await getApplicationDocumentsDirectory();
               File(
-                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.solarHeaterMeter)}/${DateFormat('dd-MMM-yyyy HH-mm').format(DateTime.now())}.xlsx"))
+                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.flowMeter)}/${DateFormat('dd-MMM-yyyy HH-mm').format(DateTime.now())}.xlsx"))
                 ..createSync(recursive: true)
                 ..writeAsBytesSync(fileBytes);
               Future.delayed(Duration.zero).then((value) async =>
@@ -180,13 +180,17 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
                     flow2HistoryGraphData.clear();
 
                     for (Map data in flowMeterHistoricalData) {
-                      final refinedDate = (data.keys.toList()[0].split(':')
-                            ..removeRange(2, 4))
-                          .join(":");
-                      flow1HistoryGraphData.add(GraphAxis(refinedDate,
-                          data.values.toList()[0][HttpProtocol.flow1]));
-                      flow2HistoryGraphData.add(GraphAxis(refinedDate,
-                          data.values.toList()[0][HttpProtocol.flow2]));
+                      // final refinedDate = (data.keys.toList()[0].split(':')
+                      //       ..removeRange(2, 4))
+                      //     .join(":");
+                      flow1HistoryGraphData.add(GraphAxis(
+                          data.keys.toList()[0],
+                          double.parse(
+                              '${(data.values.toList()[0][HttpProtocol.flow1]).toString()}.0')));
+                      flow2HistoryGraphData.add(GraphAxis(
+                          data.keys.toList()[0],
+                          double.parse(
+                              '${(data.values.toList()[0][HttpProtocol.flow2]).toString()}.0')));
                     }
                     mqttProv.refresh();
                   } catch (e) {

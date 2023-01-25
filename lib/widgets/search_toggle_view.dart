@@ -17,6 +17,8 @@ class SearchToggleView extends StatefulWidget {
   final Function? searchDatabase;
   final TextEditingController fromController;
   final TextEditingController toController;
+  static DateTime? fromDateVal;
+  static DateTime? toDateVal;
 
   @override
   State<SearchToggleView> createState() => _SearchToggleViewState();
@@ -24,13 +26,16 @@ class SearchToggleView extends StatefulWidget {
 
 class _SearchToggleViewState extends State<SearchToggleView> {
   var _online = true;
+  DateTime? _tempFromDate;
+
+  // todo Put a better date format
 
   // todo Break into a separate widget named SearchDateTime or rather this whole widget???
   Widget _searchDateTime(
           {required String title, required TextEditingController controller}) =>
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if (title.contains('From') ||
               (title.contains('To') && widget.fromController.text != ""))
@@ -47,14 +52,15 @@ class _SearchToggleViewState extends State<SearchToggleView> {
           if (title.contains('From') ||
               (title.contains('To') && widget.fromController.text != ""))
             SizedBox(
-                width: MediaQuery.of(context).size.width * 0.1 < 150
-                    ? MediaQuery.of(context).size.width * 0.1
-                    : MediaQuery.of(context).size.width * 0.125,
+                width: MediaQuery.of(context).size.width * 0.2,
                 child: DateTimeField(
                   format: DateFormat("yyyy-MM-dd HH:mm"),
+                  // format: DateFormat("EEE, MMM d yyyy h:mm a"),
                   controller: controller,
-                  // validator: ,
 
+                  // onFieldSubmitted: (value) {
+                  // },
+                  // validator: ,
                   // cursorRadius: Radius.circular(200),
                   showCursor: false,
 
@@ -63,7 +69,7 @@ class _SearchToggleViewState extends State<SearchToggleView> {
                     final date = await showDatePicker(
                         context: context,
                         firstDate: title.contains('To')
-                            ? DateTime.parse(widget.fromController.text)
+                            ? _tempFromDate!
                             : DateTime(2023, 1, 10, 0, 0),
                         initialDate: currentValue ?? DateTime.now(),
                         lastDate: DateTime(
@@ -81,9 +87,26 @@ class _SearchToggleViewState extends State<SearchToggleView> {
                                 initialTime: TimeOfDay.fromDateTime(
                                     currentValue ?? DateTime.now()),
                               ));
-                      return DateTimeField.combine(date, time);
+
+                      final dateTimeSelected =
+                          DateTimeField.combine(date, time);
+                      if (title.contains("From")) {
+                        _tempFromDate = dateTimeSelected;
+                        SearchToggleView.fromDateVal = dateTimeSelected;
+                        widget.fromController.text =
+                            DateFormat("EEE, MMM d yyyy h:mm a")
+                                .format(dateTimeSelected);
+                      }
+                      if (title.contains("To")) {
+                        SearchToggleView.toDateVal = dateTimeSelected;
+                        widget.toController.text =
+                            DateFormat("EEE, MMM d yyyy h:mm a")
+                                .format(dateTimeSelected);
+                      }
+
+                      // return dateTimeSelected;
                     } else {
-                      return currentValue;
+                      // return currentValue;
                     }
                   },
                 ))
@@ -98,17 +121,27 @@ class _SearchToggleViewState extends State<SearchToggleView> {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            height: !_online ? 50 : 0,
+            height: !_online
+                ? (MediaQuery.of(context).size.height * 0.2 <= 112
+                    ? 112
+                    : MediaQuery.of(context).size.height * 0.2)
+                : 0,
             child: _online
                 ? null
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      _searchDateTime(
-                          title: 'From:\t', controller: widget.fromController),
-                      _searchDateTime(
-                          title: 'To:\t', controller: widget.toController),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _searchDateTime(
+                              title: 'From:\t',
+                              controller: widget.fromController),
+                          _searchDateTime(
+                              title: 'To:\t', controller: widget.toController),
+                        ],
+                      ),
                       IconButton(
                           onPressed: widget.searchDatabase == null
                               ? null

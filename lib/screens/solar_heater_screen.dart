@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cbesdesktop/providers/https_protocol.dart';
+import 'package:cbesdesktop/widgets/search_toggle_view.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -114,7 +115,7 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                   if (_online) {
                     for (var data in mqttProv.temp1GraphData) {
                       tempDataCombination.add({
-                        keyMain: data.x ,
+                        keyMain: data.x,
                         key1: data.y,
                         key2: mqttProv.temp2GraphData[i].y,
                         key3: mqttProv.temp3GraphData[i].y
@@ -143,7 +144,7 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                     ).generateExcel();
                     var directory = await getApplicationDocumentsDirectory();
                     File(
-                        ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.solarHeaterMeter)}/${DateFormat('dd-MMM-yyyy HH-mm').format(DateTime.now())}.xlsx"))
+                        ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.solarHeaterMeter)}/${DateFormat("EEE, MMM d yyyy h:mm a").format(DateTime.now())}.xlsx"))
                       ..createSync(recursive: true)
                       ..writeAsBytesSync(fileBytes);
                     Future.delayed(Duration.zero).then((value) async =>
@@ -159,12 +160,12 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                 },
                 searchDatabase: (_fromDate.text == "" ||
                         _toDate.text == "" ||
-                        DateTime.parse(_fromDate.text)
-                            .isAfter(DateTime.parse(_toDate.text)))
+                        SearchToggleView.fromDateVal!
+                            .isAfter(SearchToggleView.toDateVal!))
                     ? null
                     : () async {
-                        if (DateTime.parse(_fromDate.text)
-                            .isAfter(DateTime.parse(_toDate.text))) {
+                        if (SearchToggleView.fromDateVal!
+                            .isAfter(SearchToggleView.toDateVal!)) {
                           await customDialog(context,
                               "Make sure the time in 'To' is after 'From'");
                           return;
@@ -182,19 +183,29 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                           temp3HistoryGraphData.clear();
 
                           for (Map data in solarHeaterHistoricalData) {
+                            // final refinedDate =
+                            //     (data.keys.toList()[0].split(':')
+                            //           ..removeRange(2, 4))
+                            //         .join(":");
 
-                            final refinedDate = (data.keys.toList()[0].split(':')
-                              ..removeRange(2, 4))
-                                .join(":");
                             temp1HistoryGraphData.add(GraphAxis(
-                               refinedDate,
-                                data.values.toList()[0][HttpProtocol.tank1]));
+                                data.keys.toList()[0],
+                                double.parse(
+                                    '${(data.values.toList()[0][HttpProtocol.tank1]).toString()}.0')));
                             temp2HistoryGraphData.add(GraphAxis(
-                                refinedDate,
-                                data.values.toList()[0][HttpProtocol.tank2]));
+                                data.keys.toList()[0],
+                                double.parse(
+                                    '${(data.values.toList()[0][HttpProtocol.tank2]).toString()}.0')));
                             temp3HistoryGraphData.add(GraphAxis(
-                                refinedDate,
-                                data.values.toList()[0][HttpProtocol.tank3]));
+                                data.keys.toList()[0],
+                                double.parse(
+                                    '${(data.values.toList()[0][HttpProtocol.tank3]).toString()}.0')));
+                            // temp2HistoryGraphData.add(GraphAxis(
+                            //     refinedDate,
+                            //     data.values.toList()[0][HttpProtocol.tank2]));
+                            // temp3HistoryGraphData.add(GraphAxis(
+                            //     refinedDate,
+                            //     data.values.toList()[0][HttpProtocol.tank3]));
                           }
                           mqttProv.refresh();
                         } catch (e) {

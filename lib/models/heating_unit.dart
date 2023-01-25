@@ -6,6 +6,7 @@ class HeatingUnit {
   String? flow2;
   static const capacitance = 4182.0;
   static const tankTemp = 22.0;
+  static const density = 997.0;
   static const periodOfData = 2.0;
 
   double? averageTemp;
@@ -20,11 +21,14 @@ class HeatingUnit {
         (flow2 == null)) {
       return null;
     }
-    mass = double.parse(flow1 ?? '0.0') * 0.06 * periodOfData;
-    averageTemp =
-        (double.parse(tank1!) + double.parse(tank2!)+ double.parse(tank3!)) /
-            3;
-    return ((mass! * capacitance * (averageTemp! - tankTemp)) / 1000);
+
+    mass = double.parse(flow1 ?? '0.0') * 0.06 * periodOfData * density;
+    averageTemp = (double.parse(tank1!) +
+            0 /*double.parse(tank2!)*/ +
+         // todo eliminated tank2,
+            double.parse(tank3!)) /
+        2;
+    return ((mass! * capacitance * (averageTemp! - tankTemp)) / 1000000);
   }
 
   HeatingUnit({

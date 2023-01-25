@@ -157,7 +157,7 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
               ).generateExcel();
               var directory = await getApplicationDocumentsDirectory();
               File(
-                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.solarHeaterMeter)}/${DateFormat('dd-MMM-yyyy HH-mm').format(DateTime.now())}.xlsx"))
+                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.ductMeter)}/${DateFormat('dd-MMM-yyyy HH-mm').format(DateTime.now())}.xlsx"))
                 ..createSync(recursive: true)
                 ..writeAsBytesSync(fileBytes);
               Future.delayed(Duration.zero).then((value) async =>
@@ -195,13 +195,17 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
                     print(ductMeterHistoricalData);
 
                     for (Map data in ductMeterHistoricalData) {
-                      final refinedDate = (data.keys.toList()[0].split(':')
-                            ..removeRange(2, 4))
-                          .join(":");
-                      ductTemperatureHistoryGraphData.add(GraphAxis(refinedDate,
-                          data.values.toList()[0][HttpProtocol.temperature]));
-                      ductHumidityHistoryGraphData.add(GraphAxis(refinedDate,
-                          data.values.toList()[0][HttpProtocol.humidity]));
+                      // final refinedDate = (data.keys.toList()[0].split(':')
+                      //       ..removeRange(2, 4))
+                      //     .join(":");
+                      ductTemperatureHistoryGraphData.add(GraphAxis(
+                          data.keys.toList()[0],
+                          double.parse(
+                              '${(data.values.toList()[0][HttpProtocol.temperature]).toString()}.0')));
+                      ductHumidityHistoryGraphData.add(GraphAxis(
+                          data.keys.toList()[0],
+                          double.parse(
+                              '${(data.values.toList()[0][HttpProtocol.humidity]).toString()}.0')));
                     }
                     mqttProv.refresh();
                   } catch (e) {
