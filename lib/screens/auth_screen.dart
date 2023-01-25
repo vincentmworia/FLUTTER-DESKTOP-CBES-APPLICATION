@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../providers/firebase_auth.dart';
@@ -47,9 +46,6 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   void initState() {
     super.initState();
-    // todo Check whether autologin is activated,
-    //  todo if so, directly move to the dashboard screen
-
     try {
       Future.delayed(Duration.zero)
           .then((value) async => await _connectivity.checkConnectivity())
@@ -78,7 +74,6 @@ class _AuthScreenState extends State<AuthScreen> {
         setState(() {
           _isLoading = true;
         });
-        // todo To be triggered once!!!
         if (kDebugMode) {
           print('contains');
         }
@@ -182,7 +177,6 @@ class _AuthScreenState extends State<AuthScreen> {
     );
 
     if (!goodConnection) {
-      print('object');
       _initAutoLogin = true;
       setState(() {
         _isLoading = false;
@@ -229,42 +223,8 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               Visibility(
                 visible: _isLoading,
-                child:const MyLoadingAnimation(),
+                child: const MyLoadingAnimation(),
               ),
-              //todo  transition from offline to online: try autologin
-              if (false)
-                Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  color: Colors.white,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.asset(
-                            'images/cbes_logo_main.PNG',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          "No Internet",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withOpacity(0.7),
-                              letterSpacing: 10,
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
             ],
           ),
         ),

@@ -41,7 +41,13 @@ class HttpProtocol {
       {required String fromDate, required String toDate}) async {
     final ductMeterResponse =
         await http.get(Uri.parse('$firebaseDbUrl/cbes_data/ubibot.json'));
-    // print(ductMeterResponse.body);
     return json.decode(ductMeterResponse.body) as List;
+  }
+
+  static Future<List> queryThermalEnergyData(
+      {required String fromDate, required String toDate}) async {
+    final thermalMeterResponse = await http
+        .get(Uri.parse('$firebaseDbUrl/cbes_data/thermal_energy.json'));
+    return json.decode(thermalMeterResponse.body) as List;
   }
 }

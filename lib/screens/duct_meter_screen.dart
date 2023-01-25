@@ -192,12 +192,8 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
                             fromDate: _fromDate.text, toDate: _toDate.text);
                     ductTemperatureHistoryGraphData.clear();
                     ductHumidityHistoryGraphData.clear();
-                    print(ductMeterHistoricalData);
 
                     for (Map data in ductMeterHistoricalData) {
-                      // final refinedDate = (data.keys.toList()[0].split(':')
-                      //       ..removeRange(2, 4))
-                      //     .join(":");
                       ductTemperatureHistoryGraphData.add(GraphAxis(
                           data.keys.toList()[0],
                           double.parse(
@@ -209,7 +205,6 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
                     }
                     mqttProv.refresh();
                   } catch (e) {
-                    print(e.toString());
                     await customDialog(
                         context, "Check data formatting from the database");
                   } finally {

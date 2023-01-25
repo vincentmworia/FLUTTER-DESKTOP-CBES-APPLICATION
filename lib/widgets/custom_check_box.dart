@@ -30,10 +30,7 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
   }
 }
 
-class RememberMeBnState with ChangeNotifier {
-  // var _bnState = false;
-
-  // bool get bnState => _bnState;
+class RememberMeBnState with ChangeNotifier { 
   static const rememberMePrefName = 'autoLogUser';
   static bool? bnState;
 

@@ -1,3 +1,4 @@
+// todo Review the power unit parameters
 class PowerUnit {
   bool? status;
   String? deviceMode;

@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/user.dart';
@@ -315,7 +314,6 @@ class _AuthScreenFormState extends State<AuthScreenForm> {
                   return null;
                 },
               ),
-            //  todo remember me logic
             spacing,
             if (_authMode == AuthMode.login && deviceWidth > 750)
               Padding(
@@ -346,39 +344,36 @@ class _AuthScreenFormState extends State<AuthScreenForm> {
                     elevation: 3,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0))),
-                onPressed:
-                widget.isOffline
-                    ? null:() async {
-                  FocusScope.of(context).unfocus();
-                  if (_formKey.currentState == null ||
-                      !(_formKey.currentState!.validate())) {
-                    return;
-                  }
-                  _formKey.currentState!.save();
-                  // store the button state in shared preferences API
+                onPressed: widget.isOffline
+                    ? null
+                    : () async {
+                        FocusScope.of(context).unfocus();
+                        if (_formKey.currentState == null ||
+                            !(_formKey.currentState!.validate())) {
+                          return;
+                        }
+                        _formKey.currentState!.save();
+                        // store the button state in shared preferences API
 
-                  if (RememberMeBnState.bnState == true) {
-                    final prefs = await SharedPreferences.getInstance();
-                    prefs.setString(RememberMeBnState.rememberMePrefName,
-                        json.encode(user.toLoginMap()));
-                  }
-                  widget.submit(user);
-                },
-                child:
-                    widget.isOffline
-                        ?
-                    const Center(
-                            child:Icon(Icons.not_interested),
-                          )
-                        :
-                    Text(_authMode == AuthMode.login ? "Login" : "Register")),
+                        if (RememberMeBnState.bnState == true) {
+                          final prefs = await SharedPreferences.getInstance();
+                          prefs.setString(RememberMeBnState.rememberMePrefName,
+                              json.encode(user.toLoginMap()));
+                        }
+                        widget.submit(user);
+                      },
+                child: widget.isOffline
+                    ? const Center(
+                        child: Icon(Icons.not_interested),
+                      )
+                    : Text(_authMode == AuthMode.login ? "Login" : "Register")),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 28.0),
               child: TextButton(
                 child: Text(
                   widget.isOffline
-                      ?"No Internet Connection":
-                  "Click to ${_authMode == AuthMode.login ? "Register" : "Login"}",
+                      ? "No Internet Connection"
+                      : "Click to ${_authMode == AuthMode.login ? "Register" : "Login"}",
                   style: TextStyle(
                       color: Theme.of(context).colorScheme.secondary,
                       fontSize: 16.0,

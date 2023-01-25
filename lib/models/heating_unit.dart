@@ -24,8 +24,9 @@ class HeatingUnit {
 
     mass = double.parse(flow1 ?? '0.0') * 0.06 * periodOfData * density;
     averageTemp = (double.parse(tank1!) +
-            0 /*double.parse(tank2!)*/ +
-         // todo eliminated tank2,
+
+            // todo eliminated tank2 =>  double.parse(tank2!)
+            0 +
             double.parse(tank3!)) /
         2;
     return ((mass! * capacitance * (averageTemp! - tankTemp)) / 1000000);

@@ -6,12 +6,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/custom_data.dart';
+import '../models/graph_axis.dart';
+import '../providers/https_protocol.dart';
 import '../providers/mqtt.dart';
 import '../widgets/IotPageTemplate.dart';
 import '../widgets/generate_excel_from_list.dart';
 import '../widgets/radial_gauge_sf.dart';
 import '../widgets/tank_graph.dart';
-import 'home_screen.dart';
+import './home_screen.dart';
 
 class ThermalEnergyScreen extends StatefulWidget {
   const ThermalEnergyScreen({Key? key}) : super(key: key);
@@ -25,7 +27,10 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
   final _fromDate = TextEditingController();
   final _toDate = TextEditingController();
 
+  final List<GraphAxis> thermalEnergyHistoryGraphData = [];
+
   var _isLoading = false;
+
   @override
   void dispose() {
     super.dispose();
@@ -34,13 +39,7 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
   }
 
   static const keyMain = "Datetime";
-  static const key1 = "";
-  static const capacitance = 4132.0;
-  static const tankTemp = 0.0;
-  static const period = 2;
-
-  // period of data being published from PLC
-  // Later, take the timestamp from PLC
+  static const key1 = "Thermal Energy";
 
   bool _onlineBnStatus(bool isOnline) {
     setState(() {
@@ -112,28 +111,42 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
                   .toList()),
           graphPart: TankGraph(
             axisTitle: "Thermal Energy (MJ)",
-            spline1Title: "Thermal Energy (MJ)",
-            spline1DataSource: !_online ? [] : mqttProv.enthalpyGraphData,
+            area1Title: "Thermal Energy (MJ)",
+            area1DataSource: !_online
+                ? thermalEnergyHistoryGraphData
+                : mqttProv.enthalpyGraphData,
             graphTitle: 'Graph of Thermal Energy against Time',
           ),
           generateExcel: () async {
-            List tempDataCombination = [];
-            for (var data in mqttProv.flow1GraphData) {
-              tempDataCombination.add({
-                keyMain: data.x,
-                key1: data.y,
-              });
+            setState(() {
+              _isLoading = true;
+            });
+            List thermalDataCombination = [];
+            if (_online) {
+              for (var data in mqttProv.temperatureGraphData) {
+                thermalDataCombination.add({
+                  keyMain: data.x,
+                  key1: data.y,
+                });
+              }
+            } else {
+              for (var data in thermalEnergyHistoryGraphData) {
+                thermalDataCombination.add({
+                  keyMain: data.x,
+                  key1: data.y,
+                });
+              }
             }
 
             try {
               final fileBytes = await GenerateExcelFromList(
-                listData: tempDataCombination,
+                listData: thermalDataCombination,
                 keyMain: keyMain,
                 key1: key1,
               ).generateExcel();
               var directory = await getApplicationDocumentsDirectory();
               File(
-                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.thermalEnergyMeter)}/${DateFormat('dd-MMM-yyyy HH-mm-ss').format(DateTime.now())}.xlsx"))
+                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.thermalEnergyMeter)}/${DateFormat('dd-MMM-yyyy HH-mm').format(DateTime.now())}.xlsx"))
                 ..createSync(recursive: true)
                 ..writeAsBytesSync(fileBytes);
               Future.delayed(Duration.zero).then((value) async =>
@@ -141,9 +154,52 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
                       context, "Excel file generated successfully"));
             } catch (e) {
               await customDialog(context, "Error generating Excel file");
+            } finally {
+              setState(() {
+                _isLoading = false;
+              });
             }
           },
-          searchDatabase: () {},
+          searchDatabase: (_fromDate.text == "" ||
+                  _toDate.text == "" ||
+                  DateTime.parse(_fromDate.text)
+                      .isAfter(DateTime.parse(_toDate.text)))
+              ? null
+              : () async {
+                  if (DateTime.parse(_fromDate.text)
+                      .isAfter(DateTime.parse(_toDate.text))) {
+                    await customDialog(
+                        context, "Make sure the time in 'To' is after 'From'");
+                    return;
+                  }
+                  setState(() {
+                    _isLoading = true;
+                  });
+
+                  try {
+                    final thermalEnergyHistoricalData =
+                        await HttpProtocol.queryThermalEnergyData(
+                            fromDate: _fromDate.text, toDate: _toDate.text);
+                    thermalEnergyHistoryGraphData.clear();
+
+                    for (Map data in thermalEnergyHistoricalData) {
+                      thermalEnergyHistoryGraphData.add(GraphAxis(
+                          data.keys.toList()[0], data.values.toList()[0]
+                          // double.parse(
+                          //     '${(data.values.toList()[0]).toString()}.0'),
+                          ));
+                    }
+                    mqttProv.refresh();
+                  } catch (e) {
+                    print(e.toString());
+                    await customDialog(
+                        context, "Check data formatting from the database");
+                  } finally {
+                    setState(() {
+                      _isLoading = false;
+                    });
+                  }
+                },
         );
       });
     });

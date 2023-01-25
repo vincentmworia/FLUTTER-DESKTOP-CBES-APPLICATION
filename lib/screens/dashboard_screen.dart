@@ -1,9 +1,8 @@
-import 'package:cbesdesktop/providers/mqtt.dart';
-import 'package:cbesdesktop/widgets/linear_gauge.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../widgets/radial_gauge_kd.dart';
+import '../providers/mqtt.dart';
+import '../widgets/linear_gauge.dart';
 import '../widgets/radial_gauge_sf.dart';
 import './home_screen.dart';
 

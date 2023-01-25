@@ -1,19 +1,20 @@
 import 'dart:io';
 
-import 'package:cbesdesktop/providers/https_protocol.dart';
-import 'package:cbesdesktop/widgets/search_toggle_view.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../providers/https_protocol.dart';
+import '../widgets/search_toggle_view.dart';
 import '../helpers/custom_data.dart';
 import '../models/graph_axis.dart';
 import '../widgets/IotPageTemplate.dart';
 import '../widgets/linear_gauge.dart';
 import '../widgets/tank_graph.dart';
 import '../providers/mqtt.dart';
-import './home_screen.dart';
 import '../widgets/generate_excel_from_list.dart';
+import './home_screen.dart';
 
 class HeatingUnitScreen extends StatefulWidget {
   const HeatingUnitScreen({Key? key}) : super(key: key);
@@ -27,6 +28,7 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
   static const key1 = "Tank 1 temperature";
   static const key2 = "Tank 2 temperature";
   static const key3 = "Tank 3 temperature";
+  static const key4 = "Average temperature";
   var _online = true;
   var _isLoading = false;
   final _fromDate = TextEditingController();
@@ -52,7 +54,6 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(_isLoading);
     return LayoutBuilder(
         builder: (_, cons) =>
             Consumer<MqttProvider>(builder: (context, mqttProv, child) {
@@ -119,7 +120,11 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                         keyMain: data.x,
                         key1: data.y,
                         key2: mqttProv.temp2GraphData[i].y,
-                        key3: mqttProv.temp3GraphData[i].y
+                        key3: mqttProv.temp3GraphData[i].y,
+                        key4: (data.y +
+                                mqttProv.temp2GraphData[i].y +
+                                mqttProv.temp3GraphData[i].y) /
+                            3
                       });
                       i += 1;
                     }
@@ -129,7 +134,11 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                         keyMain: data.x,
                         key1: data.y,
                         key2: temp2HistoryGraphData[i].y,
-                        key3: temp3HistoryGraphData[i].y
+                        key3: temp3HistoryGraphData[i].y,
+                        key4: (data.y +
+                                mqttProv.temp2GraphData[i].y +
+                                mqttProv.temp3GraphData[i].y) /
+                            3
                       });
                       i += 1;
                     }
@@ -142,6 +151,7 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                       key1: key1,
                       key2: key2,
                       key3: key3,
+                      key4: key4,
                     ).generateExcel();
                     var directory = await getApplicationDocumentsDirectory();
                     File(
@@ -184,11 +194,6 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                           temp3HistoryGraphData.clear();
 
                           for (Map data in solarHeaterHistoricalData) {
-                            // final refinedDate =
-                            //     (data.keys.toList()[0].split(':')
-                            //           ..removeRange(2, 4))
-                            //         .join(":");
-
                             temp1HistoryGraphData.add(GraphAxis(
                                 data.keys.toList()[0],
                                 double.parse(

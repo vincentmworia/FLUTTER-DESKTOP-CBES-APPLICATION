@@ -180,9 +180,6 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
                     flow2HistoryGraphData.clear();
 
                     for (Map data in flowMeterHistoricalData) {
-                      // final refinedDate = (data.keys.toList()[0].split(':')
-                      //       ..removeRange(2, 4))
-                      //     .join(":");
                       flow1HistoryGraphData.add(GraphAxis(
                           data.keys.toList()[0],
                           double.parse(

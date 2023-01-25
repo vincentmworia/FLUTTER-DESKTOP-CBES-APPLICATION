@@ -68,15 +68,16 @@ class _NavBarPlaneState extends State<NavBarPlane> {
       {PageTitle.dashboard: Icons.dashboard},
       {PageTitle.solarHeaterMeter: Icons.heat_pump},
       {PageTitle.flowMeter: Icons.water_drop},
-      {PageTitle.ductMeter: Icons.device_thermostat},
+      {PageTitle.ductMeter: Icons.credit_card},
       {PageTitle.ambientMeter: Icons.device_thermostat},
-      {PageTitle.shedMeter: Icons.device_thermostat},
-      {PageTitle.electricalEnergyMeter: Icons.power_input},
-      {PageTitle.thermalEnergyMeter: Icons.power_input},
+      {PageTitle.shedMeter: Icons.home},
+      {PageTitle.firewoodMoisture: Icons.water_drop},
+      {PageTitle.electricalEnergyMeter: Icons.electric_bolt},
+      {PageTitle.thermalEnergyMeter: Icons.electric_meter},
       if (LoginUserData.getLoggedUser!.privilege == userSuperAdmin ||
           LoginUserData.getLoggedUser!.privilege == userAdmin)
         {PageTitle.admin: Icons.admin_panel_settings},
-      {PageTitle.settings: Icons.settings}
+      {PageTitle.profile: Icons.settings}
     ];
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),

@@ -8,15 +8,16 @@ import '../providers/login_user_data.dart';
 import './auth_screen.dart';
 import '../widgets/nav_bar_plane.dart';
 import './dashboard_screen.dart';
-import './admin_screen.dart';
+import './administrator_screen.dart';
 import './solar_heater_screen.dart';
-import './settings_screen.dart';
+import './profile_screen.dart';
 import './electrical_energy_screen.dart';
 import './ambient_meter_screen.dart';
 import './flow_meter_screen.dart';
 import './thermal_energy_screen.dart';
 import './shed_meter_screen.dart';
 import './duct_meter_screen.dart';
+import './firewood_moisture_screen.dart';
 
 enum PageTitle {
   dashboard,
@@ -28,7 +29,8 @@ enum PageTitle {
   electricalEnergyMeter,
   thermalEnergyMeter,
   admin,
-  settings
+  profile,
+  firewoodMoisture
 }
 
 class HomeScreen extends StatefulWidget {
@@ -50,8 +52,8 @@ class HomeScreen extends StatefulWidget {
         return "Electrical Energy";
       case PageTitle.admin:
         return "Administrator";
-      case PageTitle.settings:
-        return "Settings";
+      case PageTitle.profile:
+        return "My Profile";
       case PageTitle.flowMeter:
         return "Flow Meter";
       case PageTitle.shedMeter:
@@ -60,6 +62,8 @@ class HomeScreen extends StatefulWidget {
         return "Duct Meter";
       case PageTitle.thermalEnergyMeter:
         return "Thermal Energy";
+      case PageTitle.firewoodMoisture:
+        return "Firewood Moisture";
     }
   }
 
@@ -121,8 +125,8 @@ class _HomeScreenState extends State<HomeScreen> {
         return const ElectricalEnergyScreen();
       case PageTitle.admin:
         return const AdministratorScreen();
-      case PageTitle.settings:
-        return const SettingsScreen();
+      case PageTitle.profile:
+        return const ProfileScreen();
       case PageTitle.flowMeter:
         return const FlowMeterScreen();
       case PageTitle.shedMeter:
@@ -131,18 +135,21 @@ class _HomeScreenState extends State<HomeScreen> {
         return const DuctMeterScreen();
       case PageTitle.thermalEnergyMeter:
         return const ThermalEnergyScreen();
+      case PageTitle.firewoodMoisture:
+        return const FirewoodMoistureScreen();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // todo SHOULD BE TRIGGERED ONCE
+    // TODO DECOMPRESSING THE NAVBAR THROWING ERROR IF MILLISECONDS IS INCREASED
     const duration = Duration(milliseconds: 20);
 
     const txtStyle = TextStyle(
         color: Colors.white, fontWeight: FontWeight.w600, letterSpacing: 3.0);
     return SafeArea(
       child: Scaffold(
-
         appBar: AppBar(
           title: AnimatedContainer(
             duration: duration,
@@ -215,7 +222,6 @@ class _HomeScreenState extends State<HomeScreen> {
               hoverColor: Theme.of(context).colorScheme.primary,
               focusColor: Theme.of(context).colorScheme.primary,
               onPressed: () async {
-                print(_deCompressNavPlane);
                 if (_deCompressNavPlane) {
                   setState(() {
                     _showNavPlane = false;
