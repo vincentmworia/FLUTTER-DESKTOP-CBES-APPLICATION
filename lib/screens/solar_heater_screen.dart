@@ -155,7 +155,8 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                     ).generateExcel();
                     var directory = await getApplicationDocumentsDirectory();
                     File(
-                        ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.solarHeaterMeter)}/${DateFormat("EEE, MMM d yyyy h:mm a").format(DateTime.now())}.xlsx"))
+                        ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.solarHeaterMeter)}/${DateFormat('EEE, MMM d yyyy  hh_mm a').format(DateTime.now())}.xlsx"))
+
                       ..createSync(recursive: true)
                       ..writeAsBytesSync(fileBytes);
                     Future.delayed(Duration.zero).then((value) async =>
