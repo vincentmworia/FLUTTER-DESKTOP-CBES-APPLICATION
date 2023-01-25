@@ -5,7 +5,7 @@ class HeatingUnit {
   String? flow1;
   String? flow2;
   static const capacitance = 4182.0;
-  static const tankTemp = 22.0;
+  static const tankTemp = 25.0;
   static const density = 997.0;
   static const periodOfData = 2.0;
 

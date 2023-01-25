@@ -52,6 +52,7 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(_isLoading);
     return LayoutBuilder(
         builder: (_, cons) =>
             Consumer<MqttProvider>(builder: (context, mqttProv, child) {
@@ -200,12 +201,6 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                                 data.keys.toList()[0],
                                 double.parse(
                                     '${(data.values.toList()[0][HttpProtocol.tank3]).toString()}.0')));
-                            // temp2HistoryGraphData.add(GraphAxis(
-                            //     refinedDate,
-                            //     data.values.toList()[0][HttpProtocol.tank2]));
-                            // temp3HistoryGraphData.add(GraphAxis(
-                            //     refinedDate,
-                            //     data.values.toList()[0][HttpProtocol.tank3]));
                           }
                           mqttProv.refresh();
                         } catch (e) {

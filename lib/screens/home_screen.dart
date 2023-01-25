@@ -225,10 +225,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         _showNavPlane = true;
                       }));
                 } else {
-                  // setState(() {
-                  //   // _showNavPlane = false;
-                  //   _compressNavPlane = !_compressNavPlane;
-                  // });
                   setState(() {
                     _showNavPlane = false;
                     _deCompressNavPlane = !_deCompressNavPlane;

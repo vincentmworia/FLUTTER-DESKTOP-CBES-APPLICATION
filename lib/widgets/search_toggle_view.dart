@@ -26,6 +26,7 @@ class SearchToggleView extends StatefulWidget {
 
 class _SearchToggleViewState extends State<SearchToggleView> {
   var _online = true;
+  var _visibility = false;
   DateTime? _tempFromDate;
 
   // todo Put a better date format
@@ -128,32 +129,36 @@ class _SearchToggleViewState extends State<SearchToggleView> {
                 : 0,
             child: _online
                 ? null
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _searchDateTime(
-                              title: 'From:\t',
-                              controller: widget.fromController),
-                          _searchDateTime(
-                              title: 'To:\t', controller: widget.toController),
-                        ],
-                      ),
-                      IconButton(
-                          onPressed: widget.searchDatabase == null
-                              ? null
-                              : () => widget.searchDatabase!(),
-                          icon: Icon(
-                            Icons.search,
-                            color: widget.searchDatabase == null
-                                ? Colors.grey
-                                : Theme.of(context).colorScheme.primary,
-                            size: 30,
-                          )),
-                    ],
+                : Visibility(
+                    visible: _visibility,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _searchDateTime(
+                                title: 'From:\t',
+                                controller: widget.fromController),
+                            _searchDateTime(
+                                title: 'To:\t',
+                                controller: widget.toController),
+                          ],
+                        ),
+                        IconButton(
+                            onPressed: widget.searchDatabase == null
+                                ? null
+                                : () => widget.searchDatabase!(),
+                            icon: Icon(
+                              Icons.search,
+                              color: widget.searchDatabase == null
+                                  ? Colors.grey
+                                  : Theme.of(context).colorScheme.primary,
+                              size: 30,
+                            )),
+                      ],
+                    ),
                   ),
           ),
           Row(
@@ -182,11 +187,20 @@ class _SearchToggleViewState extends State<SearchToggleView> {
                   Switch.adaptive(
                       value: _online,
                       activeColor: Theme.of(context).colorScheme.primary,
-                      onChanged: (val) {
+                      onChanged: (val) async {
                         setState(() {
+                          _visibility = false;
                           widget.toggleOnlineStatus(val);
                           _online = val;
                         });
+                        if (val == false) {
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+
+                          setState(() {
+                            _visibility = true;
+                          });
+                        }
                       }),
                 ],
               )
