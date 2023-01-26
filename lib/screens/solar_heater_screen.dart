@@ -122,8 +122,8 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                         key2: mqttProv.temp2GraphData[i].y,
                         key3: mqttProv.temp3GraphData[i].y,
                         key4: (data.y +
-                                mqttProv.temp2GraphData[i].y +
-                                mqttProv.temp3GraphData[i].y) /
+                                temp2HistoryGraphData[i].y +
+                                temp3HistoryGraphData[i].y) /
                             3
                       });
                       i += 1;
@@ -136,8 +136,8 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                         key2: temp2HistoryGraphData[i].y,
                         key3: temp3HistoryGraphData[i].y,
                         key4: (data.y +
-                                mqttProv.temp2GraphData[i].y +
-                                mqttProv.temp3GraphData[i].y) /
+                                temp2HistoryGraphData[i].y +
+                                temp3HistoryGraphData[i].y) /
                             3
                       });
                       i += 1;
@@ -155,8 +155,7 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                     ).generateExcel();
                     var directory = await getApplicationDocumentsDirectory();
                     File(
-                        ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.solarHeaterMeter)}/${DateFormat('EEE, MMM d yyyy  hh_mm a').format(DateTime.now())}.xlsx"))
-
+                        ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.solarHeaterMeter)}/${DateFormat('EEE, MMM d yyyy  hh mm a').format(DateTime.now())}.xlsx"))
                       ..createSync(recursive: true)
                       ..writeAsBytesSync(fileBytes);
                     Future.delayed(Duration.zero).then((value) async =>
