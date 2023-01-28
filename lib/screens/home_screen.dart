@@ -63,7 +63,7 @@ class HomeScreen extends StatefulWidget {
       case PageTitle.thermalEnergyMeter:
         return "Thermal Energy";
       case PageTitle.firewoodMoisture:
-        return "Firewood Moisture";
+        return "Wood Moisture";
     }
   }
 

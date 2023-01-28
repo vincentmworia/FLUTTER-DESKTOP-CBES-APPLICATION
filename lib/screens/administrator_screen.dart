@@ -12,6 +12,7 @@ class AdministratorScreen extends StatelessWidget {
       - Allow Users to access application
       - Promoting users to administrators
       - Demoting users to normal users
+      - An 'Online Message View' showing all the actions that have been undertaken in the application?
       """),
     );
   }

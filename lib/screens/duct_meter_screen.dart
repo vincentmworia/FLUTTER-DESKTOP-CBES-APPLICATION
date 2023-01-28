@@ -12,6 +12,7 @@ import '../providers/mqtt.dart';
 import '../widgets/IotPageTemplate.dart';
 import '../widgets/generate_excel_from_list.dart';
 import '../widgets/radial_gauge_sf.dart';
+import '../widgets/search_toggle_view.dart';
 import '../widgets/tank_graph.dart';
 import './home_screen.dart';
 
@@ -159,6 +160,7 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
               File(
                   ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.ductMeter)}/${DateFormat('EEE, MMM d yyyy  hh mm a').format(DateTime.now())}.xlsx"))
                 ..createSync(recursive: true)
+
                 ..writeAsBytesSync(fileBytes);
               Future.delayed(Duration.zero).then((value) async =>
                   await customDialog(
@@ -172,13 +174,13 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
             }
           },
           searchDatabase: (_fromDate.text == "" ||
-                  _toDate.text == "" ||
-                  DateTime.parse(_fromDate.text)
-                      .isAfter(DateTime.parse(_toDate.text)))
+              _toDate.text == "" ||
+              SearchToggleView.fromDateVal!
+                  .isAfter(SearchToggleView.toDateVal!))
               ? null
               : () async {
-                  if (DateTime.parse(_fromDate.text)
-                      .isAfter(DateTime.parse(_toDate.text))) {
+            if (SearchToggleView.fromDateVal!
+                .isAfter(SearchToggleView.toDateVal!)) {
                     await customDialog(
                         context, "Make sure the time in 'To' is after 'From'");
                     return;
