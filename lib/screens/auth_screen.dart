@@ -74,9 +74,6 @@ class _AuthScreenState extends State<AuthScreen> {
         setState(() {
           _isLoading = true;
         });
-        if (kDebugMode) {
-          print('contains');
-        }
         final userData = User.fromLoginMap(
             json.decode(prefs.getString(RememberMeBnState.rememberMePrefName)!)
                 as Map<String, dynamic>);

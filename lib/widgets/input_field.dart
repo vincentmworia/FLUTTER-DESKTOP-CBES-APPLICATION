@@ -33,8 +33,6 @@ class InputField extends StatefulWidget {
   final void Function(String?)? onSaved;
   final String? initialValue;
 
-  static const allowedInApp = "300003";
-  static const notAllowedInApp = "300";
 
   @override
   State<InputField> createState() => _InputFieldState();

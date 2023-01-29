@@ -16,6 +16,9 @@ import './login_user_data.dart';
 import './mqtt.dart';
 
 class FirebaseAuthentication {
+  static String? _loggedUserEmail;
+  static String? _loggedUserPassword;
+
   static Uri _actionEndpointUrl(String action) => Uri.parse(
       "https://identitytoolkit.googleapis.com/v1/accounts:${action}key=$firebaseApiKey");
 
@@ -93,10 +96,10 @@ class FirebaseAuthentication {
         message = _getErrorMessage(responseData['error']['message']);
         return message;
       }
-
       final signedInUser = SignIn.fromMap(responseData);
       final dbResponse = await http.get(Uri.parse(
           '$firebaseDbUrl/users/${signedInUser.localId}.json?auth=${signedInUser.idToken}'));
+
       final loggedIn = LoggedIn.fromMap(json.decode(dbResponse.body));
       message = await Future.delayed(Duration.zero).then((_) {
         Provider.of<LoginUserData>(context, listen: false)
@@ -110,6 +113,8 @@ class FirebaseAuthentication {
           await Provider.of<MqttProvider>(context, listen: false)
               .initializeMqttClient();
           message = 'Welcome,\n${loggedIn.firstname} ${loggedIn.lastname}';
+          _loggedUserEmail = user.email;
+          _loggedUserPassword = user.password;
           return message;
         } else {
           message = '${loggedIn.email} is not authorized  by the admin';
@@ -127,6 +132,26 @@ class FirebaseAuthentication {
       return message ?? 'Login error';
     }
     return message!;
+  }
+
+  static Future<Map<String, dynamic>> getAllUsers() async {
+    Map<String, dynamic>? message;
+    final response = await http.post(_actionEndpointUrl("signInWithPassword?"),
+        body: json.encode({
+          "email": _loggedUserEmail!,
+          "password": _loggedUserPassword!,
+          "returnSecureToken": true,
+        }));
+    final responseData = json.decode(response.body) as Map<String, dynamic>;
+    if (responseData['error'] != null) {
+      message = {"error": _getErrorMessage(responseData['error']['message'])};
+      return message;
+    }
+
+    final signedInUser = SignIn.fromMap(responseData);
+    final res = await http.get(
+        Uri.parse("$firebaseDbUrl/users.json?auth=${signedInUser.idToken}"));
+    return {"response": res};
   }
 
   static Future<void> logout(BuildContext context) async {

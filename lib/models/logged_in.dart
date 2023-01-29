@@ -17,12 +17,12 @@ class LoggedIn {
       required this.allowed});
 
   static LoggedIn fromMap(Map<String, dynamic> loggedInUser) => LoggedIn(
-      localId: loggedInUser['localId'],
-      email: loggedInUser['email'],
-      phoneNumber: loggedInUser['phoneNumber'],
-      firstname: loggedInUser['firstname'],
-      lastname: loggedInUser['lastname'],
-      privilege: loggedInUser['privilege'],
-      allowed: loggedInUser['allowed']);
-
+        localId: loggedInUser['localId'],
+        email: loggedInUser['email'],
+        phoneNumber: loggedInUser['phoneNumber'],
+        firstname: loggedInUser['firstname'],
+        lastname: loggedInUser['lastname'],
+        privilege: loggedInUser['privilege'],
+        allowed: loggedInUser['allowed'],
+      );
 }
