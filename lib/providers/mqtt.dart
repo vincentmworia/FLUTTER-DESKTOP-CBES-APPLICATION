@@ -33,19 +33,18 @@ class MqttProvider with ChangeNotifier {
   HeatingUnit? get heatingUnitData => _heatingUnitData;
   HeatingUnit? _heatingUnitData;
 
-  DuctMeter? get ductMeterData => _ductMeterData;
-  DuctMeter? _ductMeterData;
-
   final List<GraphAxis> temp1GraphData = [];
   final List<GraphAxis> temp2GraphData = [];
   final List<GraphAxis> temp3GraphData = [];
   final List<GraphAxis> flow1GraphData = [];
   final List<GraphAxis> flow2GraphData = [];
+  final List<GraphAxis> enthalpyGraphData = [];
 
+  DuctMeter? get ductMeterData => _ductMeterData;
+  DuctMeter? _ductMeterData;
   final List<GraphAxis> temperatureGraphData = [];
   final List<GraphAxis> humidityGraphData = [];
 
-  final List<GraphAxis> enthalpyGraphData = [];
 
   final Map<String, OnlineUser> onlineUsersData = {};
 
@@ -55,7 +54,7 @@ class MqttProvider with ChangeNotifier {
 
   // todo set unique Id for individual devices? From Email?
 
-  static final platform = Platform.isAndroid
+  final platform = Platform.isAndroid
       ? "Android"
       : Platform.isWindows
           ? "Windows"
@@ -69,6 +68,12 @@ class MqttProvider with ChangeNotifier {
   String? _deviceId;
   String? _devicesClient;
   String? _loginTime;
+
+  static void removeFirstElement(List list) {
+    if (list.length >= 8640) {
+      list.removeAt(0);
+    }
+  }
 
   String _duration(DateTime time) => DateFormat('HH:mm:ss')
       .format(time /*time.subtract(Duration(minutes: delay))*/);
@@ -113,11 +118,6 @@ class MqttProvider with ChangeNotifier {
     }
     if (_connStatus == ConnectionStatus.connected) {
       _mqttClient.subscribe("cbes/dekut/#", MqttQos.exactlyOnce);
-      void removeFirstElement(List list) {
-        if (list.length >= 8640) {
-          list.removeAt(0);
-        }
-      }
 
       // todo change the duration dynamically on request from the client
       timerGraph = Timer.periodic(const Duration(seconds: 10), (timer) {
@@ -189,15 +189,19 @@ class MqttProvider with ChangeNotifier {
           Map<String, OnlineUser> usersOnline = {
             '${onlineUser.email}-${onlineUser.platform}': onlineUser
           };
+
           onlineUsersData.addAll(usersOnline);
-          // todo Trigger the provider and feed in the data from here instead of notifying listeners?
           notifyListeners();
+
+          // todo Trigger the provider and feed in the data from here instead of notifying listeners?
+
         }
       });
     }
 
     return _connStatus;
   }
+
   void refresh() {
     notifyListeners();
   }
@@ -225,8 +229,14 @@ class MqttProvider with ChangeNotifier {
   }
 }
 
+// todo Split the data to individual providers
 class HeatingUnitProvider with ChangeNotifier {}
 
 class DuctMeterProvider with ChangeNotifier {}
 
-class DevicesProvider with ChangeNotifier {}
+class DevicesProvider with ChangeNotifier {
+
+  void onlineUsersListener( Map<String, OnlineUser> usersOnline) {
+
+  }
+}

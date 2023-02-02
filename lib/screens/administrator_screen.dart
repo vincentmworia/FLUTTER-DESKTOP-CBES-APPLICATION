@@ -1,10 +1,11 @@
 import 'dart:convert';
+import 'package:cbesdesktop/providers/mqtt.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/online_user.dart';
-import '../providers/mqtt.dart';
+import '../providers/mqtt_devices_provider.dart';
 import '../widgets/loading_animation.dart';
 import '../models/logged_in.dart';
 import '../private_data.dart';
@@ -42,25 +43,28 @@ class AdministratorScreen extends StatelessWidget {
             .toList();
 
         return Consumer<MqttProvider>(
-          builder: (BuildContext context, mqttProv, Widget? child) {
+          builder: (BuildContext context, devicesProv, Widget? child) {
             // todo Filter list of online users like whatsapp, differentiate windows and android
 
+            print("Trigger");
             List<OnlineUser> onlineUsers = [];
-            mqttProv.onlineUsersData.values.toList();
-            mqttProv.onlineUsersData.forEach((key, value) {
+            devicesProv.onlineUsersData.values.toList();
+
+            devicesProv.onlineUsersData.forEach((key, value) {
               if (value.onlineState == OnlineConnectionState.online) {
-                onlineUsers.add(value);
+              onlineUsers.add(value);
               }
             });
 
+            print(devicesProv.onlineUsersData);
             return Center(
               child: Text("""
-          Online: ${mqttProv.onlineUsersData.values.toList()}
-          
-          Allowed Users: $allowedUsers 
+          Online: ${devicesProv.onlineUsersData.values.toList()}
+
+          Allowed Users: $allowedUsers
           Not Allowed Users: $notAllowedUsers
-           
-          - Viewing online users in realtime 
+
+          - Viewing online users in realtime
           - Allow Users to access application
           - Promoting users to administrators
           - Demoting users to normal users
@@ -73,3 +77,20 @@ class AdministratorScreen extends StatelessWidget {
     );
   }
 }
+/*
+
+            return Center(
+              child: Text("""
+          Online: ${mqttProv.onlineUsersData.values.toList()}
+
+          Allowed Users: $allowedUsers
+          Not Allowed Users: $notAllowedUsers
+
+          - Viewing online users in realtime
+          - Allow Users to access application
+          - Promoting users to administrators
+          - Demoting users to normal users
+          - An 'Online Message View' showing all the actions that have been undertaken in the application?
+          """),
+            );
+*/

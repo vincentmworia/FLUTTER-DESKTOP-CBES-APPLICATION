@@ -51,7 +51,23 @@ class ProfileScreen extends StatelessWidget {
                   : "Not Administrator"),
             ],
           ),
-          ElevatedButton(
+          Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        cons.smallest.shortestSide * 0.01)),
+                fixedSize: Size(cons.smallest.shortestSide * 0.3,
+                    cons.smallest.shortestSide * 0.15)),
+            onPressed: () {
+              FirebaseAuthentication.deleteAccount(context);
+            },
+            child: Text(
+              'Delete',
+              style: TextStyle(fontSize: cons.smallest.shortestSide * 0.04),
+            ),
+          ),ElevatedButton(
             style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(
@@ -65,7 +81,8 @@ class ProfileScreen extends StatelessWidget {
               'Logout',
               style: TextStyle(fontSize: cons.smallest.shortestSide * 0.04),
             ),
-          )
+          ),],)
+
         ],
       );
     });

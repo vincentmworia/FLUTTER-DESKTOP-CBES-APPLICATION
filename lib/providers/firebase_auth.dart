@@ -154,6 +154,14 @@ class FirebaseAuthentication {
     return {"response": res};
   }
 
+  static Future<void> editPassword(BuildContext context) async {
+    print("Edit Password");
+  }
+
+  static Future<void> deleteAccount(BuildContext context) async {
+    print("Delete Account");
+  }
+
   static Future<void> logout(BuildContext context) async {
     final client = Provider.of<MqttProvider>(context, listen: false);
     Provider.of<LoginUserData>(context, listen: false).resetLoggedInUser();
