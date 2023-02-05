@@ -50,9 +50,13 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
         children: [
           AnimatedContainer(
             duration:
-                Duration(milliseconds: widget.decompressNavPlane ? 0 : 300),
+            Duration(milliseconds: widget.decompressNavPlane ? 0 : 300),
             color: _stackPressed != -1
-                ? Theme.of(context).colorScheme.secondary.withOpacity(0.2)
+                ? Theme
+                .of(context)
+                .colorScheme
+                .secondary
+                .withOpacity(0.2)
                 : Colors.white,
             height: double.infinity,
             width: _stackPressed < 0 ? width : width * 0.2,
@@ -78,23 +82,26 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
           // VerticalDivider(),
           Expanded(
               child: Stack(
-            children: [
-              Positioned(
-                  top: 10,
-                  right: 10,
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.cancel,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _stackPressed = -1;
-                      });
-                    },
-                  ))
-            ],
-          ))
+                children: [
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.cancel,
+                        color: Theme
+                            .of(context)
+                            .colorScheme
+                            .secondary,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _stackPressed = -1;
+                        });
+                      },
+                    ),),
+                ],
+              ))
         ],
       );
     });
@@ -109,7 +116,7 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
 // - Graph of historical data?
 // - List of all moisture data
 //
-// - Search moisture for particular stack number
+// - Search moisture  for particular stack number
 // - CRUD Stack number, and the data contents
 //
 // - Generate excel

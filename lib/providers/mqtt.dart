@@ -45,8 +45,7 @@ class MqttProvider with ChangeNotifier {
   final List<GraphAxis> temperatureGraphData = [];
   final List<GraphAxis> humidityGraphData = [];
 
-
-  final Map<String, OnlineUser> onlineUsersData = {};
+  Map<String, OnlineUser> onlineUsersData={};
 
   var _connStatus = ConnectionStatus.disconnected;
 
@@ -79,6 +78,11 @@ class MqttProvider with ChangeNotifier {
       .format(time /*time.subtract(Duration(minutes: delay))*/);
 
   Future<ConnectionStatus> initializeMqttClient() async {
+    final deviceMqttProv = DevicesProvider();
+
+
+    // onlineUsersData = {};
+
     _deviceId =
         '&${LoginUserData.getLoggedUser!.email}&${LoginUserData.getLoggedUser!.firstname}&${LoginUserData.getLoggedUser!.lastname}';
     _devicesClient = 'cbes/dekut/devices/$platform/$_deviceId';
@@ -166,6 +170,7 @@ class MqttProvider with ChangeNotifier {
           _heatingUnitData =
               HeatingUnit.fromMap(json.decode(message) as Map<String, dynamic>);
           notifyListeners();
+          deviceMqttProv.testProv();
         }
 
         if (topic == "cbes/dekut/data/environment_meter") {
@@ -177,6 +182,7 @@ class MqttProvider with ChangeNotifier {
           final deviceData = topic.split('/');
           final deviceUserDetails = deviceData[4].split('&');
 
+          // print(message.split('-')[0]);
           OnlineUser onlineUser = OnlineUser(
             platform: deviceData[3],
             email: deviceUserDetails[1],
@@ -191,10 +197,11 @@ class MqttProvider with ChangeNotifier {
           };
 
           onlineUsersData.addAll(usersOnline);
+          deviceMqttProv.setOnlineUsersData(usersOnline);
+
           notifyListeners();
 
           // todo Trigger the provider and feed in the data from here instead of notifying listeners?
-
         }
       });
     }
@@ -235,8 +242,15 @@ class HeatingUnitProvider with ChangeNotifier {}
 class DuctMeterProvider with ChangeNotifier {}
 
 class DevicesProvider with ChangeNotifier {
+  Map<String, OnlineUser> onlineUsersData = {};
 
-  void onlineUsersListener( Map<String, OnlineUser> usersOnline) {
+  void setOnlineUsersData(Map<String, OnlineUser> usrData) {
+    onlineUsersData = usrData;
+    notifyListeners();
+  }
 
+  void testProv() {
+    // print(onlineUsersData);
+    notifyListeners();
   }
 }

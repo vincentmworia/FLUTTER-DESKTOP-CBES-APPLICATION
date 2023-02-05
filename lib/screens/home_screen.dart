@@ -85,8 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     try {
       Future.delayed(Duration.zero)
-          .then((value) async => await _connectivity.checkConnectivity())
-          .then((value) => setState(() {}));
+          .then((value) async => await _connectivity.checkConnectivity());
 
       ConnectivityResult? prevResult;
       _connectivity.onConnectivityChanged.listen((result) async {
@@ -144,6 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     // todo SHOULD BE TRIGGERED ONCE
     // TODO DECOMPRESSING THE NAVBAR THROWING ERROR IF MILLISECONDS IS INCREASED
     const duration = Duration(milliseconds: 20);
@@ -244,7 +244,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         backgroundColor: Colors.white,
-        // backgroundColor: Theme.of(context).colorScheme.secondary ,
         body: Row(
           children: [
             AnimatedContainer(

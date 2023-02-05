@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cbesdesktop/providers/mqtt_devices_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +18,7 @@ void main() async {
     doWhenWindowReady(() {
       final win = appWindow;
       win.minSize = const Size(1000, 600);
+      win.maxSize = const Size(2000,1200);
       win.alignment = Alignment.center;
       win.title = MyApp.appTitle;
       win.maximize();
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => LoginUserData()),
         ChangeNotifierProvider(create: (_) => MqttProvider()),
-        // ChangeNotifierProvider(create: (_) => DevicesProvider() ),
+        ChangeNotifierProvider(create: (_) => DevicesProvider() ),
         ChangeNotifierProvider(create: (_) => RememberMeBnState()),
 
 

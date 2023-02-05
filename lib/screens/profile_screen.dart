@@ -11,6 +11,35 @@ import '../providers/login_user_data.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
+  void dialog(BuildContext context, String operation, LoggedIn user,
+          Function yesFn) async =>
+      await showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+                content: Text('$operation ${user.email}\'s account?'),
+                actions: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.secondary),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('No')),
+                      ElevatedButton(
+                          onPressed: () async {
+                            Navigator.pop(context);
+                            yesFn();
+                          },
+                          child: const Text('Yes')),
+                    ],
+                  )
+                ],
+              ));
+
   @override
   Widget build(BuildContext context) {
     LoggedIn user = LoginUserData.getLoggedUser!;
@@ -52,37 +81,44 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
           Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                        cons.smallest.shortestSide * 0.01)),
-                fixedSize: Size(cons.smallest.shortestSide * 0.3,
-                    cons.smallest.shortestSide * 0.15)),
-            onPressed: () {
-              FirebaseAuthentication.deleteAccount(context);
-            },
-            child: Text(
-              'Delete',
-              style: TextStyle(fontSize: cons.smallest.shortestSide * 0.04),
-            ),
-          ),ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                        cons.smallest.shortestSide * 0.01)),
-                fixedSize: Size(cons.smallest.shortestSide * 0.3,
-                    cons.smallest.shortestSide * 0.15)),
-            onPressed: () {
-              FirebaseAuthentication.logout(context);
-            },
-            child: Text(
-              'Logout',
-              style: TextStyle(fontSize: cons.smallest.shortestSide * 0.04),
-            ),
-          ),],)
-
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            cons.smallest.shortestSide * 0.01)),
+                    fixedSize: Size(cons.smallest.shortestSide * 0.3,
+                        cons.smallest.shortestSide * 0.15)),
+                onPressed: () async {
+                  dialog(context, 'Delete', user, () async {
+                    await FirebaseAuthentication.deleteMyAccount();
+                  });
+                },
+                child: Text(
+                  'Delete',
+                  style: TextStyle(fontSize: cons.smallest.shortestSide * 0.04),
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            cons.smallest.shortestSide * 0.01)),
+                    fixedSize: Size(cons.smallest.shortestSide * 0.3,
+                        cons.smallest.shortestSide * 0.15)),
+                onPressed: () async {
+                  dialog(context,'Logout of', user, () async {
+                    await FirebaseAuthentication.logout(context);
+                  });
+                },
+                child: Text(
+                  'Logout',
+                  style: TextStyle(fontSize: cons.smallest.shortestSide * 0.04),
+                ),
+              ),
+            ],
+          )
         ],
       );
     });
