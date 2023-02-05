@@ -23,12 +23,14 @@ class AdministratorScreen extends StatefulWidget {
 
 class _AdministratorScreenState extends State<AdministratorScreen> {
   Future<void> _allowUsersFunction(
-      BuildContext context, LoggedIn user, bool operation) async {
+      {required BuildContext context,
+      required LoggedIn user,
+      required int operation,
+      required String title}) async {
     await showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-              content: Text(
-                  'Do you want to ${operation ? 'add' : 'remove'} ${user.email} ${operation ? 'to' : 'from'} the application'),
+              content: Text(title),
               actions: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -44,22 +46,43 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
                     ElevatedButton(
                         onPressed: () async {
                           Navigator.pop(context);
-                          if (!(operation)) {
-                            print('Delete User');
-                            setState(() {
-                              _isLoading = true;
-                            });
 
-                            await FirebaseAuthentication.deleteAnotherAccount(
-                                    context, user)
-                                .then((value) => setState(
-                                      () => _isLoading = false,
-                                    ));
-                          } else {
-                            print('Add');
+                          final url =
+                              '$firebaseDbUrl/users/${user.localId}.json?auth=${FirebaseAuthentication.idToken}';
+
+                          setState(() {
+                            _isLoading = true;
+                          });
+                          if (operation == 1) {
+                            print('Delete User');
+                            await FirebaseAuthentication.deleteAccount(
+                                context, user);
+                          } else if (operation == 2) {
+                            await http.patch(Uri.parse(url),
+                                body: json.encode({'allowed': allowUserTrue}));
+                          } else if (operation == 3) {
+                            await http.patch(Uri.parse(url),
+                                body: json.encode({'privilege': userNormal}));
+                          } else if (operation == 4) {
+                            await http.patch(
+                                Uri.parse(
+                                    '$firebaseDbUrl/users/${user.localId}.json?auth=${FirebaseAuthentication.idToken}'),
+                                body: json.encode({'privilege': userAdmin}));
+                          } else if (operation == 5) {
+                            await http.patch(
+                                Uri.parse(
+                                    '$firebaseDbUrl/users/${user.localId}.json?auth=${FirebaseAuthentication.idToken}'),
+                                body: json.encode({'allowed': allowUserFalse}));
+                          } else if (operation == 6) {
+                            await http.patch(
+                                Uri.parse(
+                                    '$firebaseDbUrl/users/${user.localId}/allowed.json?auth=${FirebaseAuthentication.idToken}'),
+                                body: json.encode({'allowed': allowUserTrue}));
                           }
+
                           // todo Allow user or delete user from the database, etc...
                           // todo widget.allowUser(operation == true ? 1 : 0, user);
+                          setState(() => _isLoading = false);
                         },
                         child: const Text('Yes')),
                   ],
@@ -109,7 +132,7 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
               .where((element) => element.allowed == allowUserTrue)
               .toList()
         ];
-        print(allowedUsers);
+        // print(allowedUsers);
         final notAllowedUsers = <LoggedIn>[
           ...allUsersData.values
               .toList()
@@ -244,9 +267,12 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
                                                       child: IconButton(
                                                         onPressed: () =>
                                                             _allowUsersFunction(
-                                                                context,
-                                                                e,
-                                                                false),
+                                                                context:
+                                                                    context,
+                                                                user: e,
+                                                                operation: 1,
+                                                                title:
+                                                                    'Do you want to remove ${e.email} from the application?'),
                                                         icon: const Icon(
                                                             Icons.remove,
                                                             color:
@@ -271,9 +297,12 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
                                                       child: IconButton(
                                                         onPressed: () =>
                                                             _allowUsersFunction(
-                                                                context,
-                                                                e,
-                                                                true),
+                                                                context:
+                                                                    context,
+                                                                user: e,
+                                                                operation: 2,
+                                                                title:
+                                                                    'Do you want to add ${e.email} to the application?'),
                                                         icon: const Icon(
                                                             Icons.add,
                                                             color:
@@ -318,7 +347,7 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
                                     title: Text(usr.email),
                                     subtitle: Text(
                                         '${usr.firstname}\t${usr.lastname}'),
-                                    trailing: Container(
+                                    trailing: SizedBox(
                                       // color: Colors.red,
                                       width: 350,
                                       // height: 50,
@@ -328,13 +357,51 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
                                         children: [
                                           IconButton(
                                             onPressed: () {
-                                              if((usr.privilege ==
-                                                  userSuperAdmin) ||
+                                              if (usr.allowed ==
+                                                  allowUserTrue) {
+                                                _allowUsersFunction(
+                                                    context: context,
+                                                    user: usr,
+                                                    operation: 5,
+                                                    title:
+                                                        'Do you want to de-activate ${usr.email}\'s account?');
+                                              } else {
+                                                _allowUsersFunction(
+                                                    context: context,
+                                                    user: usr,
+                                                    operation: 6,
+                                                    title:
+                                                        'Do you want to activate ${usr.email}\'s account?');
+                                              }
+                                            },
+                                            iconSize: 30,
+                                            icon: Icon(
+                                                usr.allowed == allowUserTrue
+                                                    ? Icons.cancel
+                                                    : Icons.add,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary),
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              if ((usr.privilege ==
+                                                      userSuperAdmin) ||
                                                   (usr.privilege ==
-                                                      userAdmin)){
-                                                print('Demote User');
-                                              }else{
-                                                print('promote user');
+                                                      userAdmin)) {
+                                                _allowUsersFunction(
+                                                    context: context,
+                                                    user: usr,
+                                                    operation: 3,
+                                                    title:
+                                                        'Do you want to demote ${usr.email} from an administrator?');
+                                              } else {
+                                                _allowUsersFunction(
+                                                    context: context,
+                                                    user: usr,
+                                                    operation: 4,
+                                                    title:
+                                                        'Do you want to promote ${usr.email} to an administrator?');
                                               }
                                             },
                                             iconSize: 30,
@@ -352,7 +419,14 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
                                             ),
                                           ),
                                           IconButton(
-                                            onPressed: () {},
+                                            onPressed: () {
+                                              _allowUsersFunction(
+                                                  context: context,
+                                                  user: usr,
+                                                  operation: 1,
+                                                  title:
+                                                      'Do you want to remove ${usr.email} from the application?');
+                                            },
                                             iconSize: 30,
                                             icon: const Icon(Icons.delete,
                                                 color: Colors.red),
@@ -373,20 +447,3 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
     );
   }
 }
-/*
-
-            return Center(
-              child: Text("""
-          Online: ${mqttProv.onlineUsersData.values.toList()}
-
-          Allowed Users: $allowedUsers
-          Not Allowed Users: $notAllowedUsers
-
-          - Viewing online users in realtime
-          - Allow Users to access application
-          - Promoting users to administrators
-          - Demoting users to normal users
-          - An 'Online Message View' showing all the actions that have been undertaken in the application?
-          """),
-            );
-*/

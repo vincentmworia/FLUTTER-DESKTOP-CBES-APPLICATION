@@ -19,7 +19,7 @@ import './mqtt.dart';
 class FirebaseAuthentication {
   static String? _loggedUserEmail;
   static String? _loggedUserPassword;
-  static String? _idToken;
+  static String? idToken;
   static Timer? timer;
 
   static Uri _actionEndpointUrl(String action) => Uri.parse(
@@ -44,7 +44,7 @@ class FirebaseAuthentication {
       message = 'Could not find a user with that email.';
     } else if (errorTitle.contains('timeout period has expired')) {
       message = 'Password must be at least 6 characters';
-    }else if (errorTitle.contains('WEAK_PASSWORD')) {
+    } else if (errorTitle.contains('WEAK_PASSWORD')) {
       message = 'Password must be at least 6 characters';
     } else if (errorTitle.contains('INVALID_PASSWORD')) {
       message = 'Invalid password';
@@ -103,7 +103,7 @@ class FirebaseAuthentication {
         return message;
       }
       final signedInUser = SignIn.fromMap(responseData);
-      _idToken = signedInUser.idToken;
+      idToken = signedInUser.idToken;
       // todo begin timer
       timer = Timer.periodic(const Duration(minutes: 55), (timer) {
         refreshToken();
@@ -143,8 +143,8 @@ class FirebaseAuthentication {
       return message ?? 'Login error';
     }
 
-    if(message=="timeout period has expired"){
-      message="Please check your internet connection";
+    if (message == "timeout period has expired") {
+      message = "Please check your internet connection";
     }
     return message!;
   }
@@ -159,16 +159,16 @@ class FirebaseAuthentication {
     final responseData = json.decode(response.body) as Map<String, dynamic>;
     if (!(responseData['error'] != null)) {
       final signedInUser = SignIn.fromMap(responseData);
-      _idToken = signedInUser.idToken;
+      idToken = signedInUser.idToken;
     }
   }
 
   static Future<Map<String, dynamic>> getAllUsers() async {
-    print('1');
+    // print('1');
 
     final res =
-        await http.get(Uri.parse("$firebaseDbUrl/users.json?auth=$_idToken"));
-    print('2');
+        await http.get(Uri.parse("$firebaseDbUrl/users.json?auth=$idToken"));
+    // print('2');
     return {"response": res};
   }
 
@@ -176,13 +176,16 @@ class FirebaseAuthentication {
     print("Edit Password");
   }
 
-  static Future<void> deleteMyAccount()async {
-
-  }
-  static Future<void> deleteAnotherAccount(
+  static Future<void> deleteAccount(
       BuildContext context, LoggedIn user) async {
+// todo Delete
+    await http.post(_actionEndpointUrl("delete?"),
+        body: json.encode({
+          "idToken": user.localId,
+        }));
+
     await http.delete(
-        Uri.parse('$firebaseDbUrl/users/${user.localId}.json?auth=$_idToken'));
+        Uri.parse('$firebaseDbUrl/users/${user.localId}.json?auth=$idToken'));
   }
 
   // todo Delete My Account,

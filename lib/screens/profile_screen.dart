@@ -1,5 +1,8 @@
 import 'package:cbesdesktop/models/logged_in.dart';
 import 'package:cbesdesktop/private_data.dart';
+import 'package:cbesdesktop/screens/auth_screen.dart';
+import 'package:cbesdesktop/screens/home_screen.dart';
+import 'package:cbesdesktop/widgets/loading_animation.dart';
 import 'package:flutter/material.dart';
 
 import '../providers/firebase_auth.dart';
@@ -8,8 +11,15 @@ import '../providers/login_user_data.dart';
 // todo Edit Password, delete account, etc
 // todo improve the UI
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  var _isLoading = false;
 
   void dialog(BuildContext context, String operation, LoggedIn user,
           Function yesFn) async =>
@@ -44,6 +54,9 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     LoggedIn user = LoginUserData.getLoggedUser!;
 
+    if (_isLoading) {
+      return const MyLoadingAnimation();
+    }
     return LayoutBuilder(builder: (context, cons) {
       Widget userData(String title) => Text(
             title,
@@ -92,7 +105,19 @@ class ProfileScreen extends StatelessWidget {
                         cons.smallest.shortestSide * 0.15)),
                 onPressed: () async {
                   dialog(context, 'Delete', user, () async {
-                    await FirebaseAuthentication.deleteMyAccount();
+                    setState(
+                      () => _isLoading = true,
+                    );
+                    try {
+                      await FirebaseAuthentication.deleteAccount(context, user);
+
+                      if (mounted) {
+                        await FirebaseAuthentication.logout(context);
+                      }
+                    } catch (e) {
+                      print(e);
+                      setState(() => _isLoading = false);
+                    }
                   });
                 },
                 child: Text(
@@ -108,7 +133,7 @@ class ProfileScreen extends StatelessWidget {
                     fixedSize: Size(cons.smallest.shortestSide * 0.3,
                         cons.smallest.shortestSide * 0.15)),
                 onPressed: () async {
-                  dialog(context,'Logout of', user, () async {
+                  dialog(context, 'Logout of', user, () async {
                     await FirebaseAuthentication.logout(context);
                   });
                 },
