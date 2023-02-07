@@ -135,8 +135,8 @@ class _HomeScreenState extends State<HomeScreen> {
       case PageTitle.thermalEnergyMeter:
         return const ThermalEnergyScreen();
       case PageTitle.firewoodMoisture:
-        return FirewoodMoistureScreen(
-          decompressNavPlane: _deCompressNavPlane,
+        return const FirewoodMoistureScreen(
+          // decompressNavPlane: _deCompressNavPlane,
         );
     }
   }

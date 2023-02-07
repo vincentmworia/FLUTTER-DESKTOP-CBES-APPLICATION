@@ -116,7 +116,8 @@ class MqttProvider with ChangeNotifier {
       if (kDebugMode) {
         print('\n\nException: $e');
       }
-      // todo FORCE THE USER OFFLINE UNTIL ERROR IS ACKNOWLEDGED
+      // todo FORCE THE USER OFFLINE UNTIL ERROR IS ACKNOWLEDGED USING ANOTHER PROVIDER???
+      // TODO PROVIDER INHERITANCE?? USE RIVER-POD
       _mqttClient.disconnect();
       _connStatus = ConnectionStatus.disconnected;
     }

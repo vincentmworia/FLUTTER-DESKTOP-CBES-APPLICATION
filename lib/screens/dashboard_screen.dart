@@ -147,7 +147,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('trg');
     return LayoutBuilder(builder: (builder, cons) {
       return SizedBox(
         width: cons.maxWidth,
