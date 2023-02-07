@@ -178,14 +178,13 @@ class FirebaseAuthentication {
 
   static Future<void> deleteAccount(
       BuildContext context, LoggedIn user) async {
-// todo Delete
-    await http.post(_actionEndpointUrl("delete?"),
+   final resp= await http.post(_actionEndpointUrl("delete?"),
         body: json.encode({
-          "idToken": user.localId,
+          "idToken":idToken,
         }));
-
     await http.delete(
         Uri.parse('$firebaseDbUrl/users/${user.localId}.json?auth=$idToken'));
+
   }
 
   // todo Delete My Account,
@@ -193,6 +192,7 @@ class FirebaseAuthentication {
 
   static Future<void> logout(BuildContext context) async {
     timer = null;
+    print('6');
     final client = Provider.of<MqttProvider>(context, listen: false);
     Provider.of<LoginUserData>(context, listen: false).resetLoggedInUser();
 

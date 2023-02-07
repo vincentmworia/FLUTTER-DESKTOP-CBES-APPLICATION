@@ -1,14 +1,12 @@
 import 'dart:convert';
 
-import 'package:cbesdesktop/providers/login_user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/online_user.dart';
 import '../providers/mqtt.dart';
-import '../providers/mqtt_devices_provider.dart';
-import '../widgets/allow_users_controller.dart';
+import '../widgets/administrator_screen_user.dart';
 import '../widgets/loading_animation.dart';
 import '../models/logged_in.dart';
 import '../private_data.dart';
@@ -54,7 +52,6 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
                             _isLoading = true;
                           });
                           if (operation == 1) {
-                            print('Delete User');
                             await FirebaseAuthentication.deleteAccount(
                                 context, user);
                           } else if (operation == 2) {
@@ -76,12 +73,9 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
                           } else if (operation == 6) {
                             await http.patch(
                                 Uri.parse(
-                                    '$firebaseDbUrl/users/${user.localId}/allowed.json?auth=${FirebaseAuthentication.idToken}'),
+                                    '$firebaseDbUrl/users/${user.localId}.json?auth=${FirebaseAuthentication.idToken}'),
                                 body: json.encode({'allowed': allowUserTrue}));
                           }
-
-                          // todo Allow user or delete user from the database, etc...
-                          // todo widget.allowUser(operation == true ? 1 : 0, user);
                           setState(() => _isLoading = false);
                         },
                         child: const Text('Yes')),
@@ -116,7 +110,6 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
           return const MyLoadingAnimation();
         }
         if (snapshot.data["error"] != null) {
-          print("error");
           return const MyLoadingAnimation();
         }
         final allUsersData =
@@ -127,17 +120,9 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
         });
 
         final allowedUsers = <LoggedIn>[
-          ...allUsersData.values
-              .toList()
-              .where((element) => element.allowed == allowUserTrue)
-              .toList()
-        ];
-        // print(allowedUsers);
-        final notAllowedUsers = <LoggedIn>[
-          ...allUsersData.values
-              .toList()
-              .where((element) => element.allowed != allowUserTrue)
-              .toList()
+          ...allUsersData.values.toList()
+          // .where((element) => element.allowed == allowUserTrue)
+          // .toList()
         ];
 
         return Consumer<MqttProvider>(
@@ -150,12 +135,11 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
                 onlineUsers.add(value);
               }
             });
-
-            // print(devicesProv.onlineUsersData);
             return LayoutBuilder(builder: (context, cons) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  _title(context, 'Online Users'),
                   SizedBox(
                     height: cons.maxHeight * 0.15,
                     width: cons.maxWidth,
@@ -180,7 +164,6 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
                                                   .primary),
 
                                           child: Container(
-                                            // width: 50,
                                             margin: const EdgeInsets.all(2),
                                             height: cons.maxHeight * 0.1,
                                             decoration: BoxDecoration(
@@ -197,9 +180,7 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
                                                   fontWeight: FontWeight.w700,
                                                   color: Colors.white),
                                             )),
-                                            // height: 100,
                                           ),
-                                          // height: 100,
                                         ),
                                       ),
                                       Text(
@@ -217,115 +198,7 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
                       ),
                     ),
                   ),
-                  if (notAllowedUsers.isNotEmpty)
-                    Expanded(
-                      child: Column(
-                        children: [
-                          _title(context, 'Grant access'),
-                          Expanded(
-                              child: Wrap(
-                            children: [
-                              ...notAllowedUsers
-                                  .map((e) => Container(
-                                        width: cons.maxWidth * 0.3,
-                                        height: 85,
-                                        margin: const EdgeInsets.all(10.0),
-                                        decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                            borderRadius:
-                                                BorderRadius.circular(15.0),
-                                            boxShadow: const [
-                                              BoxShadow(
-                                                color: Colors.black26,
-                                                offset: Offset(0, 2),
-                                                blurRadius: 6.0,
-                                              )
-                                            ]),
-                                        child: LayoutBuilder(
-                                            builder: (context, constraints) {
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 25.0),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Container(
-                                                      decoration: BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .secondary,
-                                                      ),
-                                                      child: IconButton(
-                                                        onPressed: () =>
-                                                            _allowUsersFunction(
-                                                                context:
-                                                                    context,
-                                                                user: e,
-                                                                operation: 1,
-                                                                title:
-                                                                    'Do you want to remove ${e.email} from the application?'),
-                                                        icon: const Icon(
-                                                            Icons.remove,
-                                                            color:
-                                                                Colors.white),
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                        child: Center(
-                                                            child: Text(
-                                                      e.email,
-                                                      style: const TextStyle(
-                                                          color: Colors.white),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ))),
-                                                    Container(
-                                                      decoration:
-                                                          const BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        color: Colors.green,
-                                                      ),
-                                                      child: IconButton(
-                                                        onPressed: () =>
-                                                            _allowUsersFunction(
-                                                                context:
-                                                                    context,
-                                                                user: e,
-                                                                operation: 2,
-                                                                title:
-                                                                    'Do you want to add ${e.email} to the application?'),
-                                                        icon: const Icon(
-                                                            Icons.add,
-                                                            color:
-                                                                Colors.white),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                          );
-                                        }),
-                                      ))
-                                  .toList()
-                            ],
-                          ))
-                        ],
-                      ),
-                      // child: AdminAllowUsers(allowedUsers),
-                    ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  _title(context, 'All Users'),
                   if (allowedUsers.isNotEmpty)
                     Expanded(
                         child: ListView.builder(
@@ -333,110 +206,10 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
                             itemCount: allowedUsers.length,
                             itemBuilder: (ctx, i) {
                               final usr = allowedUsers[i];
-                              return Card(
-                                elevation: 8,
-                                shadowColor:
-                                    Theme.of(context).colorScheme.primary,
-                                color: Colors.white.withOpacity(0.65),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                child: SizedBox(
-                                  // width: cons.maxWidth*0.4,
-                                  height: 75,
-                                  child: ListTile(
-                                    title: Text(usr.email),
-                                    subtitle: Text(
-                                        '${usr.firstname}\t${usr.lastname}'),
-                                    trailing: SizedBox(
-                                      // color: Colors.red,
-                                      width: 350,
-                                      // height: 50,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          IconButton(
-                                            onPressed: () {
-                                              if (usr.allowed ==
-                                                  allowUserTrue) {
-                                                _allowUsersFunction(
-                                                    context: context,
-                                                    user: usr,
-                                                    operation: 5,
-                                                    title:
-                                                        'Do you want to de-activate ${usr.email}\'s account?');
-                                              } else {
-                                                _allowUsersFunction(
-                                                    context: context,
-                                                    user: usr,
-                                                    operation: 6,
-                                                    title:
-                                                        'Do you want to activate ${usr.email}\'s account?');
-                                              }
-                                            },
-                                            iconSize: 30,
-                                            icon: Icon(
-                                                usr.allowed == allowUserTrue
-                                                    ? Icons.cancel
-                                                    : Icons.add,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary),
-                                          ),
-                                          IconButton(
-                                            onPressed: () {
-                                              if ((usr.privilege ==
-                                                      userSuperAdmin) ||
-                                                  (usr.privilege ==
-                                                      userAdmin)) {
-                                                _allowUsersFunction(
-                                                    context: context,
-                                                    user: usr,
-                                                    operation: 3,
-                                                    title:
-                                                        'Do you want to demote ${usr.email} from an administrator?');
-                                              } else {
-                                                _allowUsersFunction(
-                                                    context: context,
-                                                    user: usr,
-                                                    operation: 4,
-                                                    title:
-                                                        'Do you want to promote ${usr.email} to an administrator?');
-                                              }
-                                            },
-                                            iconSize: 30,
-                                            icon: Icon(
-                                              Icons.admin_panel_settings,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary
-                                                  .withOpacity((usr.privilege ==
-                                                              userSuperAdmin) ||
-                                                          (usr.privilege ==
-                                                              userAdmin)
-                                                      ? 1
-                                                      : 0.2),
-                                            ),
-                                          ),
-                                          IconButton(
-                                            onPressed: () {
-                                              _allowUsersFunction(
-                                                  context: context,
-                                                  user: usr,
-                                                  operation: 1,
-                                                  title:
-                                                      'Do you want to remove ${usr.email} from the application?');
-                                            },
-                                            iconSize: 30,
-                                            icon: const Icon(Icons.delete,
-                                                color: Colors.red),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
+                              return AdministratorScreenUser(
+                                  allowUsersFunction: _allowUsersFunction,
+                                  cons: cons,
+                                  usr: usr);
                             }))
                 ],
               );

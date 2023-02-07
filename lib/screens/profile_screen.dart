@@ -1,12 +1,10 @@
-import 'package:cbesdesktop/models/logged_in.dart';
-import 'package:cbesdesktop/private_data.dart';
-import 'package:cbesdesktop/screens/auth_screen.dart';
-import 'package:cbesdesktop/screens/home_screen.dart';
-import 'package:cbesdesktop/widgets/loading_animation.dart';
 import 'package:flutter/material.dart';
 
 import '../providers/firebase_auth.dart';
 import '../providers/login_user_data.dart';
+import '../models/logged_in.dart';
+import '../private_data.dart';
+import '../widgets/loading_animation.dart';
 
 // todo Edit Password, delete account, etc
 // todo improve the UI
@@ -51,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ));
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext ctxMain) {
     LoggedIn user = LoginUserData.getLoggedUser!;
 
     if (_isLoading) {
@@ -110,12 +108,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     );
                     try {
                       await FirebaseAuthentication.deleteAccount(context, user);
-
                       if (mounted) {
-                        await FirebaseAuthentication.logout(context);
+                        await FirebaseAuthentication.logout(ctxMain);
                       }
                     } catch (e) {
-                      print(e);
                       setState(() => _isLoading = false);
                     }
                   });
@@ -134,7 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         cons.smallest.shortestSide * 0.15)),
                 onPressed: () async {
                   dialog(context, 'Logout of', user, () async {
-                    await FirebaseAuthentication.logout(context);
+                    await FirebaseAuthentication.logout(ctxMain);
                   });
                 },
                 child: Text(
