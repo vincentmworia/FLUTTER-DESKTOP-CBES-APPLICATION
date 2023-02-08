@@ -44,6 +44,7 @@ class FirewoodMoistureData extends StatefulWidget {
 class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
   final _searchController = TextEditingController();
   final _stackNameController = TextEditingController();
+  var _isLoading = false;
 
   @override
   void dispose() {
@@ -56,6 +57,44 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
     setState(() {});
   }
 
+  Future<void> _deleteStack(String pgKey) async {
+    await showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              content: Text('Delete $pgKey?'),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.secondary),
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                        },
+                        child: const Text('No')),
+                    ElevatedButton(
+                        onPressed: () async {
+                          Navigator.pop(ctx);
+                          setState(() {
+                            _isLoading = true;
+                          });
+                          await HttpProtocol.deleteFirewoodStack(pgKey);
+                          // print('object');
+                          setState(() {
+                            dbFirewoodData.remove(pgKey);
+                            _pageData = null;
+                            _isLoading = false;
+                          });
+                        },
+                        child: const Text('Yes')),
+                  ],
+                )
+              ],
+            ));
+  }
+
   void _resetSearchController() {
     setState(() {
       _searchController.text = "";
@@ -63,18 +102,25 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
   }
 
   Future<void> _addStackBnPressed(BuildContext ctx) async {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     if (dbFirewoodData.keys.contains(_stackNameController.text)) {
-      print('The stack already exists');
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("The stack already exists")));
     } else if (_stackNameController.text == '') {
-      print('Fill in the stack name');
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Fill in the stack name")));
     } else {
+      Navigator.pop(ctx);
+      setState(() {
+        _isLoading = true;
+      });
       await HttpProtocol.addFirewoodStack(_stackNameController.text);
       setState(() {
         dbFirewoodData[_stackNameController.text] = {};
+        _isLoading = false;
       });
 
       _stackNameController.text = '';
-      await Future.delayed(Duration.zero).then((value) => Navigator.pop(ctx));
     }
 
     // print(_stackNameController.text);
@@ -192,14 +238,6 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
                                             ),
                                           ),
                                         ),
-                                        // IconButton(
-                                        //     onPressed: () {},
-                                        //     icon: Icon(
-                                        //       Icons.delete,
-                                        //       color: Theme.of(context)
-                                        //           .colorScheme
-                                        //           .secondary,
-                                        //     ))
                                       ],
                                     ),
                                   ],
@@ -214,7 +252,12 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
           ),
           if (_pageData != null)
             FirewoodMoistureDetailedScreen(
-                op: _op, pageData: _pageData!, cancelPage: _cancelPage),
+              op: _op,
+              pageData: _pageData!,
+              cancelPage: _cancelPage,
+              deleteStack: _deleteStack,
+            ),
+          if (_isLoading) const MyLoadingAnimation()
         ],
       );
     });

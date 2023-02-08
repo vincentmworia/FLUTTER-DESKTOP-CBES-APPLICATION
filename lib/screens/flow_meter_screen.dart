@@ -97,7 +97,7 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
                         ),
                       ))
                   .toList()),
-          graphPart: TankGraph(
+          graphPart: MworiaGraph(
             axisTitle: "Flow (lpm)",
             spline1Title: "Flow (To Solar Heater)",
             spline1DataSource:
@@ -158,48 +158,44 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
               });
             }
           },
-          searchDatabase: (_fromDate.text == "" ||
-                  _toDate.text == "" ||
-                  SearchToggleView.fromDateVal!
-                      .isAfter(SearchToggleView.toDateVal!))
-              ? null
-              : () async {
-                  if (SearchToggleView.fromDateVal!
-                      .isAfter(SearchToggleView.toDateVal!)) {
-                    await customDialog(
-                        context, "Make sure the time in 'To' is after 'From'");
-                    return;
-                  }
-                  setState(() {
-                    _isLoading = true;
-                  });
-                  try {
-                    final flowMeterHistoricalData =
-                        await HttpProtocol.queryFlowData(
-                            fromDate: _fromDate.text, toDate: _toDate.text);
-                    flow1HistoryGraphData.clear();
-                    flow2HistoryGraphData.clear();
+          searchDatabase: () async {
+            if (SearchToggleView.fromDateVal!
+                .isAfter(SearchToggleView.toDateVal!)) {
+              await customDialog(
+                  context, "Make sure the time in 'To' is after 'From'");
+              return;
+            }
+            setState(() {
+              _isLoading = true;
+            });
+            try {
+              final flowMeterHistoricalData = await HttpProtocol.queryFlowData(
+                  fromDate: _fromDate.text, toDate: _toDate.text);
+              flow1HistoryGraphData.clear();
+              flow2HistoryGraphData.clear();
 
-                    for (Map data in flowMeterHistoricalData) {
-                      flow1HistoryGraphData.add(GraphAxis(
-                          data.keys.toList()[0],
-                          double.parse(
-                              '${(data.values.toList()[0][HttpProtocol.flow1]).toString()}.0')));
-                      flow2HistoryGraphData.add(GraphAxis(
-                          data.keys.toList()[0],
-                          double.parse(
-                              '${(data.values.toList()[0][HttpProtocol.flow2]).toString()}.0')));
-                    }
-                    mqttProv.refresh();
-                  } catch (e) {
-                    await customDialog(
-                        context, "Check data formatting from the database");
-                  } finally {
-                    setState(() {
-                      _isLoading = false;
-                    });
-                  }
-                },
+              for (Map data in flowMeterHistoricalData) {
+                flow1HistoryGraphData.add(GraphAxis(
+                    data.keys.toList()[0],
+                    double.parse(
+                        '${(data.values.toList()[0][HttpProtocol.flow1]).toString()}.0')));
+                flow2HistoryGraphData.add(GraphAxis(
+                    data.keys.toList()[0],
+                    double.parse(
+                        '${(data.values.toList()[0][HttpProtocol.flow2]).toString()}.0')));
+              }
+              mqttProv.refresh();
+            } catch (e) {
+              await customDialog(
+                  context, "Check data formatting from the database");
+            } finally {
+              setState(() {
+                _isLoading = false;
+              });
+            }
+          },
+          activateExcel: (!_online && flow1HistoryGraphData.isNotEmpty) ||
+              (mqttProv.flow2GraphData.isNotEmpty && _online), formKey: GlobalKey<FormState>(),
         );
       });
     });

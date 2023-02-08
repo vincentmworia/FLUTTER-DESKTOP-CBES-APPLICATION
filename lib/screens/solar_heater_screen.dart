@@ -92,7 +92,7 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                                   gaugeWidth: cons.maxWidth * 0.075),
                             ))
                         .toList()),
-                graphPart: TankGraph(
+                graphPart: MworiaGraph(
                   graphTitle: 'Graph of Temperature against Time',
                   axisTitle: "Temp (°C)",
                   spline1DataSource: !_online
@@ -169,54 +169,50 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                     });
                   }
                 },
-                searchDatabase: (_fromDate.text == "" ||
-                        _toDate.text == "" ||
-                        SearchToggleView.fromDateVal!
-                            .isAfter(SearchToggleView.toDateVal!))
-                    ? null
-                    : () async {
-                        if (SearchToggleView.fromDateVal!
-                            .isAfter(SearchToggleView.toDateVal!)) {
-                          await customDialog(context,
-                              "Make sure the time in 'To' is after 'From'");
-                          return;
-                        }
-                        setState(() {
-                          _isLoading = true;
-                        });
-                        try {
-                          final solarHeaterHistoricalData =
-                              await HttpProtocol.querySolarHeater(
-                                  fromDate: _fromDate.text,
-                                  toDate: _toDate.text);
-                          temp1HistoryGraphData.clear();
-                          temp2HistoryGraphData.clear();
-                          temp3HistoryGraphData.clear();
+                searchDatabase: () async {
+                  if (SearchToggleView.fromDateVal!
+                      .isAfter(SearchToggleView.toDateVal!)) {
+                    await customDialog(
+                        context, "Make sure the time in 'To' is after 'From'");
+                    return;
+                  }
+                  setState(() {
+                    _isLoading = true;
+                  });
+                  try {
+                    final solarHeaterHistoricalData =
+                        await HttpProtocol.querySolarHeater(
+                            fromDate: _fromDate.text, toDate: _toDate.text);
+                    temp1HistoryGraphData.clear();
+                    temp2HistoryGraphData.clear();
+                    temp3HistoryGraphData.clear();
 
-                          for (Map data in solarHeaterHistoricalData) {
-                            temp1HistoryGraphData.add(GraphAxis(
-                                data.keys.toList()[0],
-                                double.parse(
-                                    '${(data.values.toList()[0][HttpProtocol.tank1]).toString()}.0')));
-                            temp2HistoryGraphData.add(GraphAxis(
-                                data.keys.toList()[0],
-                                double.parse(
-                                    '${(data.values.toList()[0][HttpProtocol.tank2]).toString()}.0')));
-                            temp3HistoryGraphData.add(GraphAxis(
-                                data.keys.toList()[0],
-                                double.parse(
-                                    '${(data.values.toList()[0][HttpProtocol.tank3]).toString()}.0')));
-                          }
-                          mqttProv.refresh();
-                        } catch (e) {
-                          await customDialog(context,
-                              "Check data formatting from the database");
-                        } finally {
-                          setState(() {
-                            _isLoading = false;
-                          });
-                        }
-                      },
+                    for (Map data in solarHeaterHistoricalData) {
+                      temp1HistoryGraphData.add(GraphAxis(
+                          data.keys.toList()[0],
+                          double.parse(
+                              '${(data.values.toList()[0][HttpProtocol.tank1]).toString()}.0')));
+                      temp2HistoryGraphData.add(GraphAxis(
+                          data.keys.toList()[0],
+                          double.parse(
+                              '${(data.values.toList()[0][HttpProtocol.tank2]).toString()}.0')));
+                      temp3HistoryGraphData.add(GraphAxis(
+                          data.keys.toList()[0],
+                          double.parse(
+                              '${(data.values.toList()[0][HttpProtocol.tank3]).toString()}.0')));
+                    }
+                    mqttProv.refresh();
+                  } catch (e) {
+                    await customDialog(
+                        context, "Check data formatting from the database");
+                  } finally {
+                    setState(() {
+                      _isLoading = false;
+                    });
+                  }
+                },
+                activateExcel: (!_online && temp1HistoryGraphData.isNotEmpty) ||
+                    (_online && mqttProv.temp1GraphData.isNotEmpty), formKey: GlobalKey<FormState>(),
               );
             }));
   }

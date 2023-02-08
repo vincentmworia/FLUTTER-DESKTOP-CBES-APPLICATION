@@ -3,20 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class SearchToggleView extends StatefulWidget {
-  const SearchToggleView(
-      {Key? key,
-      required this.toggleOnlineStatus,
-      required this.generateExcel,
-      required this.fromController,
-      required this.toController,
-      required this.searchDatabase})
-      : super(key: key);
+  const SearchToggleView({
+    Key? key,
+    required this.toggleOnlineStatus,
+    required this.generateExcel,
+    required this.fromController,
+    required this.toController,
+    required this.searchDatabase,
+    required this.activateExcel,
+    //todo
+    required this.formKey,
+  }) : super(key: key);
 
-  final Function toggleOnlineStatus;
+  final Function? toggleOnlineStatus;
   final Function generateExcel;
+  final bool activateExcel;
   final Function? searchDatabase;
   final TextEditingController fromController;
   final TextEditingController toController;
+
+  final GlobalKey<FormState> formKey;
+
   static DateTime? fromDateVal;
   static DateTime? toDateVal;
 
@@ -28,6 +35,7 @@ class _SearchToggleViewState extends State<SearchToggleView> {
   var _online = true;
   var _visibility = false;
   DateTime? _tempFromDate;
+  // final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   // todo Put a better date format
 
@@ -63,7 +71,18 @@ class _SearchToggleViewState extends State<SearchToggleView> {
                   // },
                   // validator: ,
                   // cursorRadius: Radius.circular(200),
-                  showCursor: false,
+
+                  showCursor: true,
+                  validator: (value) {
+                    if (value == null) {
+                      return "Select Date and Time";
+                    }
+                    if (SearchToggleView.fromDateVal!
+                        .isAfter(SearchToggleView.toDateVal!)) {
+                      return "Select Date and Time";
+                    }
+                    return null;
+                  },
 
                   onShowPicker: (context, currentValue) async {
                     final currentTime = DateTime.now();
@@ -109,6 +128,8 @@ class _SearchToggleViewState extends State<SearchToggleView> {
                     } else {
                       // return currentValue;
                     }
+                    setState(() {});
+                    return null;
                   },
                 ))
         ],
@@ -116,13 +137,19 @@ class _SearchToggleViewState extends State<SearchToggleView> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.toggleOnlineStatus == null) {
+      _visibility = true;
+      _online = false;
+    }
+    print(_visibility);
+    print(!(!_online || widget.toggleOnlineStatus != null));
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            height: !_online
+            height: !_online || widget.toggleOnlineStatus == null
                 ? (MediaQuery.of(context).size.height * 0.2 <= 112
                     ? 112
                     : MediaQuery.of(context).size.height * 0.2)
@@ -147,14 +174,28 @@ class _SearchToggleViewState extends State<SearchToggleView> {
                           ],
                         ),
                         IconButton(
-                            onPressed: widget.searchDatabase == null
-                                ? null
-                                : () => widget.searchDatabase!(),
+                            onPressed: widget.fromController.text != "" &&
+                                    widget.toController.text != "" &&
+                                    SearchToggleView.fromDateVal!
+                                        .isBefore(SearchToggleView.toDateVal!)
+                                ?  () {
+                                    print('rty');
+                                    // FocusScope.of(context).unfocus();
+                                    if (widget.formKey.currentState == null ||
+                                        !(widget.formKey.currentState!.validate())) {
+                                      print('bad');
+                                      return;
+                                    }
+                                    widget.searchDatabase!();
+                                  }:null,
                             icon: Icon(
                               Icons.search,
-                              color: widget.searchDatabase == null
-                                  ? Colors.grey
-                                  : Theme.of(context).colorScheme.primary,
+                              color: widget.fromController.text != "" &&
+                                      widget.toController.text != "" &&
+                                      SearchToggleView.fromDateVal!
+                                          .isBefore(SearchToggleView.toDateVal!)
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Colors.grey,
                               size: 30,
                             )),
                       ],
@@ -166,7 +207,7 @@ class _SearchToggleViewState extends State<SearchToggleView> {
             children: [
               ElevatedButton.icon(
                   icon: const Icon(Icons.file_copy),
-                  onPressed: (!_online && widget.searchDatabase == null)
+                  onPressed: !(widget.activateExcel)
                       ? null
                       : () => widget.generateExcel(),
                   label: const Text('Generate Excel Sheet')),
@@ -176,34 +217,38 @@ class _SearchToggleViewState extends State<SearchToggleView> {
               //     onPressed: () {},
               //     label: const Text('Generate PDF')),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(_online ? 'Online\t' : 'Offline',
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          letterSpacing: 3.0,
-                          color: Theme.of(context).colorScheme.primary)),
-                  Switch.adaptive(
-                      value: _online,
-                      activeColor: Theme.of(context).colorScheme.primary,
-                      onChanged: (val) async {
-                        setState(() {
-                          _visibility = false;
-                          widget.toggleOnlineStatus(val);
-                          _online = val;
-                        });
-                        if (val == false) {
-                          await Future.delayed(
-                              const Duration(milliseconds: 500));
-
+              if (widget.toggleOnlineStatus != null)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(_online ? 'Online\t' : 'Offline',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium!
+                            .copyWith(
+                                letterSpacing: 3.0,
+                                color: Theme.of(context).colorScheme.primary)),
+                    Switch.adaptive(
+                        value: _online,
+                        activeColor: Theme.of(context).colorScheme.primary,
+                        onChanged: (val) async {
                           setState(() {
-                            _visibility = true;
+                            _visibility = false;
+                            widget.toggleOnlineStatus!(val);
+                            _online = val;
                           });
-                        }
-                      }),
-                ],
-              )
+                          if (val == false) {
+                            await Future.delayed(
+                                const Duration(milliseconds: 500));
+
+                            setState(() {
+                              _visibility = true;
+                            });
+                          }
+                        }),
+                  ],
+                )
             ],
           ),
         ],

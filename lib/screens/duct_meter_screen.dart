@@ -111,7 +111,7 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
                         ),
                       ))
                   .toList()),
-          graphPart: TankGraph(
+          graphPart: MworiaGraph(
             axisTitle: "Temp (°C) and Humidity (%)",
             spline1Title: "Temperature",
             spline1DataSource: !_online
@@ -123,6 +123,7 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
                 : mqttProv.humidityGraphData,
             graphTitle: 'Graph of Temperature and Humidity against Time',
           ),
+
           generateExcel: () async {
             setState(() {
               _isLoading = true;
@@ -160,7 +161,6 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
               File(
                   ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.ductMeter)}/${DateFormat('EEE, MMM d yyyy  hh mm a').format(DateTime.now())}.xlsx"))
                 ..createSync(recursive: true)
-
                 ..writeAsBytesSync(fileBytes);
               Future.delayed(Duration.zero).then((value) async =>
                   await customDialog(
@@ -173,48 +173,45 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
               });
             }
           },
-          searchDatabase: (_fromDate.text == "" ||
-              _toDate.text == "" ||
-              SearchToggleView.fromDateVal!
-                  .isAfter(SearchToggleView.toDateVal!))
-              ? null
-              : () async {
+          searchDatabase: () async {
             if (SearchToggleView.fromDateVal!
                 .isAfter(SearchToggleView.toDateVal!)) {
-                    await customDialog(
-                        context, "Make sure the time in 'To' is after 'From'");
-                    return;
-                  }
-                  setState(() {
-                    _isLoading = true;
-                  });
-                  try {
-                    final ductMeterHistoricalData =
-                        await HttpProtocol.queryDuctData(
-                            fromDate: _fromDate.text, toDate: _toDate.text);
-                    ductTemperatureHistoryGraphData.clear();
-                    ductHumidityHistoryGraphData.clear();
+              await customDialog(
+                  context, "Make sure the time in 'To' is after 'From'");
+              return;
+            }
+            setState(() {
+              _isLoading = true;
+            });
+            try {
+              final ductMeterHistoricalData = await HttpProtocol.queryDuctData(
+                  fromDate: _fromDate.text, toDate: _toDate.text);
+              ductTemperatureHistoryGraphData.clear();
+              ductHumidityHistoryGraphData.clear();
 
-                    for (Map data in ductMeterHistoricalData) {
-                      ductTemperatureHistoryGraphData.add(GraphAxis(
-                          data.keys.toList()[0],
-                          double.parse(
-                              '${(data.values.toList()[0][HttpProtocol.temperature]).toString()}.0')));
-                      ductHumidityHistoryGraphData.add(GraphAxis(
-                          data.keys.toList()[0],
-                          double.parse(
-                              '${(data.values.toList()[0][HttpProtocol.humidity]).toString()}.0')));
-                    }
-                    mqttProv.refresh();
-                  } catch (e) {
-                    await customDialog(
-                        context, "Check data formatting from the database");
-                  } finally {
-                    setState(() {
-                      _isLoading = false;
-                    });
-                  }
-                },
+              for (Map data in ductMeterHistoricalData) {
+                ductTemperatureHistoryGraphData.add(GraphAxis(
+                    data.keys.toList()[0],
+                    double.parse(
+                        '${(data.values.toList()[0][HttpProtocol.temperature]).toString()}.0')));
+                ductHumidityHistoryGraphData.add(GraphAxis(
+                    data.keys.toList()[0],
+                    double.parse(
+                        '${(data.values.toList()[0][HttpProtocol.humidity]).toString()}.0')));
+              }
+              mqttProv.refresh();
+            } catch (e) {
+              await customDialog(
+                  context, "Check data formatting from the database");
+            } finally {
+              setState(() {
+                _isLoading = false;
+              });
+            }
+          },
+          activateExcel:
+              (!_online && ductTemperatureHistoryGraphData.isNotEmpty) ||
+                  (mqttProv.temperatureGraphData.isNotEmpty && _online), formKey: GlobalKey<FormState>(),
         );
       });
     });

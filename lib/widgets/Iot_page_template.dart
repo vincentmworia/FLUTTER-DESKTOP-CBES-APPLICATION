@@ -16,6 +16,7 @@ class IotPageTemplate extends StatefulWidget {
     required this.toController,
     required this.searchDatabase,
     required this.loadingStatus,
+    required this.activateExcel, required this.formKey,
   }) : super(key: key);
   final Widget gaugePart;
   final Widget graphPart;
@@ -25,7 +26,9 @@ class IotPageTemplate extends StatefulWidget {
   final TextEditingController fromController;
   final TextEditingController toController;
   final bool loadingStatus;
+  final bool activateExcel;
 
+  final GlobalKey<FormState> formKey;
   @override
   State<IotPageTemplate> createState() => _IotPageTemplateState();
 }
@@ -63,6 +66,7 @@ class _IotPageTemplateState extends State<IotPageTemplate> {
                               fromController: widget.fromController,
                               toController: widget.toController,
                               searchDatabase: widget.searchDatabase,
+                              activateExcel: widget.activateExcel, formKey: widget.formKey,
                             ),
                           ],
                         ),
@@ -80,9 +84,7 @@ class _IotPageTemplateState extends State<IotPageTemplate> {
                     ],
                   ));
         }),
-
-    if (widget.loadingStatus) const MyLoadingAnimation()
-
+        if (widget.loadingStatus) const MyLoadingAnimation()
       ],
     );
   }

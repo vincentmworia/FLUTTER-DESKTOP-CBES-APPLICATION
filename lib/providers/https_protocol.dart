@@ -62,4 +62,24 @@ class HttpProtocol {
     );
     print(json.decode(resp.body));
   }
+
+  static Future<void> addFirewoodStackData(
+    String stackName,
+    Map<String, dynamic> existingData,
+    Map<String, dynamic> newData,
+  ) async {
+    final resp = await http.patch(
+      Uri.parse('$firebaseDbUrl/cbes_data/firewood/$stackName.json'),
+      // todo CHECK THE DATA TO BE ADDED
+      body: json.encode({
+        stackName: {...existingData, ...newData}
+      }),
+    );
+    print(json.decode(resp.body));
+  }
+
+  static Future<void> deleteFirewoodStack(String stackName) async {
+    await http
+        .delete(Uri.parse('$firebaseDbUrl/cbes_data/firewood/$stackName.json'));
+  }
 }

@@ -5,8 +5,8 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import '../providers/mqtt.dart';
 import '../models/graph_axis.dart';
 
-class TankGraph extends StatelessWidget {
-  const TankGraph({
+class MworiaGraph extends StatelessWidget {
+  const MworiaGraph({
     Key? key,
     required this.axisTitle,
     this.spline1Title,

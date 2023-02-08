@@ -110,7 +110,7 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
                         ),
                       ))
                   .toList()),
-          graphPart: TankGraph(
+          graphPart: MworiaGraph(
             axisTitle: "Thermal Energy (MJ)",
             area1Title: "Thermal Energy (MJ)",
             area1DataSource: !_online
@@ -161,46 +161,44 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
               });
             }
           },
-          searchDatabase: (_fromDate.text == "" ||
-                  _toDate.text == "" ||
-                  SearchToggleView.fromDateVal!
-                      .isAfter(SearchToggleView.toDateVal!))
-              ? null
-              : () async {
-                  if (SearchToggleView.fromDateVal!
-                      .isAfter(SearchToggleView.toDateVal!)) {
-                    await customDialog(
-                        context, "Make sure the time in 'To' is after 'From'");
-                    return;
-                  }
-                  setState(() {
-                    _isLoading = true;
-                  });
+          searchDatabase: () async {
+            if (SearchToggleView.fromDateVal!
+                .isAfter(SearchToggleView.toDateVal!)) {
+              await customDialog(
+                  context, "Make sure the time in 'To' is after 'From'");
+              return;
+            }
+            setState(() {
+              _isLoading = true;
+            });
 
-                  try {
-                    final thermalEnergyHistoricalData =
-                        await HttpProtocol.queryThermalEnergyData(
-                            fromDate: _fromDate.text, toDate: _toDate.text);
-                    thermalEnergyHistoryGraphData.clear();
+            try {
+              final thermalEnergyHistoricalData =
+                  await HttpProtocol.queryThermalEnergyData(
+                      fromDate: _fromDate.text, toDate: _toDate.text);
+              thermalEnergyHistoryGraphData.clear();
 
-                    for (Map data in thermalEnergyHistoricalData) {
-                      thermalEnergyHistoryGraphData.add(GraphAxis(
-                          data.keys.toList()[0], data.values.toList()[0]
-                          // double.parse(
-                          //     '${(data.values.toList()[0]).toString()}.0'),
-                          ));
-                    }
-                    mqttProv.refresh();
-                  } catch (e) {
-                    print(e.toString());
-                    await customDialog(
-                        context, "Check data formatting from the database");
-                  } finally {
-                    setState(() {
-                      _isLoading = false;
-                    });
-                  }
-                },
+              for (Map data in thermalEnergyHistoricalData) {
+                thermalEnergyHistoryGraphData.add(
+                    GraphAxis(data.keys.toList()[0], data.values.toList()[0]
+                        // double.parse(
+                        //     '${(data.values.toList()[0]).toString()}.0'),
+                        ));
+              }
+              mqttProv.refresh();
+            } catch (e) {
+              print(e.toString());
+              await customDialog(
+                  context, "Check data formatting from the database");
+            } finally {
+              setState(() {
+                _isLoading = false;
+              });
+            }
+          },
+          activateExcel:
+              (!_online && thermalEnergyHistoryGraphData.isNotEmpty) ||
+                  (_online && mqttProv.enthalpyGraphData.isNotEmpty), formKey: GlobalKey<FormState>(),
         );
       });
     });
