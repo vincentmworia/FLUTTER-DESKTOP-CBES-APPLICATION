@@ -179,13 +179,6 @@ class _SearchToggleViewState extends State<SearchToggleView> {
                                     SearchToggleView.fromDateVal!
                                         .isBefore(SearchToggleView.toDateVal!)
                                 ?  () {
-                                    print('rty');
-                                    // FocusScope.of(context).unfocus();
-                                    if (widget.formKey.currentState == null ||
-                                        !(widget.formKey.currentState!.validate())) {
-                                      print('bad');
-                                      return;
-                                    }
                                     widget.searchDatabase!();
                                   }:null,
                             icon: Icon(
@@ -211,12 +204,6 @@ class _SearchToggleViewState extends State<SearchToggleView> {
                       ? null
                       : () => widget.generateExcel(),
                   label: const Text('Generate Excel Sheet')),
-              // todo Generate PDF???
-              // ElevatedButton.icon(
-              //     icon: const Icon(Icons.picture_as_pdf),
-              //     onPressed: () {},
-              //     label: const Text('Generate PDF')),
-
               if (widget.toggleOnlineStatus != null)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

@@ -36,6 +36,8 @@ class _FirewoodMoistureDetailedScreenState
     (widget.pageData[widget.pageData.keys.first] as Map).forEach((key, value) {
       graphData.add(GraphAxis.fromMap({key: value}));
     });
+    // todo Filter graph data by date???
+    // todo By default, get all data
     return AnimatedOpacity(
         duration: const Duration(milliseconds: 500),
         opacity: widget.op,
@@ -111,7 +113,8 @@ class _FirewoodMoistureDetailedScreenState
                               fromController: _fromController,
                               toController: _toController,
                               searchDatabase: _searchDatabase,
-                              activateExcel: graphData.isNotEmpty, formKey: GlobalKey<FormState>(),
+                              activateExcel: graphData.isNotEmpty,
+                              formKey: GlobalKey<FormState>(),
                             ),
                           ],
                         ),

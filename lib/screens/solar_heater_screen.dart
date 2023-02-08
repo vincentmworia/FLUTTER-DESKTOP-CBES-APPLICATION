@@ -122,8 +122,8 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                         key2: mqttProv.temp2GraphData[i].y,
                         key3: mqttProv.temp3GraphData[i].y,
                         key4: (data.y +
-                                temp2HistoryGraphData[i].y +
-                                temp3HistoryGraphData[i].y) /
+                                mqttProv.temp2GraphData[i].y +
+                                mqttProv.temp3GraphData[i].y) /
                             3
                       });
                       i += 1;
@@ -212,7 +212,8 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                   }
                 },
                 activateExcel: (!_online && temp1HistoryGraphData.isNotEmpty) ||
-                    (_online && mqttProv.temp1GraphData.isNotEmpty), formKey: GlobalKey<FormState>(),
+                    (_online && mqttProv.temp1GraphData.isNotEmpty),
+                formKey: GlobalKey<FormState>(),
               );
             }));
   }
