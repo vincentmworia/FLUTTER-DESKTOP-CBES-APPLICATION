@@ -1,10 +1,10 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 import '../widgets/loading_animation.dart';
-import '../private_data.dart';
+import '../providers/https_protocol.dart';
+import '../widgets/firewood_moisture_detailed_screen.dart';
+import '../widgets/firewood_moisture_search_and_add_stack.dart';
 
 class FirewoodMoistureScreen extends StatelessWidget {
   const FirewoodMoistureScreen({super.key});
@@ -18,7 +18,7 @@ class FirewoodMoistureScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: http.get(Uri.parse('$firebaseDbUrl/cbes_data/firewood.json')),
+        future: HttpProtocol.getFirewoodData(),
         builder: (context, snap) {
           if (snap.connectionState == ConnectionState.waiting) {
             return const MyLoadingAnimation();
@@ -52,20 +52,65 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
     _stackNameController.dispose();
   }
 
+  void _refreshPage() {
+    setState(() {});
+  }
+
+  void _resetSearchController() {
+    setState(() {
+      _searchController.text = "";
+    });
+  }
+
+  Future<void> _addStackBnPressed(BuildContext ctx) async {
+    if (dbFirewoodData.keys.contains(_stackNameController.text)) {
+      print('The stack already exists');
+    } else if (_stackNameController.text == '') {
+      print('Fill in the stack name');
+    } else {
+      await HttpProtocol.addFirewoodStack(_stackNameController.text);
+      setState(() {
+        dbFirewoodData[_stackNameController.text] = {};
+      });
+
+      _stackNameController.text = '';
+      await Future.delayed(Duration.zero).then((value) => Navigator.pop(ctx));
+    }
+
+    // print(_stackNameController.text);
+    // todo, should be a trial and error,
+    //  todo in case of any error, Display the error
+    // todo
+  }
+
   Map<String, dynamic> firewoodData = {};
 
   // var _openPage = false;
   var _op = 0.0;
-  Map? _pageData;
+  Map<String, dynamic>? _pageData;
+  late Map<String, dynamic> dbFirewoodData;
+
+  @override
+  void initState() {
+    super.initState();
+    dbFirewoodData = widget.firewoodData;
+  }
+
+  Future<void> _cancelPage() async {
+    setState(() => _op = 0.0);
+    await Future.delayed(const Duration(milliseconds: 500));
+    setState(() => _pageData = null);
+  }
 
   @override
   Widget build(BuildContext context) {
+    print(dbFirewoodData);
+
     if (_searchController.text == "") {
-      firewoodData = widget.firewoodData;
+      firewoodData = dbFirewoodData;
     } else {
-      // print(_controller.text);
       firewoodData = {};
-      widget.firewoodData.forEach((key, value) {
+      dbFirewoodData.forEach((key, value) {
         if (key.contains(_searchController.text)) {
           firewoodData[key] = value;
         }
@@ -76,93 +121,19 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
         children: [
           ListView(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        controller: _searchController,
-                        onChanged: (value) => setState(() {}),
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(20),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                            borderSide: const BorderSide(width: 0.8),
-                          ),
-                          hintText: 'Search Stack by Id',
-                          suffixIcon: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _searchController.text = "";
-                                  });
-                                },
-                                icon: const Icon(
-                                  Icons.clear,
-                                  size: 30,
-                                )),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton.icon(
-                        icon: const Icon(Icons.add),
-                        onPressed: () async {
-                          await showDialog(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                    content: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: TextField(
-                                        controller: _stackNameController,
-                                        decoration: InputDecoration(
-                                          contentPadding:
-                                              const EdgeInsets.all(20),
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(30),
-                                            borderSide:
-                                                const BorderSide(width: 0.8),
-                                          ),
-                                          hintText: 'Enter Stack ID',
-                                        ),
-                                      ),
-                                    ),
-                                    actions: [
-                                      ElevatedButton(
-                                          onPressed: () async {
-                                            if (widget.firewoodData.keys
-                                                .contains(_stackNameController
-                                                    .text)) {
-                                              print('The stack already exists');
-                                            } else {
-                                              print('DN#');
-                                            }
-                                            // print(_stackNameController.text);
-                                            // todo, should be a trial and error,
-                                            //  todo in case of any error, Display the error
-                                            // todo
-                                          },
-                                          child: const Text('Ok'))
-                                    ],
-                                  ));
-                        },
-                        label: const Text('Add Stack')),
-                  )
-                ],
-              ),
+              FirewoodMoistureSearchAndAddStack(
+                  searchController: _stackNameController,
+                  stackNameController: _stackNameController,
+                  resetSearchController: _resetSearchController,
+                  refreshPage: _refreshPage,
+                  addStackBnPressed: _addStackBnPressed),
               Wrap(
                 children: [
                   ...(firewoodData.keys.toList())
                       .map((e) => Container(
-                            margin: EdgeInsets.all(cons.maxWidth * 0.01),
-                            width: cons.maxWidth * 0.15,
-                            height: cons.maxWidth * 0.15,
+                            margin: EdgeInsets.all(cons.maxWidth * 0.02),
+                            width: cons.maxWidth * 0.155,
+                            height: cons.maxWidth * 0.155,
                             child: Card(
                               elevation: 6,
                               shadowColor:
@@ -172,43 +143,65 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
                                   borderRadius: BorderRadius.circular(20)),
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(20),
-                                splashColor: Theme.of(context)
-                                    .colorScheme
-                                    .primary
-                                    .withOpacity(0.4),
+                                // splashColor: Theme.of(context)
+                                //     .colorScheme
+                                //     .primary
+                                //     .withOpacity(0.9),
                                 onTap: () async {
                                   setState(() {
                                     // _openPage = true;
                                     _pageData = {e: firewoodData[e]};
                                   });
                                   await Future.delayed(
-                                      Duration(milliseconds: 100));
+                                      const Duration(milliseconds: 100));
                                   setState(() {
                                     _op = 1;
                                   });
                                 },
-                                child: Column(
+                                child: Stack(
                                   children: [
-                                    Expanded(
-                                      child: Align(
-                                        alignment: FractionalOffset.center,
-                                        child: Text(
-                                          e,
-                                          style: const TextStyle(
-                                              overflow: TextOverflow.fade,
-                                              fontSize: 20.0,
-                                              fontWeight: FontWeight.bold),
-                                        ),
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: Image.asset(
+                                        'images/wood1.jpg',
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        height: double.infinity,
                                       ),
                                     ),
-                                    // IconButton(
-                                    //     onPressed: () {},
-                                    //     icon: Icon(
-                                    //       Icons.delete,
-                                    //       color: Theme.of(context)
-                                    //           .colorScheme
-                                    //           .secondary,
-                                    //     ))
+                                    ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: Container(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withOpacity(0.5),
+                                        )),
+                                    Column(
+                                      children: [
+                                        Expanded(
+                                          child: Align(
+                                            alignment: FractionalOffset.center,
+                                            child: Text(
+                                              e,
+                                              style: const TextStyle(
+                                                  overflow: TextOverflow.fade,
+                                                  color: Colors.white,
+                                                  fontSize: 25.0,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ),
+                                        // IconButton(
+                                        //     onPressed: () {},
+                                        //     icon: Icon(
+                                        //       Icons.delete,
+                                        //       color: Theme.of(context)
+                                        //           .colorScheme
+                                        //           .secondary,
+                                        //     ))
+                                      ],
+                                    ),
                                   ],
                                 ),
                               ),
@@ -220,38 +213,8 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
             ],
           ),
           if (_pageData != null)
-            AnimatedOpacity(
-                duration: const Duration(milliseconds: 500),
-                opacity: _op,
-                child: Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  color: Colors.white,
-                  child: Stack(
-                    children: [
-                      Center(
-                        child: Text(_pageData.toString()),
-                      ),
-                      Positioned(
-                        top: 15,
-                        right: 15,
-                        child: IconButton(
-                          iconSize: 30.0,
-                          icon: Icon(
-                            Icons.cancel,
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                          onPressed: () async {
-                            setState(() => _op = 0.0);
-                            await Future.delayed(
-                                const Duration(milliseconds: 500));
-                            setState(() => _pageData = null);
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
+            FirewoodMoistureDetailedScreen(
+                op: _op, pageData: _pageData!, cancelPage: _cancelPage),
         ],
       );
     });

@@ -50,4 +50,16 @@ class HttpProtocol {
         .get(Uri.parse('$firebaseDbUrl/cbes_data/thermal_energy.json'));
     return json.decode(thermalMeterResponse.body) as List;
   }
+
+  static Future<http.Response> getFirewoodData() async {
+    return await http.get(Uri.parse('$firebaseDbUrl/cbes_data/firewood.json'));
+  }
+
+  static Future<void> addFirewoodStack(String stackName) async {
+    final resp = await http.patch(
+      Uri.parse('$firebaseDbUrl/cbes_data/firewood.json'),
+      body: json.encode({stackName: {}}),
+    );
+    print(json.decode(resp.body));
+  }
 }
