@@ -11,10 +11,10 @@ class HttpProtocol {
 
   static Future<List> querySolarHeater(
       {required String fromDate, required String toDate}) async {
-    final solarHeaterResponse =
-        await http.get(Uri.parse('$firebaseDbUrl/cbes_data/temperature.json'));
+    final solarHeaterResponse = await http.get(Uri.parse('$firebaseDbUrl/cbes_data/temperature.json'));
     // todo Jose API to be in the right format with the right headers
     // todo joseph URL is => http://34.219.126.46
+
     // await http.get(
     //   Uri.parse('$josephDbUrl/cbes/tank_temp'),
     //   headers: {"fromDate": fromDate, "toDate": toDate});

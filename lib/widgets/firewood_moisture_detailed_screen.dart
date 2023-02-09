@@ -1,10 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield_new/datetime_picker_formfield_new.dart';
+import 'package:path_provider/path_provider.dart';
 
+import '../helpers/custom_data.dart';
 import '../models/graph_axis.dart';
+import '../screens/home_screen.dart';
 import './search_toggle_view.dart';
 import './tank_graph.dart';
+import 'generate_excel_from_list.dart';
 
 class FirewoodMoistureDetailedScreen extends StatefulWidget {
   const FirewoodMoistureDetailedScreen(
@@ -13,13 +19,15 @@ class FirewoodMoistureDetailedScreen extends StatefulWidget {
       required this.pageData,
       required this.cancelPage,
       required this.deleteStack,
-      required this.addMoistureLevelToStack})
+      required this.addMoistureLevelToStack,
+      required this.changeLoadingStatus})
       : super(key: key);
   final double op;
   final Map<String, dynamic> pageData;
   final Function cancelPage;
   final Function deleteStack;
   final Function addMoistureLevelToStack;
+  final Function changeLoadingStatus;
 
   @override
   State<FirewoodMoistureDetailedScreen> createState() =>
@@ -35,9 +43,39 @@ class _FirewoodMoistureDetailedScreenState
   final _moistureLevelController = TextEditingController();
   var _selectedDateAndTime = '';
 
-  void _searchDatabase() {}
+  static const keyMain = "Datetime";
+  static const key1 = "Moisture Level (%)";
 
-  void _generateExcel() {}
+  void _searchDatabase() {
+    // todo filter the graph and setState
+  }
+
+  void _generateExcel() async {
+    widget.changeLoadingStatus(true);
+    // todo Get the values of the graph and convert them into a list
+    List graphDataCombination = [];
+    for (var element in graphData) {
+      graphDataCombination.add({keyMain: element.x, key1: element.y});
+    }
+    try {
+      final fileBytes = await GenerateExcelFromList(
+        listData: graphDataCombination,
+        keyMain: keyMain,
+        key1: key1,
+      ).generateExcel();
+      var directory = await getApplicationDocumentsDirectory();
+      File(
+          ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.firewoodMoisture)}/${DateFormat('EEE, MMM d yyyy  hh mm a').format(DateTime.now())}.xlsx"))
+        ..createSync(recursive: true)
+        ..writeAsBytesSync(fileBytes);
+      Future.delayed(Duration.zero).then((value) async =>
+          await customDialog(context, "Excel file generated successfully"));
+    } catch (e) {
+      await customDialog(context, "Error generating Excel file");
+    } finally {
+      widget.changeLoadingStatus(false);
+    }
+  }
 
   @override
   void dispose() {
@@ -46,9 +84,11 @@ class _FirewoodMoistureDetailedScreenState
     _moistureLevelController.dispose();
   }
 
+  final graphData = <GraphAxis>[];
+
   @override
   Widget build(BuildContext context) {
-    final graphData = <GraphAxis>[];
+    graphData.clear();
     (widget.pageData[widget.pageData.keys.first] as Map).forEach((key, value) {
       graphData.add(GraphAxis.fromMap({key: value}));
     });
@@ -116,12 +156,12 @@ class _FirewoodMoistureDetailedScreenState
                           children: [
                             Card(
                               // todo Decorate here
-                              elevation: 0,
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              color: Colors.white.withOpacity(0.85),
                               shadowColor:
                                   Theme.of(context).colorScheme.primary,
-                              color: Colors.white.withOpacity(0.65),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0)),
                               child: Column(
                                 children: [
                                   if (MediaQuery.of(context).size.height > 650)
@@ -132,7 +172,7 @@ class _FirewoodMoistureDetailedScreenState
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .primary,
-                                            fontSize: 25),
+                                            fontSize: 22),
                                       ),
                                     ),
                                   SizedBox(
@@ -148,6 +188,8 @@ class _FirewoodMoistureDetailedScreenState
                                           format:
                                               DateFormat("yyyy-MM-dd HH:mm"),
                                           decoration: InputDecoration(
+                                              filled: true,
+                                              fillColor: Colors.white,
                                               contentPadding:
                                                   const EdgeInsets.all(20),
                                               border: OutlineInputBorder(
@@ -230,6 +272,8 @@ class _FirewoodMoistureDetailedScreenState
                                             ),
                                             hintText: 'Enter Moisture Level',
                                             counterText: 'Moisture Level',
+                                            filled: true,
+                                            fillColor: Colors.white,
                                           ),
                                           controller: _moistureLevelController,
                                         ),
@@ -295,7 +339,7 @@ class _FirewoodMoistureDetailedScreenState
                             Expanded(
                               // todo Break widget
                               child: MworiaGraph(
-                                axisTitle: "Firewood Moisture Level (ml)",
+                                axisTitle: "Firewood Moisture Level (%)",
                                 spline1Title: "Firewood Moisture Level",
                                 spline1DataSource: graphData,
                                 graphTitle:

@@ -26,7 +26,6 @@ class FirewoodMoistureSearchAndAddStack extends StatelessWidget {
 final BoxConstraints cons;
   @override
   Widget build(BuildContext context) {
-    print(cons.maxHeight);
     return Row(
       children: [
         Expanded(
@@ -80,7 +79,7 @@ final BoxConstraints cons;
                                           fontSize: 25),
                                     ),
                                   ),
-                                  SizedBox(height: 20,),
+                                  const SizedBox(height: 20,),
                                   TextField(
                                     controller: stackNameController,
                                     decoration: InputDecoration(
@@ -93,7 +92,7 @@ final BoxConstraints cons;
                                     ),
                                   ),
 
-                                  SizedBox(height: 40),
+                                  const SizedBox(height: 40),
                                   DateTimeField(
                                     format: DateFormat("yyyy-MM-dd HH:mm"),
                                     decoration: InputDecoration(
@@ -105,14 +104,7 @@ final BoxConstraints cons;
                                         ),
                                         hintText: 'Select Date and Time',
                                         counterText: "Date and Time"),
-                                    // format: DateFormat("EEE, MMM d yyyy h:mm a"),
                                     controller: searchDateTimeController,
-
-                                    // onFieldSubmitted: (value) {
-                                    // },
-                                    // validator: ,
-                                    // cursorRadius: Radius.circular(200),
-
                                     showCursor: true,
                                     validator: (value) {
                                       if (value == null) {
@@ -163,7 +155,7 @@ final BoxConstraints cons;
                                     },
                                   ),
 
-                                  SizedBox(height: 20),
+                                  const SizedBox(height: 20),
                                   TextField(
                                     decoration: InputDecoration(
                                       border: OutlineInputBorder(

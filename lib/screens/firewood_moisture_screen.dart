@@ -120,20 +120,20 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
 
   Future<void> _addMoistureLevelToStack(
       String pgKey, String date, String moistureLevel) async {
-    await _showAlertDialog('$moistureLevel ml recorded on date $date?',
+    await _showAlertDialog('$moistureLevel% recorded on date $date?',
         () async {
       setState(() {
         _isLoading = true;
       });
-      print('13');
+      // print('13');
 
       print(dbFirewoodData);
       await HttpProtocol.addFirewoodStackData(
           stackName: pgKey, newData: {date: moistureLevel});
       setState(() {
-        (dbFirewoodData[pgKey] as Map<String, dynamic>)
+        (dbFirewoodData[pgKey] as Map<String, String>)
             .addAll({date: moistureLevel});
-        _pageData = null;
+        // _pageData = null;
         _isLoading = false;
       });
     });
@@ -208,7 +208,6 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
     await Future.delayed(const Duration(milliseconds: 500));
     setState(() => _pageData = null);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -323,6 +322,11 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
               cancelPage: _cancelPage,
               deleteStack: _deleteStack,
               addMoistureLevelToStack: _addMoistureLevelToStack,
+              changeLoadingStatus: (bool val) {
+                setState(() {
+                  _isLoading = val;
+                });
+              },
             ),
           if (_isLoading) const MyLoadingAnimation()
         ],
