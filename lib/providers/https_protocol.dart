@@ -55,13 +55,13 @@ class HttpProtocol {
     return await http.get(Uri.parse('$firebaseDbUrl/cbes_data/firewood.json'));
   }
 
-  static Future<void> addFirewoodStack(String stackName) async {
-    final resp = await http.patch(
-      Uri.parse('$firebaseDbUrl/cbes_data/firewood.json'),
-      body: json.encode({stackName: {}}),
-    );
-    print(json.decode(resp.body));
-  }
+  // static Future<void> addFirewoodStack(
+  //     String stackName, Map<String, dynamic> newVal) async {
+  //   final resp = await http.patch(
+  //       Uri.parse('$firebaseDbUrl/cbes_data/firewood.json'),
+  //       body: json.encode({stackName: newVal}));
+  //   print(json.decode(resp.body));
+  // }
 
   static Future<void> addFirewoodStackData(
       {required String stackName,

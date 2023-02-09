@@ -114,143 +114,167 @@ class _FirewoodMoistureDetailedScreenState
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            if (MediaQuery.of(context).size.height > 650)
-                              Center(
-                                child: Text(
-                                  "Add Moisture Level",
-                                  style: TextStyle(
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                      fontSize: 25),
-                                ),
-                              ),
-                            SizedBox(
-                              height: cons.maxHeight * 0.5,
-                              width: cons.maxWidth * 0.3,
+                            Card(
+                              // todo Decorate here
+                              elevation: 0,
+                              shadowColor:
+                                  Theme.of(context).colorScheme.primary,
+                              color: Colors.white.withOpacity(0.65),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0)),
                               child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  DateTimeField(
-                                    format: DateFormat("yyyy-MM-dd HH:mm"),
-                                    decoration: InputDecoration(
-                                        contentPadding:
-                                            const EdgeInsets.all(20),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                          borderSide:
-                                              const BorderSide(width: 0.8),
-                                        ),
-                                        hintText: 'Select Date and Time',
-                                        counterText: "Date and Time"),
-                                    // format: DateFormat("EEE, MMM d yyyy h:mm a"),
-                                    controller: _dateTimeController,
-
-                                    // onFieldSubmitted: (value) {
-                                    // },
-                                    // validator: ,
-                                    // cursorRadius: Radius.circular(200),
-
-                                    showCursor: true,
-                                    validator: (value) {
-                                      if (value == null) {
-                                        return "Select Date and Time";
-                                      }
-                                      if (SearchToggleView.fromDateVal!.isAfter(
-                                          SearchToggleView.toDateVal!)) {
-                                        return "Select Date and Time";
-                                      }
-                                      return null;
-                                    },
-
-                                    onShowPicker:
-                                        (context, currentValue) async {
-                                      final currentTime = DateTime.now();
-                                      final date = await showDatePicker(
-                                          context: context,
-                                          firstDate:
-                                              DateTime(2023, 1, 10, 0, 0),
-                                          initialDate:
-                                              currentValue ?? DateTime.now(),
-                                          lastDate: DateTime(
-                                            currentTime.year,
-                                            currentTime.month,
-                                            currentTime.day,
-                                            currentTime.hour,
-                                            currentTime.minute,
-                                          ));
-                                      if (date != null) {
-                                        TimeOfDay? time;
-                                        await Future.delayed(Duration.zero)
-                                            .then((value) async =>
-                                                time = await showTimePicker(
-                                                  context: context,
-                                                  initialTime:
-                                                      TimeOfDay.fromDateTime(
-                                                          currentValue ??
-                                                              DateTime.now()),
-                                                ));
-
-                                        final dateTimeSelected =
-                                            DateTimeField.combine(date, time);
-
-                                        _dateTimeController.text =
-                                            DateFormat("EEE, MMM d yyyy h:mm a")
-                                                .format(dateTimeSelected);
-                                        _selectedDateAndTime =
-                                            DateFormat("yyyy-MM-dd HH:mm")
-                                                .format(dateTimeSelected);
-                                      } else {
-                                        return currentValue;
-                                      }
-                                    },
-                                  ),
-                                  TextField(
-                                    decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(30),
-                                        borderSide:
-                                            const BorderSide(width: 0.8),
+                                  if (MediaQuery.of(context).size.height > 650)
+                                    Center(
+                                      child: Text(
+                                        "Add Moisture Level",
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            fontSize: 25),
                                       ),
-                                      hintText: 'Enter Moisture Level',
-                                      counterText: 'Moisture Level',
                                     ),
-                                    controller: _moistureLevelController,
+                                  SizedBox(
+                                    height: cons.maxHeight * 0.5,
+                                    width: cons.maxWidth * 0.3,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        DateTimeField(
+                                          format:
+                                              DateFormat("yyyy-MM-dd HH:mm"),
+                                          decoration: InputDecoration(
+                                              contentPadding:
+                                                  const EdgeInsets.all(20),
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(30),
+                                                borderSide: const BorderSide(
+                                                    width: 0.8),
+                                              ),
+                                              hintText: 'Select Date and Time',
+                                              counterText: "Date and Time"),
+                                          // format: DateFormat("EEE, MMM d yyyy h:mm a"),
+                                          controller: _dateTimeController,
+
+                                          // onFieldSubmitted: (value) {
+                                          // },
+                                          // validator: ,
+                                          // cursorRadius: Radius.circular(200),
+
+                                          showCursor: true,
+                                          validator: (value) {
+                                            if (value == null) {
+                                              return "Select Date and Time";
+                                            }
+                                            return null;
+                                          },
+
+                                          onShowPicker:
+                                              (context, currentValue) async {
+                                            final currentTime = DateTime.now();
+                                            final date = await showDatePicker(
+                                                context: context,
+                                                firstDate:
+                                                    DateTime(2023, 1, 10, 0, 0),
+                                                initialDate: currentValue ??
+                                                    DateTime.now(),
+                                                lastDate: DateTime(
+                                                  currentTime.year,
+                                                  currentTime.month,
+                                                  currentTime.day,
+                                                  currentTime.hour,
+                                                  currentTime.minute,
+                                                ));
+                                            if (date != null) {
+                                              TimeOfDay? time;
+                                              await Future.delayed(
+                                                      Duration.zero)
+                                                  .then((value) async => time =
+                                                          await showTimePicker(
+                                                        context: context,
+                                                        initialTime: TimeOfDay
+                                                            .fromDateTime(
+                                                                currentValue ??
+                                                                    DateTime
+                                                                        .now()),
+                                                      ));
+
+                                              final dateTimeSelected =
+                                                  DateTimeField.combine(
+                                                      date, time);
+
+                                              _dateTimeController
+                                                  .text = DateFormat(
+                                                      "EEE, MMM d yyyy h:mm a")
+                                                  .format(dateTimeSelected);
+                                              _selectedDateAndTime =
+                                                  DateFormat("yyyy-MM-dd HH:mm")
+                                                      .format(dateTimeSelected);
+                                            } else {
+                                              return currentValue;
+                                            }
+                                          },
+                                        ),
+                                        TextField(
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                              borderSide:
+                                                  const BorderSide(width: 0.8),
+                                            ),
+                                            hintText: 'Enter Moisture Level',
+                                            counterText: 'Moisture Level',
+                                          ),
+                                          controller: _moistureLevelController,
+                                        ),
+                                        ElevatedButton.icon(
+                                          onPressed: () async {
+                                            ScaffoldMessenger.of(context)
+                                                .hideCurrentSnackBar();
+                                            if (_selectedDateAndTime == '') {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                      content:
+                                                          Text("Enter Date")));
+                                              return;
+                                            }
+                                            if (_moistureLevelController.text ==
+                                                '') {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                      content: Text(
+                                                          "Enter Moisture Level")));
+                                              return;
+                                            }
+                                            if (double.tryParse(
+                                                    _moistureLevelController
+                                                        .text) ==
+                                                null) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                      content: Text(
+                                                          "Moisture Level is a number")));
+                                              return;
+                                            }
+                                            await widget
+                                                .addMoistureLevelToStack(
+                                                    widget.pageData.keys.first,
+                                                    _selectedDateAndTime,
+                                                    _moistureLevelController
+                                                        .text);
+                                          },
+                                          icon: const Icon(Icons.add),
+                                          label: const Text('Add'),
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                  ElevatedButton.icon(
-                                    onPressed: () async {
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
-                                      if (_selectedDateAndTime == '') {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(const SnackBar(
-                                                content: Text("Enter Date")));
-                                        return;
-                                      }
-                                      if (_moistureLevelController.text == '') {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(const SnackBar(
-                                                content: Text(
-                                                    "Enter Moisture Level")));
-                                        return;
-                                      }
-                                      if (double.tryParse(_moistureLevelController.text) == null ) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(const SnackBar(
-                                                content: Text(
-                                                    "Enter a number")));
-                                        return;
-                                      }
-                                      await widget.addMoistureLevelToStack(
-                                          widget.pageData.keys.first,
-                                          _selectedDateAndTime,
-                                          _moistureLevelController.text);
-                                    },
-                                    icon: const Icon(Icons.add),
-                                    label: const Text('Add'),
-                                  )
                                 ],
                               ),
                             ),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../widgets/loading_animation.dart';
@@ -23,7 +24,10 @@ class FirewoodMoistureScreen extends StatelessWidget {
           if (snap.connectionState == ConnectionState.waiting) {
             return const MyLoadingAnimation();
           }
-          final data = json.decode(snap.data!.body) as Map;
+          final data = json.decode(snap.data!.body);
+          if (data == null) {
+            return const FirewoodMoistureData(firewoodData: null);
+          }
           return FirewoodMoistureData(
             firewoodData: data as Map<String, dynamic>,
           );
@@ -34,7 +38,7 @@ class FirewoodMoistureScreen extends StatelessWidget {
 class FirewoodMoistureData extends StatefulWidget {
   const FirewoodMoistureData({Key? key, required this.firewoodData})
       : super(key: key);
-  final Map<String, dynamic> firewoodData;
+  final Map<String, dynamic>? firewoodData;
 
   // final bool decompressNavPlane;
   @override
@@ -43,6 +47,9 @@ class FirewoodMoistureData extends StatefulWidget {
 
 class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
   final _searchController = TextEditingController();
+  final _searchDateTimeController = TextEditingController();
+  final _searchMoistureLevelController = TextEditingController();
+
   final _stackNameController = TextEditingController();
   var _isLoading = false;
 
@@ -55,6 +62,18 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
 
   void _refreshPage() {
     setState(() {});
+  }
+
+  late String _selectedDate;
+
+  void _searchSelectedDate(String? selectedDate) {
+    if (selectedDate == null) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Select Date')));
+      return;
+    }
+    _selectedDate = selectedDate;
   }
 
   Future<void> _showAlertDialog(String title, Function yesFn) async =>
@@ -107,11 +126,13 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
         _isLoading = true;
       });
       print('13');
-      (dbFirewoodData[pgKey] as Map<String,dynamic>).addAll({date: moistureLevel});
-      print('1');
+
+      print(dbFirewoodData);
       await HttpProtocol.addFirewoodStackData(
-          stackName: pgKey, newData: dbFirewoodData);
+          stackName: pgKey, newData: {date: moistureLevel});
       setState(() {
+        (dbFirewoodData[pgKey] as Map<String, dynamic>)
+            .addAll({date: moistureLevel});
         _pageData = null;
         _isLoading = false;
       });
@@ -125,21 +146,38 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
   }
 
   Future<void> _addStackBnPressed(BuildContext ctx) async {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
     if (dbFirewoodData.keys.contains(_stackNameController.text)) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(ctx).showSnackBar(
           const SnackBar(content: Text("The stack already exists")));
     } else if (_stackNameController.text == '') {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(ctx).showSnackBar(
           const SnackBar(content: Text("Fill in the stack name")));
+    } else if (_searchDateTimeController.text == '') {
+      ScaffoldMessenger.of(ctx)
+          .showSnackBar(const SnackBar(content: Text("Enter Date")));
+    } else if (_searchMoistureLevelController.text == '') {
+      ScaffoldMessenger.of(ctx)
+          .showSnackBar(const SnackBar(content: Text("Enter Moisture Level")));
+    } else if (_searchMoistureLevelController.text == '') {
+      ScaffoldMessenger.of(ctx).showSnackBar(
+          const SnackBar(content: Text("Moisture Level is a number")));
+    } else if (double.tryParse(_searchMoistureLevelController.text) == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Moisture Level is a number")));
+      return;
     } else {
       Navigator.pop(ctx);
       setState(() {
         _isLoading = true;
       });
-      await HttpProtocol.addFirewoodStack(_stackNameController.text);
+      final newData = {_selectedDate: _searchMoistureLevelController.text};
+      await HttpProtocol.addFirewoodStackData(
+        stackName: _stackNameController.text,
+        newData: newData,
+      );
       setState(() {
-        dbFirewoodData[_stackNameController.text] = {};
+        dbFirewoodData[_stackNameController.text] = newData;
         _isLoading = false;
       });
 
@@ -162,7 +200,7 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
   @override
   void initState() {
     super.initState();
-    dbFirewoodData = widget.firewoodData;
+    dbFirewoodData = widget.firewoodData ?? {};
   }
 
   Future<void> _cancelPage() async {
@@ -171,9 +209,10 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
     setState(() => _pageData = null);
   }
 
+
   @override
   Widget build(BuildContext context) {
-    print(dbFirewoodData);
+    // print(dbFirewoodData);
 
     if (_searchController.text == "") {
       firewoodData = dbFirewoodData;
@@ -191,84 +230,88 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
           ListView(
             children: [
               FirewoodMoistureSearchAndAddStack(
-                  searchController: _stackNameController,
-                  stackNameController: _stackNameController,
-                  resetSearchController: _resetSearchController,
-                  refreshPage: _refreshPage,
-                  addStackBnPressed: _addStackBnPressed),
+                searchController: _searchController,
+                stackNameController: _stackNameController,
+                resetSearchController: _resetSearchController,
+                refreshPage: _refreshPage,
+                addStackBnPressed: _addStackBnPressed,
+                searchDateTimeController: _searchDateTimeController,
+                searchMoistureLevelController: _searchMoistureLevelController,
+                searchSelectedDate: _searchSelectedDate,
+                cons: cons,
+              ),
               Wrap(
                 children: [
-                  ...(firewoodData.keys.toList())
-                      .map((e) => Container(
-                            margin: EdgeInsets.all(cons.maxWidth * 0.02),
-                            width: cons.maxWidth * 0.155,
-                            height: cons.maxWidth * 0.155,
-                            child: Card(
-                              elevation: 6,
-                              shadowColor:
-                                  Theme.of(context).colorScheme.primary,
-                              color: Colors.white.withOpacity(0.65),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20)),
-                              child: InkWell(
+                  ...(firewoodData.keys.toList()).map((e) {
+                    return Container(
+                      margin: EdgeInsets.all(cons.maxWidth * 0.02),
+                      width: cons.maxWidth * 0.155,
+                      height: cons.maxWidth * 0.155,
+                      child: Card(
+                        elevation: 6,
+                        shadowColor: Theme.of(context).colorScheme.primary,
+                        color: Colors.white.withOpacity(0.65),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          // splashColor: Theme.of(context)
+                          //     .colorScheme
+                          //     .primary
+                          //     .withOpacity(0.9),
+                          onTap: () async {
+                            setState(() {
+                              // _openPage = true;
+                              _pageData = {e: firewoodData[e]};
+                            });
+                            await Future.delayed(
+                                const Duration(milliseconds: 100));
+                            setState(() {
+                              _op = 1;
+                            });
+                          },
+                          child: Stack(
+                            children: [
+                              ClipRRect(
                                 borderRadius: BorderRadius.circular(20),
-                                // splashColor: Theme.of(context)
-                                //     .colorScheme
-                                //     .primary
-                                //     .withOpacity(0.9),
-                                onTap: () async {
-                                  setState(() {
-                                    // _openPage = true;
-                                    _pageData = {e: firewoodData[e]};
-                                  });
-                                  await Future.delayed(
-                                      const Duration(milliseconds: 100));
-                                  setState(() {
-                                    _op = 1;
-                                  });
-                                },
-                                child: Stack(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: Image.asset(
-                                        'images/wood1.jpg',
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                        height: double.infinity,
-                                      ),
-                                    ),
-                                    ClipRRect(
-                                        borderRadius: BorderRadius.circular(20),
-                                        child: Container(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary
-                                              .withOpacity(0.5),
-                                        )),
-                                    Column(
-                                      children: [
-                                        Expanded(
-                                          child: Align(
-                                            alignment: FractionalOffset.center,
-                                            child: Text(
-                                              e,
-                                              style: const TextStyle(
-                                                  overflow: TextOverflow.fade,
-                                                  color: Colors.white,
-                                                  fontSize: 25.0,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                child: Image.asset(
+                                  'images/wood3.jpg',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
                                 ),
                               ),
-                            ),
-                          ))
-                      .toList()
+                              ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Container(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primary
+                                        .withOpacity(0.5),
+                                  )),
+                              Column(
+                                children: [
+                                  Expanded(
+                                    child: Align(
+                                      alignment: FractionalOffset.center,
+                                      child: Text(
+                                        e,
+                                        style: const TextStyle(
+                                            overflow: TextOverflow.fade,
+                                            color: Colors.white,
+                                            fontSize: 25.0,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList()
                 ],
               ),
             ],
