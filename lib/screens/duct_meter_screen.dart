@@ -211,7 +211,7 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
           },
           activateExcel:
               (!_online && ductTemperatureHistoryGraphData.isNotEmpty) ||
-                  (mqttProv.temperatureGraphData.isNotEmpty && _online), formKey: GlobalKey<FormState>(),
+                  (mqttProv.temperatureGraphData.isNotEmpty && _online),
         );
       });
     });

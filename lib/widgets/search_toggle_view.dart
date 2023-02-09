@@ -12,7 +12,6 @@ class SearchToggleView extends StatefulWidget {
     required this.searchDatabase,
     required this.activateExcel,
     //todo
-    required this.formKey,
   }) : super(key: key);
 
   final Function? toggleOnlineStatus;
@@ -22,7 +21,6 @@ class SearchToggleView extends StatefulWidget {
   final TextEditingController fromController;
   final TextEditingController toController;
 
-  final GlobalKey<FormState> formKey;
 
   static DateTime? fromDateVal;
   static DateTime? toDateVal;

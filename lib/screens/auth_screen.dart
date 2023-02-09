@@ -119,6 +119,9 @@ class _AuthScreenState extends State<AuthScreen> {
                 setState(() {
                   _isLoading = false;
                 });
+                if(message.contains("has expired")){
+                  message='Please check your internet connection to the broker';
+                }
                 await customDialog(context, message);
               }
             }

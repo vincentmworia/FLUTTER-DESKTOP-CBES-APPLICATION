@@ -57,42 +57,65 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
     setState(() {});
   }
 
+  Future<void> _showAlertDialog(String title, Function yesFn) async =>
+      await showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+                content: Text(title),
+                actions: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.secondary),
+                          onPressed: () {
+                            Navigator.pop(ctx);
+                          },
+                          child: const Text('No')),
+                      ElevatedButton(
+                          onPressed: () async {
+                            Navigator.pop(ctx);
+                            await yesFn();
+                          },
+                          child: const Text('Yes')),
+                    ],
+                  )
+                ],
+              ));
+
   Future<void> _deleteStack(String pgKey) async {
-    await showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-              content: Text('Delete $pgKey?'),
-              actions: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.secondary),
-                        onPressed: () {
-                          Navigator.pop(ctx);
-                        },
-                        child: const Text('No')),
-                    ElevatedButton(
-                        onPressed: () async {
-                          Navigator.pop(ctx);
-                          setState(() {
-                            _isLoading = true;
-                          });
-                          await HttpProtocol.deleteFirewoodStack(pgKey);
-                          // print('object');
-                          setState(() {
-                            dbFirewoodData.remove(pgKey);
-                            _pageData = null;
-                            _isLoading = false;
-                          });
-                        },
-                        child: const Text('Yes')),
-                  ],
-                )
-              ],
-            ));
+    await _showAlertDialog('Delete $pgKey?', () async {
+      setState(() {
+        _isLoading = true;
+      });
+      await HttpProtocol.deleteFirewoodStack(pgKey);
+      setState(() {
+        dbFirewoodData.remove(pgKey);
+        _pageData = null;
+        _isLoading = false;
+      });
+    });
+  }
+
+  Future<void> _addMoistureLevelToStack(
+      String pgKey, String date, String moistureLevel) async {
+    await _showAlertDialog('$moistureLevel ml recorded on date $date?',
+        () async {
+      setState(() {
+        _isLoading = true;
+      });
+      print('13');
+      (dbFirewoodData[pgKey] as Map<String,dynamic>).addAll({date: moistureLevel});
+      print('1');
+      await HttpProtocol.addFirewoodStackData(
+          stackName: pgKey, newData: dbFirewoodData);
+      setState(() {
+        _pageData = null;
+        _isLoading = false;
+      });
+    });
   }
 
   void _resetSearchController() {
@@ -256,6 +279,7 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
               pageData: _pageData!,
               cancelPage: _cancelPage,
               deleteStack: _deleteStack,
+              addMoistureLevelToStack: _addMoistureLevelToStack,
             ),
           if (_isLoading) const MyLoadingAnimation()
         ],

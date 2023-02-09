@@ -213,7 +213,6 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                 },
                 activateExcel: (!_online && temp1HistoryGraphData.isNotEmpty) ||
                     (_online && mqttProv.temp1GraphData.isNotEmpty),
-                formKey: GlobalKey<FormState>(),
               );
             }));
   }

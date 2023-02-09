@@ -195,7 +195,7 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
             }
           },
           activateExcel: (!_online && flow1HistoryGraphData.isNotEmpty) ||
-              (mqttProv.flow2GraphData.isNotEmpty && _online), formKey: GlobalKey<FormState>(),
+              (mqttProv.flow2GraphData.isNotEmpty && _online),
         );
       });
     });

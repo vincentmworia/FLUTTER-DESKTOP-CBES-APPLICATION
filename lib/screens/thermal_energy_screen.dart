@@ -198,7 +198,7 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
           },
           activateExcel:
               (!_online && thermalEnergyHistoryGraphData.isNotEmpty) ||
-                  (_online && mqttProv.enthalpyGraphData.isNotEmpty), formKey: GlobalKey<FormState>(),
+                  (_online && mqttProv.enthalpyGraphData.isNotEmpty),
         );
       });
     });
