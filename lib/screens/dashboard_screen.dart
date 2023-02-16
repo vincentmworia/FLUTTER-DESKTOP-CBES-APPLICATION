@@ -129,6 +129,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ? LinearGauge(
                       title: e['title'],
                       data: e['data'],
+                      min: e['minValue'],
+                      max: e['maxValue'],
+                      units: e['units'],
                       gaugeWidth: width * 0.1,
                     )
                   // KdRadialGauge(
@@ -293,17 +296,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 HomeScreen.pageTitle(PageTitle.ambientMeter),
                                 _gaugeView([
                                   {
-                                    'data': '0.0',
+                                    'data':
+                                        (mqttProv.heatingUnitData?.ambientTemp)
+                                                ?.toStringAsFixed(1) ??
+                                            '0.0',
                                     'title': 'A.Temp',
                                     ...temperatureConfig
                                   },
                                   {
-                                    'data': '0.0',
-                                    'title': 'A.Hum',
+                                    'data': (mqttProv.heatingUnitData
+                                                ?.ambientHumidity)
+                                            ?.toStringAsFixed(1) ??
+                                        '0.0',
+                                    'title': 'A.Humidity',
                                     ...humidityConfig
                                   },
                                   {
-                                    'data': '0.0',
+                                    'data': (mqttProv.heatingUnitData
+                                                ?.ambientIrradiance)
+                                            ?.toStringAsFixed(1) ??
+                                        '0.0',
                                     'title': 'A.Irradiance',
                                     ...irradianceConfig
                                   },

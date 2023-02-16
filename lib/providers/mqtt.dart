@@ -38,8 +38,13 @@ class MqttProvider with ChangeNotifier {
   final List<GraphAxis> temp3GraphData = [];
   final List<GraphAxis> flow1GraphData = [];
   final List<GraphAxis> flow2GraphData = [];
+
   final List<GraphAxis> waterEnthalpyGraphData = [];
   final List<GraphAxis> pvEnthalpyGraphData = [];
+
+  final List<GraphAxis> ambientTempGraphData = [];
+  final List<GraphAxis> ambientHumidityGraphData = [];
+  final List<GraphAxis> ambientIrradianceGraphData = [];
 
   DuctMeter? get ductMeterData => _ductMeterData;
   DuctMeter? _ductMeterData;
@@ -137,6 +142,9 @@ class MqttProvider with ChangeNotifier {
           removeFirstElement(humidityGraphData);
           removeFirstElement(waterEnthalpyGraphData);
           removeFirstElement(pvEnthalpyGraphData);
+          removeFirstElement(ambientTempGraphData);
+          removeFirstElement(ambientHumidityGraphData);
+          removeFirstElement(ambientIrradianceGraphData);
           final time = DateTime.now();
 
           temp1GraphData.add(GraphAxis(
@@ -158,10 +166,14 @@ class MqttProvider with ChangeNotifier {
           if (_heatingUnitData != null) {
             waterEnthalpyGraphData.add(
                 GraphAxis(_duration(time), _heatingUnitData!.waterEnthalpy!));
-          }
-          if (_heatingUnitData != null) {
             pvEnthalpyGraphData
                 .add(GraphAxis(_duration(time), _heatingUnitData!.pvEnthalpy));
+            ambientTempGraphData
+                .add(GraphAxis(_duration(time), _heatingUnitData!.ambientTemp));
+            ambientHumidityGraphData.add(
+                GraphAxis(_duration(time), _heatingUnitData!.ambientHumidity));
+            ambientIrradianceGraphData.add(GraphAxis(
+                _duration(time), _heatingUnitData!.ambientIrradiance));
           }
         }
         notifyListeners();

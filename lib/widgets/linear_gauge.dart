@@ -9,17 +9,25 @@ class LinearGauge extends StatelessWidget {
     required this.title,
     required this.data,
     required this.gaugeWidth,
+    required this.units,
+    required this.min,
+    required this.max,
   }) : super(key: key);
-  final String? title;
-  final String? data;
-  final double? gaugeWidth;
+  final String title;
+  final String data;
+  final String units;
+  final double gaugeWidth;
+  final double min;
+  final double max;
 
   @override
   Widget build(BuildContext context) {
-    final value = double.parse(data ?? '0.0');
-    final color = value < 25
+    final minRange = ((max - min) * 0.3) + min;
+    final maxRange = ((max - min) * 0.6) + min;
+    final value = double.parse(data);
+    final color = value < minRange
         ? lowColor
-        : value > 25 && value < 55
+        : value > minRange && value < maxRange
             ? mediumColor
             : highColor;
 
@@ -28,7 +36,7 @@ class LinearGauge extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            title == null ? '' : title! /*.toUpperCase()*/,
+            title,
             style: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold),
@@ -38,8 +46,8 @@ class LinearGauge extends StatelessWidget {
               width: gaugeWidth,
               child: SfLinearGauge(
                 animationDuration: 2000,
-                minimum: 0,
-                maximum: 100,
+                minimum: min,
+                maximum: max,
                 orientation: LinearGaugeOrientation.vertical,
                 animateAxis: true,
                 animateRange: true,
@@ -54,7 +62,7 @@ class LinearGauge extends StatelessWidget {
                     color: Theme.of(context).colorScheme.primary),
                 useRangeColorForAxis: true,
                 labelPosition: LinearLabelPosition.inside,
-                interval: 20,
+                interval: (max - min) / 5,
                 markerPointers: [
                   LinearWidgetPointer(
                     value: value,
@@ -80,7 +88,7 @@ class LinearGauge extends StatelessWidget {
                 color: Colors.white, borderRadius: BorderRadius.circular(4)),
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             child: Text(
-              '${value.toStringAsFixed(1)} °C',
+              '${value.toStringAsFixed(1)} $units',
               style: TextStyle(color: color),
             ),
           ),

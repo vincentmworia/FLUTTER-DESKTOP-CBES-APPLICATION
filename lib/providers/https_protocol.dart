@@ -83,6 +83,18 @@ class HttpProtocol {
     return json.decode(thermalMeterResponse.body) as List;
   }
 
+  // Ambient Meter
+  static const ambientTemp = "temp";
+  static const ambientHumidity = "humidity";
+  static const ambientIrradiance = "irradiance";
+
+  static Future<List> queryAmbientMeter(
+      {required String fromDate, required String toDate}) async {
+    final thermalMeterResponse = await http
+        .get(Uri.parse('$firebaseDbUrl/cbes_data/ambient_meter.json'));
+    return json.decode(thermalMeterResponse.body) as List;
+  }
+
   static Future<http.Response> getFirewoodData() async {
     return await http.get(Uri.parse('$firebaseDbUrl/cbes_data/firewood.json'));
   }

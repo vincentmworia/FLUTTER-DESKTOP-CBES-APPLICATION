@@ -25,10 +25,10 @@ class HeatingUnitScreen extends StatefulWidget {
 
 class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
   static const keyMain = "Datetime";
-  static const key1 = "Tank 1 temperature";
-  static const key2 = "Tank 2 temperature";
-  static const key3 = "Tank 3 temperature";
-  static const key4 = "Average temperature";
+  static const key1 = "Tank 1 temperature (°C)";
+  static const key2 = "Tank 2 temperature (°C)";
+  static const key3 = "Tank 3 temperature (°C)";
+  static const key4 = "Average temperature (°C)";
   var _online = true;
   var _isLoading = false;
   final _fromDate = TextEditingController();
@@ -37,10 +37,6 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
   final List<GraphAxis> temp1HistoryGraphData = [];
   final List<GraphAxis> temp2HistoryGraphData = [];
   final List<GraphAxis> temp3HistoryGraphData = [];
-
-  final List<GraphAxis> temp1FilteredHistoryGraphData = [];
-  final List<GraphAxis> temp2FilteredHistoryGraphData = [];
-  final List<GraphAxis> temp3FilteredHistoryGraphData = [];
 
   @override
   void dispose() {
@@ -63,7 +59,7 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
             Consumer<MqttProvider>(builder: (context, mqttProv, child) {
               final List<Map<String, String>> heatingUnitData = [
                 {
-                  'title': 'Tank 1',
+                  'title': 'Tank 1 ',
                   'data': mqttProv.heatingUnitData?.tank1 ?? '0.0'
                 },
                 {
@@ -91,8 +87,11 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                               shadowColor:
                                   Theme.of(context).colorScheme.primary,
                               child: LinearGauge(
-                                  title: e['title'],
-                                  data: e['data'],
+                                  title: e['title']!,
+                                  data: e['data']!,
+                                  min: 0.0,
+                                  max: 100.0,
+                                  units: '°C',
                                   gaugeWidth: cons.maxWidth * 0.075),
                             ))
                         .toList()),

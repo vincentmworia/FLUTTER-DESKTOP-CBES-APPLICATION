@@ -39,8 +39,8 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
   }
 
   static const keyMain = "Datetime";
-  static const key1 = "Duct Temperature";
-  static const key2 = "Duct Humidity";
+  static const key1 = "Duct Temperature (°C)";
+  static const key2 = "Duct Humidity (%)";
 
   var _isLoading = false;
 

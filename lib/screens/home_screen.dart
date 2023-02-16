@@ -105,8 +105,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void _switchPage(PageTitle page, String title) {
     setState(() {
       // todo
-      _showNavPlane = false;
-      _deCompressNavPlane = true;
+      // _showNavPlane = false;
+      // _deCompressNavPlane = true;
       _page = page;
       _pageTitle = title;
     });
@@ -224,6 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
               hoverColor: Theme.of(context).colorScheme.primary,
               focusColor: Theme.of(context).colorScheme.primary,
               onPressed: () async {
+                // print(_deCompressNavPlane);
                 if (_deCompressNavPlane) {
                   setState(() {
                     _showNavPlane = false;
@@ -233,6 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         _showNavPlane = true;
                       }));
                 } else {
+
                   setState(() {
                     _showNavPlane = false;
                     _deCompressNavPlane = !_deCompressNavPlane;

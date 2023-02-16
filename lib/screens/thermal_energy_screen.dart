@@ -41,8 +41,8 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
   }
 
   static const keyMain = "Datetime";
-  static const key1 = "Water Thermal Energy";
-  static const key2 = "Pv Thermal Energy";
+  static const key1 = "Water Thermal Energy (KJ)";
+  static const key2 = "Pv Thermal Energy (KJ)";
 
   bool _onlineBnStatus(bool isOnline) {
     setState(() {
@@ -119,7 +119,7 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
                 : mqttProv.waterEnthalpyGraphData,
             area2Title: "Pv Thermal Energy (MJ)",
             area2DataSource: !_online
-                ?pvThermalEnergyHistoryGraphData
+                ? pvThermalEnergyHistoryGraphData
                 : mqttProv.pvEnthalpyGraphData,
             graphTitle: 'Graph of Thermal Energy against Time',
           ),
@@ -128,19 +128,24 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
               _isLoading = true;
             });
             List thermalDataCombination = [];
+            var i = 0;
             if (_online) {
-              for (var data in mqttProv.temperatureGraphData) {
+              for (var data in mqttProv.waterEnthalpyGraphData) {
                 thermalDataCombination.add({
                   keyMain: data.x,
                   key1: data.y,
+                  key2: mqttProv.pvEnthalpyGraphData[i].y,
                 });
               }
+              i += 1;
             } else {
               for (var data in waterThermalEnergyHistoryGraphData) {
                 thermalDataCombination.add({
                   keyMain: data.x,
                   key1: data.y,
+                  key2: pvThermalEnergyHistoryGraphData[i].y,
                 });
+                i += 1;
               }
             }
 
@@ -149,6 +154,7 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
                 listData: thermalDataCombination,
                 keyMain: keyMain,
                 key1: key1,
+                key2: key2,
               ).generateExcel();
               var directory = await getApplicationDocumentsDirectory();
               File(

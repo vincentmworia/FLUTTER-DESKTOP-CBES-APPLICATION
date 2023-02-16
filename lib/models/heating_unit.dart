@@ -15,7 +15,11 @@ class HeatingUnit {
 
   static const solarArea = 2.0;
 
-  double get getIrradiance => Random().nextDouble() * (100) + 700;
+  double get ambientIrradiance => Random().nextDouble() * (100) + 700;
+
+  double get ambientTemp => (Random().nextDouble() * 5) + 20;
+
+  double get ambientHumidity => (Random().nextDouble() * 10) + 30;
 
   double? averageTemp;
 
@@ -30,7 +34,7 @@ class HeatingUnit {
       return null;
     }
 
-    mass = double.parse(flow1 ?? '0.0') * (1/60000) * periodOfData * density;
+    mass = double.parse(flow1 ?? '0.0') * (1 / 60000) * periodOfData * density;
     // mass = double.parse(flow1 ?? '0.0') * 0.06 * periodOfData * density;
     averageTemp = (double.parse(tank1!) +
 
@@ -41,8 +45,8 @@ class HeatingUnit {
     return ((mass! * capacitance * (averageTemp! - tankTemp)) / 1000);
   }
 
-
-  double get pvEnthalpy =>( solarArea * 3 * getIrradiance *periodOfData)/1000;
+  double get pvEnthalpy =>
+      (solarArea * 3 * ambientIrradiance * periodOfData) / 1000;
 
   HeatingUnit({
     required this.tank1,

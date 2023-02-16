@@ -40,8 +40,8 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
   }
 
   static const keyMain = "Datetime";
-  static const key1 = "Flow Rate (To Solar Heater)";
-  static const key2 = "Flow Rate (To Heat Exchanger)";
+  static const key1 = "Flow Rate (To Solar Heater) in lpm";
+  static const key2 = "Flow Rate (To Heat Exchanger) in lpm";
 
   bool _onlineBnStatus(bool isOnline) {
     setState(() {
