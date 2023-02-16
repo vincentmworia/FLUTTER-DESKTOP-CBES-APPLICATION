@@ -112,12 +112,12 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
                       ))
                   .toList()),
           graphPart: MworiaGraph(
-            axisTitle: "Thermal Energy (MJ)",
-            area1Title: "Water Thermal Energy (MJ)",
+            axisTitle: "Thermal Energy (KJ)",
+            area1Title: "Water Thermal Energy (KJ)",
             area1DataSource: !_online
                 ? waterThermalEnergyHistoryGraphData
                 : mqttProv.waterEnthalpyGraphData,
-            area2Title: "Pv Thermal Energy (MJ)",
+            area2Title: "Pv Thermal Energy (KJ)",
             area2DataSource: !_online
                 ? pvThermalEnergyHistoryGraphData
                 : mqttProv.pvEnthalpyGraphData,
