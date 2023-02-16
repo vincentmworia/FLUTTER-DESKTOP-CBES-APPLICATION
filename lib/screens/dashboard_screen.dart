@@ -17,8 +17,15 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   var _threeDView = false;
-  static const temperatureHumidityConfig = {
+  static const temperatureConfig = {
     'units': '°C',
+    'minValue': 0.0,
+    'maxValue': 100.0,
+    'range1Value': 25.0,
+    'range2Value': 55.0
+  };
+  static const humidityConfig = {
+    'units': '%',
     'minValue': 0.0,
     'maxValue': 100.0,
     'range1Value': 25.0,
@@ -41,9 +48,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   static const irradianceConfig = {
     'units': 'w/m²',
     'minValue': 0.0,
-    'maxValue': 1000.0,
-    'range1Value': 250.0,
-    'range2Value': 750.0
+    'maxValue': 2000.0,
+    'range1Value': 400.0,
+    'range2Value': 1000.0
   };
 
   final bdRadius = BorderRadius.circular(10);
@@ -116,7 +123,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             (e) => Expanded(
                 child: Padding(
               padding: const EdgeInsets.all(10.0),
-              child: e['title'].toString().contains('Tank')
+              child: e['title'].toString().contains('Tank') ||
+                      e['title'].toString().contains('A.') ||
+                      e['title'].toString().contains('Irradiance')
                   ? LinearGauge(
                       title: e['title'],
                       data: e['data'],
@@ -190,19 +199,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     'data': mqttProv.heatingUnitData?.tank1 ??
                                         '0.0',
                                     'title': 'Tank 1',
-                                    ...temperatureHumidityConfig
+                                    ...temperatureConfig
                                   },
                                   {
                                     'data': mqttProv.heatingUnitData?.tank2 ??
                                         '0.0',
                                     'title': 'Tank 2',
-                                    ...temperatureHumidityConfig
+                                    ...temperatureConfig
                                   },
                                   {
                                     'data': mqttProv.heatingUnitData?.tank3 ??
                                         '0.0',
                                     'title': 'Tank 3',
-                                    ...temperatureHumidityConfig
+                                    ...temperatureConfig
                                   },
                                 ], cons.maxWidth),
                                 cons),
@@ -255,13 +264,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         mqttProv.ductMeterData?.temperature ??
                                             '0.0',
                                     'title': 'Temperature',
-                                    ...temperatureHumidityConfig
+                                    ...temperatureConfig
                                   },
                                   {
                                     'data': mqttProv.ductMeterData?.humidity ??
                                         '0.0',
                                     'title': 'Humidity',
-                                    ...temperatureHumidityConfig
+                                    ...humidityConfig
                                   },
                                 ], cons.maxWidth),
                                 cons),
@@ -271,12 +280,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   {
                                     'data': '0.0',
                                     'title': 'Temperature',
-                                    ...temperatureHumidityConfig
+                                    ...temperatureConfig
                                   },
                                   {
                                     'data': '0.0',
                                     'title': 'Humidity',
-                                    ...temperatureHumidityConfig
+                                    ...humidityConfig
                                   },
                                 ], cons.maxWidth),
                                 cons),
@@ -285,12 +294,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 _gaugeView([
                                   {
                                     'data': '0.0',
-                                    'title': 'Temperature',
-                                    ...temperatureHumidityConfig
+                                    'title': 'A.Temp',
+                                    ...temperatureConfig
                                   },
                                   {
                                     'data': '0.0',
-                                    'title': 'Irradiance',
+                                    'title': 'A.Hum',
+                                    ...humidityConfig
+                                  },
+                                  {
+                                    'data': '0.0',
+                                    'title': 'A.Irradiance',
                                     ...irradianceConfig
                                   },
                                 ], cons.maxWidth),

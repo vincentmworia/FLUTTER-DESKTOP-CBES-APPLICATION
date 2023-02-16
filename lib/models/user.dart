@@ -43,7 +43,7 @@ class User {
         "phoneNumber": phoneNumber,
         "firstname": firstName,
         "lastname": lastName,
-        "password": password,
+        // "password": password,
         "privilege": privilege,
         "allowed": allowed,
       };

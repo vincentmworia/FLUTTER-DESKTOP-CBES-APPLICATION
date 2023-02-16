@@ -139,8 +139,9 @@ class _SearchToggleViewState extends State<SearchToggleView> {
       _visibility = true;
       _online = false;
     }
-    print(_visibility);
-    print(!(!_online || widget.toggleOnlineStatus != null));
+    // print(_visibility);
+    // todo Switching alot
+    // print(!(!_online || widget.toggleOnlineStatus != null));
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

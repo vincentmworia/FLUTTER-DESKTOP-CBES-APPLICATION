@@ -28,7 +28,8 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
   final _fromDate = TextEditingController();
   final _toDate = TextEditingController();
 
-  final List<GraphAxis> thermalEnergyHistoryGraphData = [];
+  final List<GraphAxis> waterThermalEnergyHistoryGraphData = [];
+  final List<GraphAxis> pvThermalEnergyHistoryGraphData = [];
 
   var _isLoading = false;
 
@@ -40,7 +41,8 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
   }
 
   static const keyMain = "Datetime";
-  static const key1 = "Thermal Energy";
+  static const key1 = "Water Thermal Energy";
+  static const key2 = "Pv Thermal Energy";
 
   bool _onlineBnStatus(bool isOnline) {
     setState(() {
@@ -55,24 +57,23 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
       return Consumer<MqttProvider>(builder: (context, mqttProv, child) {
         // Compute MCDT, Compute Av.t,
         // todo here
+        const gaugeConfig = {
+          'units': 'KJ',
+          'minValue': 0.0,
+          'maxValue': 50.0,
+          'range1Value': 15.0,
+          'range2Value': 35.0
+        };
         final List<Map<String, dynamic>> heatingUnitData = [
           {
-            'title': 'Thermal Energy',
-            'data': mqttProv.heatingUnitData!.enthalpy!.toStringAsFixed(1),
-            'units': 'MJ',
-            'minValue': 0.0,
-            'maxValue': 500.0,
-            'range1Value': 100.0,
-            'range2Value': 350.0,
+            'title': 'Water Thermal Energy',
+            'data': mqttProv.heatingUnitData!.waterEnthalpy!.toStringAsFixed(1),
+            ...gaugeConfig
           },
           {
-            'title': 'Average Temperature',
-            'data': mqttProv.heatingUnitData!.averageTemp!.toStringAsFixed(1),
-            'units': '°C',
-            'minValue': 0.0,
-            'maxValue': 100.0,
-            'range1Value': 35.0,
-            'range2Value': 55.0,
+            'title': 'Pv Thermal Energy',
+            'data': mqttProv.heatingUnitData!.pvEnthalpy.toStringAsFixed(1),
+            ...gaugeConfig
           },
         ];
         return IotPageTemplate(
@@ -112,10 +113,14 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
                   .toList()),
           graphPart: MworiaGraph(
             axisTitle: "Thermal Energy (MJ)",
-            area1Title: "Thermal Energy (MJ)",
+            area1Title: "Water Thermal Energy (MJ)",
             area1DataSource: !_online
-                ? thermalEnergyHistoryGraphData
-                : mqttProv.enthalpyGraphData,
+                ? waterThermalEnergyHistoryGraphData
+                : mqttProv.waterEnthalpyGraphData,
+            area2Title: "Pv Thermal Energy (MJ)",
+            area2DataSource: !_online
+                ?pvThermalEnergyHistoryGraphData
+                : mqttProv.pvEnthalpyGraphData,
             graphTitle: 'Graph of Thermal Energy against Time',
           ),
           generateExcel: () async {
@@ -131,7 +136,7 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
                 });
               }
             } else {
-              for (var data in thermalEnergyHistoryGraphData) {
+              for (var data in waterThermalEnergyHistoryGraphData) {
                 thermalDataCombination.add({
                   keyMain: data.x,
                   key1: data.y,
@@ -147,7 +152,7 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
               ).generateExcel();
               var directory = await getApplicationDocumentsDirectory();
               File(
-                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.thermalEnergyMeter)}/${DateFormat('EEE, MMM d yyyy  hh mm a').format(DateTime.now())}.xlsx"))
+                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.thermalEnergyMeter)}/${DateFormat(GenerateExcelFromList.excelFormat).format(DateTime.now())}.xlsx"))
                 ..createSync(recursive: true)
                 ..writeAsBytesSync(fileBytes);
               Future.delayed(Duration.zero).then((value) async =>
@@ -176,14 +181,24 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
               final thermalEnergyHistoricalData =
                   await HttpProtocol.queryThermalEnergyData(
                       fromDate: _fromDate.text, toDate: _toDate.text);
-              thermalEnergyHistoryGraphData.clear();
+              waterThermalEnergyHistoryGraphData.clear();
+              pvThermalEnergyHistoryGraphData.clear();
+              print(thermalEnergyHistoricalData);
 
               for (Map data in thermalEnergyHistoricalData) {
-                thermalEnergyHistoryGraphData.add(
-                    GraphAxis(data.keys.toList()[0], data.values.toList()[0]
-                        // double.parse(
-                        //     '${(data.values.toList()[0]).toString()}.0'),
-                        ));
+                waterThermalEnergyHistoryGraphData.add(GraphAxis(
+                    data.keys.toList()[0],
+                    (data.values.toList()[0][HttpProtocol.waterThermal])
+                    // double.parse(
+                    //     '${(data.values.toList()[0][HttpProtocol.tank1]).toString()}.0')
+
+                    ));
+                pvThermalEnergyHistoryGraphData.add(GraphAxis(
+                    data.keys.toList()[0],
+                    (data.values.toList()[0][HttpProtocol.pvThermal])
+                    // double.parse(
+                    //     '${(data.values.toList()[0][HttpProtocol.tank1]).toString()}.0')
+                    ));
               }
               mqttProv.refresh();
             } catch (e) {
@@ -197,8 +212,8 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
             }
           },
           activateExcel:
-              (!_online && thermalEnergyHistoryGraphData.isNotEmpty) ||
-                  (_online && mqttProv.enthalpyGraphData.isNotEmpty),
+              (!_online && waterThermalEnergyHistoryGraphData.isNotEmpty) ||
+                  (_online && mqttProv.waterEnthalpyGraphData.isNotEmpty),
         );
       });
     });

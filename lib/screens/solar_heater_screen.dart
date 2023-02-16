@@ -38,6 +38,10 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
   final List<GraphAxis> temp2HistoryGraphData = [];
   final List<GraphAxis> temp3HistoryGraphData = [];
 
+  final List<GraphAxis> temp1FilteredHistoryGraphData = [];
+  final List<GraphAxis> temp2FilteredHistoryGraphData = [];
+  final List<GraphAxis> temp3FilteredHistoryGraphData = [];
+
   @override
   void dispose() {
     super.dispose();
@@ -155,7 +159,7 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                     ).generateExcel();
                     var directory = await getApplicationDocumentsDirectory();
                     File(
-                        ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.solarHeaterMeter)}/${DateFormat('EEE, MMM d yyyy  hh mm a').format(DateTime.now())}.xlsx"))
+                        ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.solarHeaterMeter)}/${DateFormat(GenerateExcelFromList.excelFormat).format(DateTime.now())}.xlsx"))
                       ..createSync(recursive: true)
                       ..writeAsBytesSync(fileBytes);
                     Future.delayed(Duration.zero).then((value) async =>
@@ -186,7 +190,6 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                     temp1HistoryGraphData.clear();
                     temp2HistoryGraphData.clear();
                     temp3HistoryGraphData.clear();
-
                     for (Map data in solarHeaterHistoricalData) {
                       temp1HistoryGraphData.add(GraphAxis(
                           data.keys.toList()[0],
@@ -206,9 +209,11 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                     await customDialog(
                         context, "Check data formatting from the database");
                   } finally {
-                    setState(() {
-                      _isLoading = false;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                    }
                   }
                 },
                 activateExcel: (!_online && temp1HistoryGraphData.isNotEmpty) ||

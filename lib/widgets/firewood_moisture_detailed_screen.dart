@@ -65,13 +65,14 @@ class _FirewoodMoistureDetailedScreenState
       ).generateExcel();
       var directory = await getApplicationDocumentsDirectory();
       File(
-          ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.firewoodMoisture)}/${DateFormat('EEE, MMM d yyyy  hh mm a').format(DateTime.now())}.xlsx"))
+          ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.firewoodMoisture)}/${DateFormat(GenerateExcelFromList.excelFormat).format(DateTime.now())}.xlsx"))
         ..createSync(recursive: true)
         ..writeAsBytesSync(fileBytes);
       Future.delayed(Duration.zero).then((value) async =>
           await customDialog(context, "Excel file generated successfully"));
     } catch (e) {
       await customDialog(context, "Error generating Excel file");
+      
     } finally {
       widget.changeLoadingStatus(false);
     }

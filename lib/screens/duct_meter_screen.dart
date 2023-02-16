@@ -123,7 +123,6 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
                 : mqttProv.humidityGraphData,
             graphTitle: 'Graph of Temperature and Humidity against Time',
           ),
-
           generateExcel: () async {
             setState(() {
               _isLoading = true;
@@ -159,7 +158,7 @@ class _DuctMeterScreenState extends State<DuctMeterScreen> {
               ).generateExcel();
               var directory = await getApplicationDocumentsDirectory();
               File(
-                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.ductMeter)}/${DateFormat('EEE, MMM d yyyy  hh mm a').format(DateTime.now())}.xlsx"))
+                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.ductMeter)}/${DateFormat(GenerateExcelFromList.excelFormat).format(DateTime.now())}.xlsx"))
                 ..createSync(recursive: true)
                 ..writeAsBytesSync(fileBytes);
               Future.delayed(Duration.zero).then((value) async =>

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 class HeatingUnit {
   String? tank1;
   String? tank2;
@@ -9,11 +11,17 @@ class HeatingUnit {
   static const density = 997.0;
   static const periodOfData = 2.0;
 
+  // static const irradiance = 700;
+
+  static const solarArea = 2.0;
+
+  double get getIrradiance => Random().nextDouble() * (100) + 700;
+
   double? averageTemp;
 
   double? mass;
 
-  double? get enthalpy {
+  double? get waterEnthalpy {
     if ((tank1 == null) ||
         (tank2 == null) ||
         (tank3 == null) ||
@@ -22,15 +30,19 @@ class HeatingUnit {
       return null;
     }
 
-    mass = double.parse(flow1 ?? '0.0') * 0.06 * periodOfData * density;
+    mass = double.parse(flow1 ?? '0.0') * (1/60000) * periodOfData * density;
+    // mass = double.parse(flow1 ?? '0.0') * 0.06 * periodOfData * density;
     averageTemp = (double.parse(tank1!) +
 
             // todo eliminated tank2 =>  double.parse(tank2!)
             0 +
             double.parse(tank3!)) /
         2;
-    return ((mass! * capacitance * (averageTemp! - tankTemp)) / 1000000);
+    return ((mass! * capacitance * (averageTemp! - tankTemp)) / 1000);
   }
+
+
+  double get pvEnthalpy =>( solarArea * 3 * getIrradiance *periodOfData)/1000;
 
   HeatingUnit({
     required this.tank1,

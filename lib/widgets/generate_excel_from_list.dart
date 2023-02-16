@@ -8,6 +8,8 @@ class GenerateExcelFromList {
   final String? key3;
   final String? key4;
 
+  static const excelFormat = 'MMM d yyyy  hh mm a';
+
   GenerateExcelFromList({
     required this.listData,
     required this.keyMain,

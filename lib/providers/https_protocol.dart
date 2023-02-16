@@ -9,17 +9,31 @@ class HttpProtocol {
   static const tank2 = 'Tank2';
   static const tank3 = 'Tank3';
 
+  // http://52.36.201.129/cbes/tank_temp
+  static List filterDbData(List data) {
+    final elementsToBeRemoved = (data.length / 1000).floor();
+
+    for (var i = 0; i < data.length; i++) {
+      if ((i + elementsToBeRemoved) > data.length) {
+        break;
+      }
+      data.removeRange(i, i + elementsToBeRemoved);
+    }
+
+    return data;
+  }
+
   static Future<List> querySolarHeater(
       {required String fromDate, required String toDate}) async {
-    final solarHeaterResponse = await http.get(Uri.parse('$firebaseDbUrl/cbes_data/temperature.json'));
-    // todo Jose API to be in the right format with the right headers
-    // todo joseph URL is => http://34.219.126.46
-
-    // await http.get(
-    //   Uri.parse('$josephDbUrl/cbes/tank_temp'),
-    //   headers: {"fromDate": fromDate, "toDate": toDate});
-    print(solarHeaterResponse.body);
-    return json.decode(solarHeaterResponse.body) as List;
+    final solarHeaterResponse =
+        // await http.get(Uri.parse('$firebaseDbUrl/cbes_data/temperature.json'));
+        await http.get(Uri.parse('$josephDbUrl/cbes/tank_temp'),
+            headers: {"fromDate": fromDate, "toDate": toDate});
+    final tempData = json.decode(solarHeaterResponse.body) as List;
+    if (tempData.length > 1100) {
+      filterDbData(tempData);
+    }
+    return tempData;
   }
 
   // Flow rates
@@ -29,8 +43,14 @@ class HttpProtocol {
   static Future<List> queryFlowData(
       {required String fromDate, required String toDate}) async {
     final flowMeterResponse =
-        await http.get(Uri.parse('$firebaseDbUrl/cbes_data/flow.json'));
-    return json.decode(flowMeterResponse.body) as List;
+        // await http.get(Uri.parse('$firebaseDbUrl/cbes_data/flow.json'));
+        await http.get(Uri.parse('$josephDbUrl/cbes/flow_rates'),
+            headers: {"fromDate": fromDate, "toDate": toDate});
+    final tempData = json.decode(flowMeterResponse.body) as List;
+    if (tempData.length > 1100) {
+      filterDbData(tempData);
+    }
+    return tempData;
   }
 
   // Duct Data
@@ -40,9 +60,21 @@ class HttpProtocol {
   static Future<List> queryDuctData(
       {required String fromDate, required String toDate}) async {
     final ductMeterResponse =
-        await http.get(Uri.parse('$firebaseDbUrl/cbes_data/ubibot.json'));
-    return json.decode(ductMeterResponse.body) as List;
+        // await http.get(Uri.parse('$firebaseDbUrl/cbes_data/ubibot.json'));
+        await http.get(Uri.parse('$josephDbUrl/cbes/ubibot'),
+            headers: {"fromDate": fromDate, "toDate": toDate});
+    final tempData = json.decode(ductMeterResponse.body) as List;
+    if (tempData.length > 1100) {
+      filterDbData(tempData);
+    }
+    return tempData;
   }
+
+  // todo Switch to Joseph's Database
+  // Thermal Energy
+
+  static const waterThermal = "water";
+  static const pvThermal = "pv";
 
   static Future<List> queryThermalEnergyData(
       {required String fromDate, required String toDate}) async {
@@ -54,14 +86,6 @@ class HttpProtocol {
   static Future<http.Response> getFirewoodData() async {
     return await http.get(Uri.parse('$firebaseDbUrl/cbes_data/firewood.json'));
   }
-
-  // static Future<void> addFirewoodStack(
-  //     String stackName, Map<String, dynamic> newVal) async {
-  //   final resp = await http.patch(
-  //       Uri.parse('$firebaseDbUrl/cbes_data/firewood.json'),
-  //       body: json.encode({stackName: newVal}));
-  //   print(json.decode(resp.body));
-  // }
 
   static Future<void> addFirewoodStackData(
       {required String stackName,

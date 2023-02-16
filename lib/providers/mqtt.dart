@@ -38,14 +38,15 @@ class MqttProvider with ChangeNotifier {
   final List<GraphAxis> temp3GraphData = [];
   final List<GraphAxis> flow1GraphData = [];
   final List<GraphAxis> flow2GraphData = [];
-  final List<GraphAxis> enthalpyGraphData = [];
+  final List<GraphAxis> waterEnthalpyGraphData = [];
+  final List<GraphAxis> pvEnthalpyGraphData = [];
 
   DuctMeter? get ductMeterData => _ductMeterData;
   DuctMeter? _ductMeterData;
   final List<GraphAxis> temperatureGraphData = [];
   final List<GraphAxis> humidityGraphData = [];
 
-  Map<String, OnlineUser> onlineUsersData={};
+  Map<String, OnlineUser> onlineUsersData = {};
 
   var _connStatus = ConnectionStatus.disconnected;
 
@@ -69,7 +70,7 @@ class MqttProvider with ChangeNotifier {
   String? _loginTime;
 
   static void removeFirstElement(List list) {
-    if (list.length >= 8640) {
+    if (list.length >= (3600 / 2)) {
       list.removeAt(0);
     }
   }
@@ -79,7 +80,6 @@ class MqttProvider with ChangeNotifier {
 
   Future<ConnectionStatus> initializeMqttClient() async {
     final deviceMqttProv = DevicesProvider();
-
 
     // onlineUsersData = {};
 
@@ -121,6 +121,7 @@ class MqttProvider with ChangeNotifier {
       _mqttClient.disconnect();
       _connStatus = ConnectionStatus.disconnected;
     }
+
     if (_connStatus == ConnectionStatus.connected) {
       _mqttClient.subscribe("cbes/dekut/#", MqttQos.exactlyOnce);
 
@@ -134,7 +135,8 @@ class MqttProvider with ChangeNotifier {
           removeFirstElement(flow2GraphData);
           removeFirstElement(temperatureGraphData);
           removeFirstElement(humidityGraphData);
-          removeFirstElement(enthalpyGraphData);
+          removeFirstElement(waterEnthalpyGraphData);
+          removeFirstElement(pvEnthalpyGraphData);
           final time = DateTime.now();
 
           temp1GraphData.add(GraphAxis(
@@ -154,8 +156,12 @@ class MqttProvider with ChangeNotifier {
                 _duration(time), double.parse(_ductMeterData!.humidity!)));
           }
           if (_heatingUnitData != null) {
-            enthalpyGraphData
-                .add(GraphAxis(_duration(time), _heatingUnitData!.enthalpy!));
+            waterEnthalpyGraphData.add(
+                GraphAxis(_duration(time), _heatingUnitData!.waterEnthalpy!));
+          }
+          if (_heatingUnitData != null) {
+            pvEnthalpyGraphData
+                .add(GraphAxis(_duration(time), _heatingUnitData!.pvEnthalpy));
           }
         }
         notifyListeners();
