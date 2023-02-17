@@ -39,8 +39,8 @@ class _ShedMeterScreenState extends State<ShedMeterScreen> {
   }
 
   static const keyMain = "Datetime";
-  static const key1 = "Flow Rate (To Solar Heater) in lpm";
-  static const key2 = "Flow Rate (To Heat Exchanger) in lpm";
+  static const key1 = "Temperature (°C)";
+  static const key2 = "Humidity (%)";
 
   bool _onlineBnStatus(bool isOnline) {
     setState(() {
@@ -114,20 +114,20 @@ class _ShedMeterScreenState extends State<ShedMeterScreen> {
             setState(() {
               _isLoading = true;
             });
-            List flowDataCombination = [];
+            List shedDataCombination = [];
             int i = 0;
             if (_online) {
-              for (var data in mqttProv.flow1GraphData) {
-                flowDataCombination.add({
+              for (var data in mqttProv.shedTempGraphData) {
+                shedDataCombination.add({
                   keyMain: data.x,
                   key1: data.y,
-                  key2: mqttProv.flow2GraphData[i].y,
+                  key2: mqttProv.shedHumidityGraphData[i].y,
                 });
                 i += 1;
               }
             } else {
               for (var data in shedTemperatureHistoryGraphData) {
-                flowDataCombination.add({
+                shedDataCombination.add({
                   keyMain: data.x,
                   key1: data.y,
                   key2: shedHumidityHistoryGraphData[i].y,
@@ -138,7 +138,7 @@ class _ShedMeterScreenState extends State<ShedMeterScreen> {
 
             try {
               final fileBytes = await GenerateExcelFromList(
-                listData: flowDataCombination,
+                listData: shedDataCombination,
                 keyMain: keyMain,
                 key1: key1,
                 key2: key2,
@@ -169,6 +169,7 @@ class _ShedMeterScreenState extends State<ShedMeterScreen> {
                       fromDate: _fromDate.text, toDate: _toDate.text);
               shedTemperatureHistoryGraphData.clear();
               shedHumidityHistoryGraphData.clear();
+              // print(shedMeterHistoricalData);
 
               for (Map data in shedMeterHistoricalData) {
                 shedTemperatureHistoryGraphData.add(GraphAxis(

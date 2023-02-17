@@ -96,7 +96,7 @@ class HttpProtocol {
   }
 
   // Shed Meter
-  static const shedTemp = "temperature";
+  static const shedTemp = "temp";
   static const shedHumidity = "humidity";
 
   static Future<List> queryShedMeterData(
