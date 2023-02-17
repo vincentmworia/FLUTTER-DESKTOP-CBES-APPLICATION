@@ -71,7 +71,7 @@ class _FirewoodMoistureDetailedScreenState
       ).generateExcel();
       var directory = await getApplicationDocumentsDirectory();
       File(
-          ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.firewoodMoisture)}/${DateFormat(GenerateExcelFromList.excelFormat).format(DateTime.now())}.xlsx"))
+          ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.firewoodMoisture)}/${widget.pageData.keys.first}/${DateFormat(GenerateExcelFromList.excelFormat).format(DateTime.now())}.xlsx"))
         ..createSync(recursive: true)
         ..writeAsBytesSync(fileBytes);
       Future.delayed(Duration.zero).then((value) async =>
@@ -424,7 +424,11 @@ class _FirewoodMoistureDetailedScreenState
                                                                               .x ==
                                                                           e.x);
                                                                 });
-                                                              } catch (e) {}
+                                                              } catch (e) {
+                                                                await customDialog(
+                                                                    context,
+                                                                    "Operation failed");
+                                                              }
                                                             }, context);
 
                                                             widget

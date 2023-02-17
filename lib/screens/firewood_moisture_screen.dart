@@ -253,13 +253,8 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
                         color: Colors.white.withOpacity(0.65),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20)),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(20),
-                          // splashColor: Theme.of(context)
-                          //     .colorScheme
-                          //     .primary
-                          //     .withOpacity(0.9),
-                          onDoubleTap: () async {
+                        child: GestureDetector(
+                          onTap: () async {
                             setState(() {
                               // _openPage = true;
                               _pageData = {e: firewoodData[e]};

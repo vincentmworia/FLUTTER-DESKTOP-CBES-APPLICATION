@@ -136,35 +136,32 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
               }
             });
             return LayoutBuilder(builder: (context, cons) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              return Row(
+                // crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _title(context, 'Online Users'),
                   SizedBox(
-                    height: cons.maxHeight * 0.15,
-                    width: cons.maxWidth,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ...onlineUsers
-                              .map((e) => Column(
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          width: 120,
-                                          margin: const EdgeInsets.all(10),
+                    width: cons.maxWidth * 0.15,
+                    child: ListView(
+
+                      children: [
+                        _title(context, 'Online Users'),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            ...onlineUsers
+                                .map((e) => Column(
+                                      children: [
+                                        Container(
+                                          width: cons.maxWidth*0.05,
                                           height: cons.maxHeight * 0.2,
                                           decoration: BoxDecoration(
                                               shape: BoxShape.circle,
                                               color: Theme.of(context)
                                                   .colorScheme
                                                   .primary),
-
                                           child: Container(
-                                            margin: const EdgeInsets.all(2),
+                                            margin:
+                                                const EdgeInsets.all(2),
                                             height: cons.maxHeight * 0.1,
                                             decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
@@ -177,40 +174,46 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
                                               e.firstName[0],
                                               style: const TextStyle(
                                                   fontSize: 30,
-                                                  fontWeight: FontWeight.w700,
+                                                  fontWeight:
+                                                      FontWeight.w700,
                                                   color: Colors.white),
                                             )),
                                           ),
                                         ),
-                                      ),
-                                      Text(
-                                        '${e.firstName} ${e.lastName}',
-                                        style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary),
-                                      )
-                                      // Text(e.email.substring(0,e.email.indexOf('@')))
-                                    ],
-                                  ))
-                              .toList()
-                        ],
-                      ),
+                                        Text(
+                                          '${e.firstName} ${e.lastName}',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary),
+                                        )
+                                        // Text(e.email.substring(0,e.email.indexOf('@')))
+                                      ],
+                                    ))
+                                .toList()
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  _title(context, 'All Users'),
-                  if (allowedUsers.isNotEmpty)
-                    Expanded(
-                        child: ListView.builder(
-                            // separatorBuilder: (context, index) => const Divider(),
-                            itemCount: allowedUsers.length,
-                            itemBuilder: (ctx, i) {
-                              final usr = allowedUsers[i];
-                              return AdministratorScreenUser(
-                                  allowUsersFunction: _allowUsersFunction,
-                                  cons: cons,
-                                  usr: usr);
-                            }))
+                  Expanded(
+                    child: Column(
+                      children: [
+                        _title(context, 'All Users'),
+                        Expanded(
+                            child: ListView.builder(
+                                // separatorBuilder: (context, index) => const Divider(),
+                                itemCount: allowedUsers.length,
+                                itemBuilder: (ctx, i) {
+                                  final usr = allowedUsers[i];
+                                  return AdministratorScreenUser(
+                                      allowUsersFunction: _allowUsersFunction,
+                                      cons: cons,
+                                      usr: usr);
+                                }))
+                      ],
+                    ),
+                  )
                 ],
               );
             });
