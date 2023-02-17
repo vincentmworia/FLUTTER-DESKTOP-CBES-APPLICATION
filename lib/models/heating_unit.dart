@@ -35,7 +35,6 @@ class HeatingUnit {
     }
 
     mass = double.parse(flow1 ?? '0.0') * (1 / 60000) * periodOfData * density;
-    // mass = double.parse(flow1 ?? '0.0') * 0.06 * periodOfData * density;
     averageTemp = (double.parse(tank1!) +
 
             // todo eliminated tank2 =>  double.parse(tank2!)

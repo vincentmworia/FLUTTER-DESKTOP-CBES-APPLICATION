@@ -8,6 +8,7 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
 import '../models/duct_meter.dart';
+import '../models/electrical_energy.dart';
 import '../models/graph_axis.dart';
 import '../models/heating_unit.dart';
 import '../models/shed_meter.dart';
@@ -37,6 +38,7 @@ class MqttProvider with ChangeNotifier {
   final List<GraphAxis> temp1GraphData = [];
   final List<GraphAxis> temp2GraphData = [];
   final List<GraphAxis> temp3GraphData = [];
+
   final List<GraphAxis> flow1GraphData = [];
   final List<GraphAxis> flow2GraphData = [];
 
@@ -50,11 +52,17 @@ class MqttProvider with ChangeNotifier {
   final List<GraphAxis> shedTempGraphData = [];
   final List<GraphAxis> shedHumidityGraphData = [];
 
+  final List<GraphAxis> pvEnergyGraphData = [];
+  final List<GraphAxis> outputEnergyGraphData = [];
+
   DuctMeter? get ductMeterData => _ductMeterData;
   DuctMeter? _ductMeterData;
 
   ShedMeter? get shedMeterData => _shedMeterData;
   ShedMeter? _shedMeterData;
+
+  ElectricalEnergy? get electricalEnergyData => _electricalEnergy;
+  ElectricalEnergy? _electricalEnergy;
 
   final List<GraphAxis> temperatureGraphData = [];
   final List<GraphAxis> humidityGraphData = [];
@@ -153,9 +161,10 @@ class MqttProvider with ChangeNotifier {
           removeFirstElement(ambientTempGraphData);
           removeFirstElement(ambientHumidityGraphData);
           removeFirstElement(ambientIrradianceGraphData);
-
           removeFirstElement(shedTempGraphData);
           removeFirstElement(shedHumidityGraphData);
+          removeFirstElement(pvEnergyGraphData);
+          removeFirstElement(outputEnergyGraphData);
           final time = DateTime.now();
 
           temp1GraphData.add(GraphAxis(
@@ -219,6 +228,11 @@ class MqttProvider with ChangeNotifier {
         if (topic == "cbes/dekut/data/shed_meter") {
           _shedMeterData =
               ShedMeter.fromMap(json.decode(message) as Map<String, dynamic>);
+          notifyListeners();
+        }
+        if (topic == "cbes/dekut/data/electrical_energy") {
+          _electricalEnergy = ElectricalEnergy.fromMap(
+              json.decode(message) as Map<String, dynamic>);
           notifyListeners();
         }
         if (topic.contains("cbes/dekut/devices")) {
