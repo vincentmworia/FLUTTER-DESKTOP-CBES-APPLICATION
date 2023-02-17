@@ -101,8 +101,8 @@ class HttpProtocol {
 
   static Future<List> queryShedMeterData(
       {required String fromDate, required String toDate}) async {
-    final thermalMeterResponse = await http
-        .get(Uri.parse('$firebaseDbUrl/cbes_data/shed_meter.json'));
+    final thermalMeterResponse =
+        await http.get(Uri.parse('$firebaseDbUrl/cbes_data/shed_meter.json'));
     return json.decode(thermalMeterResponse.body) as List;
   }
 
@@ -124,14 +124,21 @@ class HttpProtocol {
   static Future<void> addFirewoodStackData(
       {required String stackName,
       required Map<String, dynamic> newData}) async {
-    final resp = await http.patch(
+    await http.patch(
       Uri.parse('$firebaseDbUrl/cbes_data/firewood/$stackName.json'),
       // todo CHECK THE DATA TO BE ADDED
       body: json.encode(newData),
     );
+  }
 
   static Future<void> deleteFirewoodStack(String stackName) async {
     await http
         .delete(Uri.parse('$firebaseDbUrl/cbes_data/firewood/$stackName.json'));
+  }
+
+  static Future<void> deleteFirewoodStackData(
+      {required String stackName, required String date}) async {
+    await http.delete(
+        Uri.parse('$firebaseDbUrl/cbes_data/firewood/$stackName/$date.json'));
   }
 }

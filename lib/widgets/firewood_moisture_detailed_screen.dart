@@ -7,6 +7,8 @@ import 'package:path_provider/path_provider.dart';
 
 import '../helpers/custom_data.dart';
 import '../models/graph_axis.dart';
+import '../providers/https_protocol.dart';
+import '../screens/firewood_moisture_screen.dart';
 import '../screens/home_screen.dart';
 import './search_toggle_view.dart';
 import './tank_graph.dart';
@@ -20,7 +22,9 @@ class FirewoodMoistureDetailedScreen extends StatefulWidget {
       required this.cancelPage,
       required this.deleteStack,
       required this.addMoistureLevelToStack,
-      required this.changeLoadingStatus})
+      required this.changeLoadingStatus,
+      required this.cons,
+      required this.removeMoistureItem})
       : super(key: key);
   final double op;
   final Map<String, dynamic> pageData;
@@ -28,6 +32,8 @@ class FirewoodMoistureDetailedScreen extends StatefulWidget {
   final Function deleteStack;
   final Function addMoistureLevelToStack;
   final Function changeLoadingStatus;
+  final Function removeMoistureItem;
+  final BoxConstraints cons;
 
   @override
   State<FirewoodMoistureDetailedScreen> createState() =>
@@ -72,7 +78,6 @@ class _FirewoodMoistureDetailedScreenState
           await customDialog(context, "Excel file generated successfully"));
     } catch (e) {
       await customDialog(context, "Error generating Excel file");
-      
     } finally {
       widget.changeLoadingStatus(false);
     }
@@ -86,6 +91,7 @@ class _FirewoodMoistureDetailedScreenState
   }
 
   final graphData = <GraphAxis>[];
+  var graphView = true;
 
   @override
   Widget build(BuildContext context) {
@@ -339,12 +345,113 @@ class _FirewoodMoistureDetailedScreenState
                           children: [
                             Expanded(
                               // todo Break widget
-                              child: MworiaGraph(
-                                axisTitle: "Firewood Moisture Level (%)",
-                                spline1Title: "Firewood Moisture Level",
-                                spline1DataSource: graphData,
-                                graphTitle:
-                                    'Graph of Firewood Moisture Level against Time',
+                              child: Stack(
+                                children: [
+                                  if (graphView)
+                                    MworiaGraph(
+                                      axisTitle: "Firewood Moisture Level (%)",
+                                      spline1Title: "Firewood Moisture Level",
+                                      spline1DataSource: graphData,
+                                      graphTitle:
+                                          'Graph of Firewood Moisture Level against Time',
+                                    ),
+                                  if (!graphView)
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 30.0, right: 10, left: 10),
+                                      child: ListView(
+                                          children: graphData
+                                              .map((e) => Card(
+                                                    elevation: 4,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10)),
+                                                    color: Colors.white
+                                                        .withOpacity(0.85),
+                                                    shadowColor:
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .primary,
+                                                    child: Container(
+                                                      width:
+                                                          cons.maxWidth * 0.01,
+                                                      margin:
+                                                          const EdgeInsets.all(
+                                                              10),
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 20),
+                                                      child: ListTile(
+                                                        title: Text(DateFormat(
+                                                                'MMM d yyyy  hh:mm a')
+                                                            .format(
+                                                                DateTime.parse(
+                                                                    e.x))),
+                                                        subtitle: Text(
+                                                            '${e.y.toString()} %'),
+                                                        trailing: IconButton(
+                                                          onPressed: () async {
+                                                            // todo Remove element from the api
+                                                            // todo Try except
+                                                            widget
+                                                                .changeLoadingStatus(
+                                                                    true);
+                                                            await FirewoodMoistureScreen
+                                                                .showAlertDialog(
+                                                                    'Are you sure?',
+                                                                    () async {
+                                                              try {
+                                                                await HttpProtocol.deleteFirewoodStackData(
+                                                                    stackName: widget
+                                                                        .pageData
+                                                                        .keys
+                                                                        .first,
+                                                                    date: e.x);
+
+                                                                widget.removeMoistureItem(
+                                                                    widget
+                                                                        .pageData
+                                                                        .keys
+                                                                        .first,
+                                                                    e.x);
+                                                                setState(() {
+                                                                  graphData.removeWhere(
+                                                                      (element) =>
+                                                                          element
+                                                                              .x ==
+                                                                          e.x);
+                                                                });
+                                                              } catch (e) {}
+                                                            }, context);
+
+                                                            widget
+                                                                .changeLoadingStatus(
+                                                                    false);
+                                                          },
+                                                          icon: const Icon(
+                                                            Icons.delete,
+                                                            color: Colors.red,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ))
+                                              .toList()),
+                                    ),
+                                  Positioned(
+                                      top: 1,
+                                      right: 5,
+                                      child: Switch.adaptive(
+                                          value: graphView,
+                                          onChanged: (val) {
+                                            setState(() {
+                                              graphView = val;
+                                            });
+                                          }))
+                                ],
                               ),
                             ),
                           ],

@@ -6,11 +6,11 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/signIn.dart';
+import '../models/sign_in.dart';
 import '../models/logged_in.dart';
 import '../models/user.dart';
 import '../private_data.dart';
-import '../models/signUp.dart';
+import '../models/sign_up.dart';
 import '../screens/auth_screen.dart';
 import '../widgets/custom_check_box.dart';
 import './login_user_data.dart';
@@ -102,7 +102,7 @@ class FirebaseAuthentication {
         message = _getErrorMessage(responseData['error']['message']);
         return message;
       }
-      final signedInUser = Signin.fromMap(responseData);
+      final signedInUser = SignIn.fromMap(responseData);
       idToken = signedInUser.idToken;
       // todo begin timer
       timer = Timer.periodic(const Duration(minutes: 55), (timer) {
@@ -158,7 +158,7 @@ class FirebaseAuthentication {
         }));
     final responseData = json.decode(response.body) as Map<String, dynamic>;
     if (!(responseData['error'] != null)) {
-      final signedInUser = Signin.fromMap(responseData);
+      final signedInUser = SignIn.fromMap(responseData);
       idToken = signedInUser.idToken;
     }
   }
@@ -174,12 +174,11 @@ class FirebaseAuthentication {
 
   static Future<void> editPassword(BuildContext context) async {
     // todo Add change password to the next production
-    print("Edit Password");
   }
 
   static Future<void> deleteAccount(
       BuildContext context, LoggedIn user) async {
-   final resp= await http.post(_actionEndpointUrl("delete?"),
+ await http.post(_actionEndpointUrl("delete?"),
         body: json.encode({
           "idToken":idToken,
         }));

@@ -9,7 +9,7 @@ import '../providers/https_protocol.dart';
 import '../widgets/search_toggle_view.dart';
 import '../helpers/custom_data.dart';
 import '../models/graph_axis.dart';
-import '../widgets/Iot_page_template.dart';
+import '../widgets/iot_page_template.dart';
 import '../widgets/linear_gauge.dart';
 import '../widgets/tank_graph.dart';
 import '../providers/mqtt.dart';
@@ -189,13 +189,10 @@ class _AmbientMeterScreenState extends State<AmbientMeterScreen> {
                     _isLoading = true;
                   });
                   try {
-                    print('object');
+                    // todo Get the ambient temp, humidity, irradiance of the database
                     final ambientMeterHeaterHistoricalData =
-                        // todo Get the ambient temp, humidity, irradiance of the database
                         await HttpProtocol.queryAmbientMeter(
                             fromDate: _fromDate.text, toDate: _toDate.text);
-
-                    print(ambientMeterHeaterHistoricalData);
                     ambientTempHistoryGraphData.clear();
                     ambientHumidityHistoryGraphData.clear();
                     irradianceHistoryGraphData.clear();

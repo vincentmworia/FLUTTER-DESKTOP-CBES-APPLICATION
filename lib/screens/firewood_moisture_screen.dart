@@ -16,6 +16,35 @@ class FirewoodMoistureScreen extends StatelessWidget {
   // TODO delete Stack
   // TODO delete item in stack
 
+  static Future<void> showAlertDialog(
+          String title, Function yesFn, BuildContext ctx) async =>
+      await showDialog(
+          context: ctx,
+          builder: (ctx) => AlertDialog(
+                content: Text(title),
+                actions: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(ctx).colorScheme.secondary),
+                          onPressed: () {
+                            Navigator.pop(ctx);
+                          },
+                          child: const Text('No')),
+                      ElevatedButton(
+                          onPressed: () async {
+                            Navigator.pop(ctx);
+                            await yesFn();
+                          },
+                          child: const Text('Yes')),
+                    ],
+                  )
+                ],
+              ));
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -76,36 +105,12 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
     _selectedDate = selectedDate;
   }
 
-  Future<void> _showAlertDialog(String title, Function yesFn) async =>
-      await showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-                content: Text(title),
-                actions: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.secondary),
-                          onPressed: () {
-                            Navigator.pop(ctx);
-                          },
-                          child: const Text('No')),
-                      ElevatedButton(
-                          onPressed: () async {
-                            Navigator.pop(ctx);
-                            await yesFn();
-                          },
-                          child: const Text('Yes')),
-                    ],
-                  )
-                ],
-              ));
+  void _removeMoistureItem(String stackName, String date) {
+    (dbFirewoodData[stackName] as Map).removeWhere((key, value) => key == date);
+  }
 
   Future<void> _deleteStack(String pgKey) async {
-    await _showAlertDialog('Delete $pgKey?', () async {
+    await FirewoodMoistureScreen.showAlertDialog('Delete $pgKey?', () async {
       setState(() {
         _isLoading = true;
       });
@@ -115,24 +120,24 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
         _pageData = null;
         _isLoading = false;
       });
-    });
+    }, context);
   }
 
   Future<void> _addMoistureLevelToStack(
       String pgKey, String date, String moistureLevel) async {
-    await _showAlertDialog('$moistureLevel% recorded on date $date?',
-        () async {
+    await FirewoodMoistureScreen.showAlertDialog(
+        '$moistureLevel% recorded on date $date?', () async {
       setState(() {
         _isLoading = true;
       });
       await HttpProtocol.addFirewoodStackData(
           stackName: pgKey, newData: {date: moistureLevel});
       setState(() {
-        (dbFirewoodData[pgKey] as Map<String, String>)
+        (dbFirewoodData[pgKey] /*as Map<String, String>*/)
             .addAll({date: moistureLevel});
         _isLoading = false;
       });
-    });
+    }, context);
   }
 
   void _resetSearchController() {
@@ -254,7 +259,7 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
                           //     .colorScheme
                           //     .primary
                           //     .withOpacity(0.9),
-                          onTap: () async {
+                          onDoubleTap: () async {
                             setState(() {
                               // _openPage = true;
                               _pageData = {e: firewoodData[e]};
@@ -323,6 +328,8 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
                   _isLoading = val;
                 });
               },
+              cons: cons,
+              removeMoistureItem: _removeMoistureItem,
             ),
           if (_isLoading) const MyLoadingAnimation()
         ],

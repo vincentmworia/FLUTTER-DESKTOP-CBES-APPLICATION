@@ -9,7 +9,7 @@ import '../helpers/custom_data.dart';
 import '../models/graph_axis.dart';
 import '../providers/https_protocol.dart';
 import '../providers/mqtt.dart';
-import '../widgets/Iot_page_template.dart';
+import '../widgets/iot_page_template.dart';
 import '../widgets/generate_excel_from_list.dart';
 import '../widgets/radial_gauge_sf.dart';
 import '../widgets/tank_graph.dart';
