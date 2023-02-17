@@ -95,6 +95,17 @@ class HttpProtocol {
     return json.decode(thermalMeterResponse.body) as List;
   }
 
+  // Shed Meter
+  static const shedTemp = "temperature";
+  static const shedHumidity = "humidity";
+
+  static Future<List> queryShedMeterData(
+      {required String fromDate, required String toDate}) async {
+    final thermalMeterResponse = await http
+        .get(Uri.parse('$firebaseDbUrl/cbes_data/shed_meter.json'));
+    return json.decode(thermalMeterResponse.body) as List;
+  }
+
   static Future<http.Response> getFirewoodData() async {
     return await http.get(Uri.parse('$firebaseDbUrl/cbes_data/firewood.json'));
   }

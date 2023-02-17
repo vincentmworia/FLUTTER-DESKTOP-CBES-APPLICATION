@@ -10,6 +10,7 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 import '../models/duct_meter.dart';
 import '../models/graph_axis.dart';
 import '../models/heating_unit.dart';
+import '../models/shed_meter.dart';
 import '../private_data.dart';
 import '../models/online_user.dart';
 import './login_user_data.dart';
@@ -46,8 +47,15 @@ class MqttProvider with ChangeNotifier {
   final List<GraphAxis> ambientHumidityGraphData = [];
   final List<GraphAxis> ambientIrradianceGraphData = [];
 
+  final List<GraphAxis> shedTempGraphData = [];
+  final List<GraphAxis> shedHumidityGraphData = [];
+
   DuctMeter? get ductMeterData => _ductMeterData;
   DuctMeter? _ductMeterData;
+
+  ShedMeter? get shedMeterData => _shedMeterData;
+  ShedMeter? _shedMeterData;
+
   final List<GraphAxis> temperatureGraphData = [];
   final List<GraphAxis> humidityGraphData = [];
 
@@ -145,6 +153,9 @@ class MqttProvider with ChangeNotifier {
           removeFirstElement(ambientTempGraphData);
           removeFirstElement(ambientHumidityGraphData);
           removeFirstElement(ambientIrradianceGraphData);
+
+          removeFirstElement(shedTempGraphData);
+          removeFirstElement(shedHumidityGraphData);
           final time = DateTime.now();
 
           temp1GraphData.add(GraphAxis(
@@ -174,6 +185,10 @@ class MqttProvider with ChangeNotifier {
                 GraphAxis(_duration(time), _heatingUnitData!.ambientHumidity));
             ambientIrradianceGraphData.add(GraphAxis(
                 _duration(time), _heatingUnitData!.ambientIrradiance));
+            shedTempGraphData.add(GraphAxis(
+                _duration(time), double.parse(_shedMeterData!.temperature)));
+            shedHumidityGraphData.add(GraphAxis(
+                _duration(time), double.parse(_shedMeterData!.humidity)));
           }
         }
         notifyListeners();
@@ -195,6 +210,11 @@ class MqttProvider with ChangeNotifier {
         if (topic == "cbes/dekut/data/environment_meter") {
           _ductMeterData =
               DuctMeter.fromMap(json.decode(message) as Map<String, dynamic>);
+          notifyListeners();
+        }
+        if (topic == "cbes/dekut/data/shed_meter") {
+          _shedMeterData =
+              ShedMeter.fromMap(json.decode(message) as Map<String, dynamic>);
           notifyListeners();
         }
         if (topic.contains("cbes/dekut/devices")) {

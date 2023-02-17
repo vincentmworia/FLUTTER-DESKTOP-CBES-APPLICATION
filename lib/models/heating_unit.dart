@@ -15,11 +15,11 @@ class HeatingUnit {
 
   static const solarArea = 2.0;
 
-  double get ambientIrradiance => Random().nextDouble() * (100) + 700;
+  double get ambientIrradiance => Random().nextDouble() * (20) + 700;
 
   double get ambientTemp => (Random().nextDouble() * 5) + 20;
 
-  double get ambientHumidity => (Random().nextDouble() * 10) + 30;
+  double get ambientHumidity => (Random().nextDouble() * 5) + 30;
 
   double? averageTemp;
 

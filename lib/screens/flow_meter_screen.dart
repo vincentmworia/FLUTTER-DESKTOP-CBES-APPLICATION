@@ -12,7 +12,6 @@ import '../providers/mqtt.dart';
 import '../widgets/Iot_page_template.dart';
 import '../widgets/generate_excel_from_list.dart';
 import '../widgets/radial_gauge_sf.dart';
-import '../widgets/search_toggle_view.dart';
 import '../widgets/tank_graph.dart';
 import './home_screen.dart';
 
@@ -159,12 +158,6 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
             }
           },
           searchDatabase: () async {
-            if (SearchToggleView.fromDateVal!
-                .isAfter(SearchToggleView.toDateVal!)) {
-              await customDialog(
-                  context, "Make sure the time in 'To' is after 'From'");
-              return;
-            }
             setState(() {
               _isLoading = true;
             });

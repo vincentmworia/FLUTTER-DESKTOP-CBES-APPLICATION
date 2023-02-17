@@ -77,7 +77,7 @@ class _AmbientMeterScreenState extends State<AmbientMeterScreen> {
                   'units': '%',
                 },
                 {
-                  'title': 'Tank 3',
+                  'title': 'Irradiance',
                   'data': (mqttProv.heatingUnitData?.ambientIrradiance)
                           ?.toStringAsFixed(1) ??
                       '0.0',
@@ -111,7 +111,7 @@ class _AmbientMeterScreenState extends State<AmbientMeterScreen> {
                             ))
                         .toList()),
                 graphPart: MworiaGraph(
-                  graphTitle: 'Graph of Temperature against Time',
+                  graphTitle: 'Graph of Ambience against Time',
                   axisTitle: "Temp (°C)",
                   spline1DataSource: !_online
                       ? ambientTempHistoryGraphData
