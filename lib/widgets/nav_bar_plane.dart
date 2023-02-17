@@ -71,9 +71,9 @@ class _NavBarPlaneState extends State<NavBarPlane> {
       {PageTitle.ductMeter: Icons.credit_card},
       {PageTitle.ambientMeter: Icons.device_thermostat},
       {PageTitle.shedMeter: Icons.home},
-      {PageTitle.firewoodMoisture: Icons.water_drop},
       {PageTitle.electricalEnergyMeter: Icons.electric_bolt},
       {PageTitle.thermalEnergyMeter: Icons.electric_meter},
+      {PageTitle.firewoodMoisture: Icons.water_drop},
       if (LoginUserData.getLoggedUser!.privilege == userSuperAdmin ||
           LoginUserData.getLoggedUser!.privilege == userAdmin)
         {PageTitle.admin: Icons.admin_panel_settings},

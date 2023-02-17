@@ -185,13 +185,17 @@ class MqttProvider with ChangeNotifier {
                 GraphAxis(_duration(time), _heatingUnitData!.ambientHumidity));
             ambientIrradianceGraphData.add(GraphAxis(
                 _duration(time), _heatingUnitData!.ambientIrradiance));
-            shedTempGraphData.add(GraphAxis(
-                _duration(time), double.parse(_shedMeterData!.temperature)));
-            shedHumidityGraphData.add(GraphAxis(
-                _duration(time), double.parse(_shedMeterData!.humidity)));
+            if (_shedMeterData!.temperature != null) {
+              shedTempGraphData.add(GraphAxis(
+                  _duration(time), double.parse(_shedMeterData!.temperature!)));
+            }
+            if (_shedMeterData!.humidity != null) {
+              shedHumidityGraphData.add(GraphAxis(
+                  _duration(time), double.parse(_shedMeterData!.humidity!)));
+            }
           }
+          notifyListeners();
         }
-        notifyListeners();
       });
       _mqttClient.updates?.listen((List<MqttReceivedMessage<MqttMessage>> c) {
         final MqttPublishMessage recMess = c[0].payload as MqttPublishMessage;

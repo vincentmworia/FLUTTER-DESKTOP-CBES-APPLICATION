@@ -1,6 +1,6 @@
 class ShedMeter {
-  String temperature;
-  String humidity;
+  String? temperature;
+  String? humidity;
 
   ShedMeter({
     required this.temperature,
@@ -13,7 +13,7 @@ class ShedMeter {
       );
 
   Map<String, String> asMap() => {
-        "temperature": temperature,
-        "humidity": humidity,
+        "temperature": temperature ?? '0.0',
+        "humidity": humidity ?? '0.0',
       };
 }
