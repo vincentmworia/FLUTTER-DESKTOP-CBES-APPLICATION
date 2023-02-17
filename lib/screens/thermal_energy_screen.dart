@@ -182,7 +182,6 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
                       fromDate: _fromDate.text, toDate: _toDate.text);
               waterThermalEnergyHistoryGraphData.clear();
               pvThermalEnergyHistoryGraphData.clear();
-              print(thermalEnergyHistoricalData);
 
               for (Map data in thermalEnergyHistoricalData) {
                 waterThermalEnergyHistoryGraphData.add(GraphAxis(
@@ -201,7 +200,6 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
               }
               mqttProv.refresh();
             } catch (e) {
-              print(e.toString());
               await customDialog(
                   context, "Check data formatting from the database");
             } finally {

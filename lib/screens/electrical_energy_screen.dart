@@ -129,11 +129,11 @@ class _ElectricalEnergyScreenState extends State<ElectricalEnergyScreen> {
             List thermalDataCombination = [];
             var i = 0;
             if (_online) {
-              for (var data in mqttProv.waterEnthalpyGraphData) {
+              for (var data in mqttProv.outputElectricalEnergyGraphData) {
                 thermalDataCombination.add({
                   keyMain: data.x,
                   key1: data.y,
-                  key2: mqttProv.pvEnthalpyGraphData[i].y,
+                  key2: mqttProv.pvElectricalEnergyGraphData[i].y,
                 });
               }
               i += 1;
@@ -157,7 +157,7 @@ class _ElectricalEnergyScreenState extends State<ElectricalEnergyScreen> {
               ).generateExcel();
               var directory = await getApplicationDocumentsDirectory();
               File(
-                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.thermalEnergyMeter)}/${DateFormat(GenerateExcelFromList.excelFormat).format(DateTime.now())}.xlsx"))
+                  ("${directory.path}/CBES/${HomeScreen.pageTitle(PageTitle.electricalEnergyMeter)}/${DateFormat(GenerateExcelFromList.excelFormat).format(DateTime.now())}.xlsx"))
                 ..createSync(recursive: true)
                 ..writeAsBytesSync(fileBytes);
               Future.delayed(Duration.zero).then((value) async =>
@@ -182,21 +182,19 @@ class _ElectricalEnergyScreenState extends State<ElectricalEnergyScreen> {
                       fromDate: _fromDate.text, toDate: _toDate.text);
               outputElectricalEnergyHistoryGraphData.clear();
               pvElectricalEnergyHistoryGraphData.clear();
-              print(electricalEnergyHistoricalData);
 
               for (Map data in electricalEnergyHistoricalData) {
                 outputElectricalEnergyHistoryGraphData.add(GraphAxis(
                     data.keys.toList()[0],
-                    (data.values.toList()[0][HttpProtocol.outputElectricalEnergy])
-                    ));
+                    (data.values.toList()[0]
+                        [HttpProtocol.outputElectricalEnergy])));
                 pvElectricalEnergyHistoryGraphData.add(GraphAxis(
                     data.keys.toList()[0],
-                    (data.values.toList()[0][HttpProtocol.pvElectricalEnergy])
-                    ));
+                    (data.values.toList()[0]
+                        [HttpProtocol.pvElectricalEnergy])));
               }
               mqttProv.refresh();
-            } catch (e) {
-              print(e.toString());
+            } catch (e) { 
               await customDialog(
                   context, "Check data formatting from the database");
             } finally {
@@ -205,9 +203,9 @@ class _ElectricalEnergyScreenState extends State<ElectricalEnergyScreen> {
               });
             }
           },
-          activateExcel:
-              (!_online && outputElectricalEnergyHistoryGraphData.isNotEmpty) ||
-                  (_online && mqttProv.outputElectricalEnergyGraphData.isNotEmpty),
+          activateExcel: (!_online &&
+                  outputElectricalEnergyHistoryGraphData.isNotEmpty) ||
+              (_online && mqttProv.outputElectricalEnergyGraphData.isNotEmpty),
         );
       });
     });

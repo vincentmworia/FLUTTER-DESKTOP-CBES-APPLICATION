@@ -72,5 +72,4 @@ void main() {
     });
     i += 1;
   }
-  print(tempDataCombination);
 }

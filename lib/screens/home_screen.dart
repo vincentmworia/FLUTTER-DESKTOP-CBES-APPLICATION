@@ -105,10 +105,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void _switchPage(PageTitle page, String title) {
     setState(() {
       // todo
-      // _showNavPlane = false;
-      // _deCompressNavPlane = true;
       _page = page;
       _pageTitle = title;
+      if(_page == PageTitle.dashboard){
+      _showNavPlane = false;
+      _deCompressNavPlane = true;
+    }
     });
   }
 

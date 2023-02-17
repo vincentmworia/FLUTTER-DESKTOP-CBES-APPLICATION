@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart';
-
-import '../models/online_user.dart';
+// import 'package:flutter/foundation.dart';
+//
+// import '../models/online_user.dart';
 
 // class DevicesProvider with ChangeNotifier {
 //   final Map<String, OnlineUser> onlineUsersData = {};

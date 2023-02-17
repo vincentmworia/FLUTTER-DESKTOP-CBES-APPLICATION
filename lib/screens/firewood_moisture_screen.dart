@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../widgets/loading_animation.dart';
@@ -125,15 +125,11 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
       setState(() {
         _isLoading = true;
       });
-      // print('13');
-
-      print(dbFirewoodData);
       await HttpProtocol.addFirewoodStackData(
           stackName: pgKey, newData: {date: moistureLevel});
       setState(() {
         (dbFirewoodData[pgKey] as Map<String, String>)
             .addAll({date: moistureLevel});
-        // _pageData = null;
         _isLoading = false;
       });
     });

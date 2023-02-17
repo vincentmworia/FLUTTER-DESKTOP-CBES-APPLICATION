@@ -1,4 +1,4 @@
-class SignIn {
+class Signin {
   final String localId;
   final String email;
   final String displayName;
@@ -7,7 +7,7 @@ class SignIn {
   final bool registered;
   final String expiresIn;
 
-  SignIn({
+  Signin({
     required this.localId,
     required this.email,
     required this.displayName,
@@ -17,7 +17,7 @@ class SignIn {
     required this.expiresIn,
   });
 
-  static SignIn fromMap(Map<String, dynamic> signedInUser) => SignIn(
+  static Signin fromMap(Map<String, dynamic> signedInUser) => Signin(
       localId: signedInUser['localId'],
       email: signedInUser['email'],
       displayName: signedInUser['displayName'],

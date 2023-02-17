@@ -102,7 +102,7 @@ class FirebaseAuthentication {
         message = _getErrorMessage(responseData['error']['message']);
         return message;
       }
-      final signedInUser = SignIn.fromMap(responseData);
+      final signedInUser = Signin.fromMap(responseData);
       idToken = signedInUser.idToken;
       // todo begin timer
       timer = Timer.periodic(const Duration(minutes: 55), (timer) {
@@ -158,7 +158,7 @@ class FirebaseAuthentication {
         }));
     final responseData = json.decode(response.body) as Map<String, dynamic>;
     if (!(responseData['error'] != null)) {
-      final signedInUser = SignIn.fromMap(responseData);
+      final signedInUser = Signin.fromMap(responseData);
       idToken = signedInUser.idToken;
     }
   }
@@ -173,6 +173,7 @@ class FirebaseAuthentication {
   }
 
   static Future<void> editPassword(BuildContext context) async {
+    // todo Add change password to the next production
     print("Edit Password");
   }
 
@@ -192,7 +193,6 @@ class FirebaseAuthentication {
 
   static Future<void> logout(BuildContext context) async {
     timer = null;
-    print('6');
     final client = Provider.of<MqttProvider>(context, listen: false);
     Provider.of<LoginUserData>(context, listen: false).resetLoggedInUser();
 

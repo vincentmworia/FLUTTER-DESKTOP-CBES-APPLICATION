@@ -103,10 +103,10 @@ class _AdminAllowUsersState extends State<AdminAllowUsers> {
                           child: IconButton(
                             onPressed: () =>
                                 _allowUsersFunction(context, index, false),
-                            icon: Icon(Icons.remove, color: Colors.white),
+                            icon: const Icon(Icons.remove, color: Colors.white),
                           ),
                         ),
-                        Text('ACTIVATE'),
+                        const Text('ACTIVATE'),
                         Container(
                           decoration: const BoxDecoration(
                             shape: BoxShape.circle,
@@ -115,7 +115,7 @@ class _AdminAllowUsersState extends State<AdminAllowUsers> {
                           child: IconButton(
                             onPressed: () =>
                                 _allowUsersFunction(context, index, true),
-                            icon: Icon(Icons.add, color: Colors.white),
+                            icon: const Icon(Icons.add, color: Colors.white),
                           ),
                         ),
                       ],
@@ -144,7 +144,7 @@ class _AdminAllowUsersState extends State<AdminAllowUsers> {
                   children: [
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            primary: MyApp.appSecondaryColor),
+                            backgroundColor: MyApp.appSecondaryColor),
                         onPressed: () {
                           Navigator.pop(context);
                         },
