@@ -12,7 +12,6 @@ import '../providers/mqtt.dart';
 import '../widgets/Iot_page_template.dart';
 import '../widgets/generate_excel_from_list.dart';
 import '../widgets/radial_gauge_sf.dart';
-import '../widgets/search_toggle_view.dart';
 import '../widgets/tank_graph.dart';
 import './home_screen.dart';
 
@@ -115,17 +114,18 @@ class _ElectricalEnergyScreenState extends State<ElectricalEnergyScreen> {
             area1Title: key1,
             area1DataSource: !_online
                 ? outputElectricalEnergyHistoryGraphData
-                : mqttProv.outputEnergyGraphData,
+                : mqttProv.outputElectricalEnergyGraphData,
             area2Title: key2,
             area2DataSource: !_online
                 ? pvElectricalEnergyHistoryGraphData
-                : mqttProv.pvEnergyGraphData,
+                : mqttProv.pvElectricalEnergyGraphData,
             graphTitle: 'Graph of Electrical Energy against Time',
           ),
           generateExcel: () async {
             setState(() {
               _isLoading = true;
             });
+
             List thermalDataCombination = [];
             var i = 0;
             if (_online) {
@@ -172,37 +172,26 @@ class _ElectricalEnergyScreenState extends State<ElectricalEnergyScreen> {
             }
           },
           searchDatabase: () async {
-            if (SearchToggleView.fromDateVal!
-                .isAfter(SearchToggleView.toDateVal!)) {
-              await customDialog(
-                  context, "Make sure the time in 'To' is after 'From'");
-              return;
-            }
             setState(() {
               _isLoading = true;
             });
 
             try {
-              final thermalEnergyHistoricalData =
-                  await HttpProtocol.queryThermalEnergyData(
+              final electricalEnergyHistoricalData =
+                  await HttpProtocol.queryElectricalEnergyData(
                       fromDate: _fromDate.text, toDate: _toDate.text);
               outputElectricalEnergyHistoryGraphData.clear();
               pvElectricalEnergyHistoryGraphData.clear();
-              print(thermalEnergyHistoricalData);
+              print(electricalEnergyHistoricalData);
 
-              for (Map data in thermalEnergyHistoricalData) {
+              for (Map data in electricalEnergyHistoricalData) {
                 outputElectricalEnergyHistoryGraphData.add(GraphAxis(
                     data.keys.toList()[0],
-                    (data.values.toList()[0][HttpProtocol.waterThermal])
-                    // double.parse(
-                    //     '${(data.values.toList()[0][HttpProtocol.tank1]).toString()}.0')
-
+                    (data.values.toList()[0][HttpProtocol.outputElectricalEnergy])
                     ));
                 pvElectricalEnergyHistoryGraphData.add(GraphAxis(
                     data.keys.toList()[0],
-                    (data.values.toList()[0][HttpProtocol.pvThermal])
-                    // double.parse(
-                    //     '${(data.values.toList()[0][HttpProtocol.tank1]).toString()}.0')
+                    (data.values.toList()[0][HttpProtocol.pvElectricalEnergy])
                     ));
               }
               mqttProv.refresh();
@@ -218,7 +207,7 @@ class _ElectricalEnergyScreenState extends State<ElectricalEnergyScreen> {
           },
           activateExcel:
               (!_online && outputElectricalEnergyHistoryGraphData.isNotEmpty) ||
-                  (_online && mqttProv.waterEnthalpyGraphData.isNotEmpty),
+                  (_online && mqttProv.outputElectricalEnergyGraphData.isNotEmpty),
         );
       });
     });

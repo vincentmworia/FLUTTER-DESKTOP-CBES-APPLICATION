@@ -52,8 +52,8 @@ class MqttProvider with ChangeNotifier {
   final List<GraphAxis> shedTempGraphData = [];
   final List<GraphAxis> shedHumidityGraphData = [];
 
-  final List<GraphAxis> pvEnergyGraphData = [];
-  final List<GraphAxis> outputEnergyGraphData = [];
+  final List<GraphAxis> pvElectricalEnergyGraphData = [];
+  final List<GraphAxis> outputElectricalEnergyGraphData = [];
 
   DuctMeter? get ductMeterData => _ductMeterData;
   DuctMeter? _ductMeterData;
@@ -163,8 +163,8 @@ class MqttProvider with ChangeNotifier {
           removeFirstElement(ambientIrradianceGraphData);
           removeFirstElement(shedTempGraphData);
           removeFirstElement(shedHumidityGraphData);
-          removeFirstElement(pvEnergyGraphData);
-          removeFirstElement(outputEnergyGraphData);
+          removeFirstElement(pvElectricalEnergyGraphData);
+          removeFirstElement(outputElectricalEnergyGraphData);
           final time = DateTime.now();
 
           temp1GraphData.add(GraphAxis(
@@ -202,6 +202,12 @@ class MqttProvider with ChangeNotifier {
               shedHumidityGraphData.add(GraphAxis(
                   _duration(time), double.parse(_shedMeterData!.humidity!)));
             }
+            outputElectricalEnergyGraphData.add(GraphAxis(
+                _duration(time), double.parse(_electricalEnergy!.outputEnergy)));
+
+              pvElectricalEnergyGraphData.add(GraphAxis(
+                  _duration(time), double.parse(_electricalEnergy!.pvEnergy)));
+
           }
           notifyListeners();
         }

@@ -39,11 +39,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     'range2Value': 25.0
   };
   static const powerConfig = {
-    'units': 'Kwh',
+    'units': 'KW',
     'minValue': 0.0,
-    'maxValue': 1000.0,
-    'range1Value': 250.0,
-    'range2Value': 750.0
+    'maxValue': 100.0,
+    'range1Value': 15.0,
+    'range2Value': 65.0
   };
   static const irradianceConfig = {
     'units': 'w/m²',
@@ -240,13 +240,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     PageTitle.electricalEnergyMeter),
                                 _gaugeView([
                                   {
-                                    'data': '0.0',
-                                    'title': 'Pv Power',
+                                    'data': mqttProv.electricalEnergyData
+                                            ?.outputEnergy ??
+                                        '0.0',
+                                    'title': 'Output Power',
                                     ...powerConfig
                                   },
                                   {
-                                    'data': '0.0',
-                                    'title': 'Output Power',
+                                    'data': mqttProv
+                                            .electricalEnergyData?.pvEnergy ??
+                                        '0.0',
+                                    'title': 'Pv Power',
                                     ...powerConfig
                                   },
                                 ], cons.maxWidth),
@@ -281,12 +285,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 HomeScreen.pageTitle(PageTitle.shedMeter),
                                 _gaugeView([
                                   {
-                                    'data': '0.0',
+                                    'data':
+                                        mqttProv.shedMeterData?.temperature ??
+                                            '0.0',
                                     'title': 'Temperature',
                                     ...temperatureConfig
                                   },
                                   {
-                                    'data': '0.0',
+                                    'data': mqttProv.shedMeterData?.humidity ??
+                                        '0.0',
                                     'title': 'Humidity',
                                     ...humidityConfig
                                   },

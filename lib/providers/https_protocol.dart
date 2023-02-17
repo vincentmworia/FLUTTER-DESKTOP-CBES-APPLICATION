@@ -106,6 +106,17 @@ class HttpProtocol {
     return json.decode(thermalMeterResponse.body) as List;
   }
 
+  // Electrical Energy
+  static const outputElectricalEnergy = "outputElectrical";
+  static const pvElectricalEnergy = "pvElectrical";
+
+  static Future<List> queryElectricalEnergyData(
+      {required String fromDate, required String toDate}) async {
+    final electricalEnergyResponse = await http
+        .get(Uri.parse('$firebaseDbUrl/cbes_data/electrical_energy.json'));
+    return json.decode(electricalEnergyResponse.body) as List;
+  }
+
   static Future<http.Response> getFirewoodData() async {
     return await http.get(Uri.parse('$firebaseDbUrl/cbes_data/firewood.json'));
   }
