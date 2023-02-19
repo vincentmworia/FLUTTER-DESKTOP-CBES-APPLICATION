@@ -48,32 +48,36 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  var _scadaView = false;
+  var _scadaView = true;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-        builder: (builder, cons) => Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Switch.adaptive(
-                        activeColor: Theme.of(context).colorScheme.primary,
-                        value: _scadaView,
-                        onChanged: (val) {
-                          setState(() {
-                            _scadaView = val;
-                          });
-                        })
-                  ],
-                ),
-                if (_scadaView) DashboardScreenScada(cons: cons),
-                if (!_scadaView)
-                  DashboardScreenGaugeView(
-                      switchDashboardPage: widget.switchDashboardPage,
-                      cons: cons),
-              ],
-            ));
+        builder: (builder, cons) => SizedBox(
+          width: cons.maxWidth,
+          height: cons.maxHeight,
+          child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Switch.adaptive(
+                          activeColor: Theme.of(context).colorScheme.primary,
+                          value: _scadaView,
+                          onChanged: (val) {
+                            setState(() {
+                              _scadaView = val;
+                            });
+                          })
+                    ],
+                  ),
+                  if (_scadaView) DashboardScreenScada(cons: cons),
+                  if (!_scadaView)
+                    DashboardScreenGaugeView(
+                        switchDashboardPage: widget.switchDashboardPage,
+                        cons: cons),
+                ],
+              ),
+        ));
   }
 }
