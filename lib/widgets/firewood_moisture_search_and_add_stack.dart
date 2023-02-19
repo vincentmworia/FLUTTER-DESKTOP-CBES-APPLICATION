@@ -113,6 +113,7 @@ final BoxConstraints cons;
                                       return null;
                                     },
 
+
                                     onShowPicker: (context, currentValue) async {
                                       final currentTime = DateTime.now();
                                       final date = await showDatePicker(
@@ -149,6 +150,7 @@ final BoxConstraints cons;
                                         searchSelectedDate(
                                             DateFormat("yyyy-MM-dd HH:mm")
                                                 .format(dateTimeSelected));
+                                        return null;
                                       } else {
                                         return currentValue;
                                       }

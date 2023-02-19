@@ -99,6 +99,8 @@ class _FirewoodMoistureDetailedScreenState
     (widget.pageData[widget.pageData.keys.first] as Map).forEach((key, value) {
       graphData.add(GraphAxis.fromMap({key: value}));
     });
+    graphData
+        .sort((a, b) => DateTime.parse(a.x).compareTo(DateTime.parse(b.x)));
     // todo Filter graph data by date???
     // todo By default, get all data
     return AnimatedOpacity(
@@ -267,6 +269,7 @@ class _FirewoodMoistureDetailedScreenState
                                             } else {
                                               return currentValue;
                                             }
+                                            return null;
                                           },
                                         ),
                                         TextField(
