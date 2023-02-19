@@ -1,22 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../providers/mqtt.dart';
-import '../widgets/linear_gauge.dart';
-import '../widgets/radial_gauge_sf.dart';
-import './home_screen.dart';
+import '../widgets/dashboard_screen_gauge_view.dart';
+import '../widgets/dashboard_screen_scada.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key, required this.switchDashboardPage})
       : super(key: key);
   final Function switchDashboardPage;
-
-  @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
-}
-
-class _DashboardScreenState extends State<DashboardScreen> {
-  var _threeDView = false;
   static const temperatureConfig = {
     'units': '°C',
     'minValue': 0.0,
@@ -53,291 +43,37 @@ class _DashboardScreenState extends State<DashboardScreen> {
     'range2Value': 1000.0
   };
 
-  final bdRadius = BorderRadius.circular(10);
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
 
-  Widget cardView(String title, Widget? child, BoxConstraints cons) =>
-      GestureDetector(
-        onDoubleTap: () {
-          if (title == HomeScreen.pageTitle(PageTitle.solarHeaterMeter)) {
-            widget.switchDashboardPage(PageTitle.solarHeaterMeter,
-                HomeScreen.pageTitle(PageTitle.solarHeaterMeter));
-          }
-          if (title == HomeScreen.pageTitle(PageTitle.ambientMeter)) {
-            widget.switchDashboardPage(PageTitle.ambientMeter,
-                HomeScreen.pageTitle(PageTitle.ambientMeter));
-          }
-          if (title == HomeScreen.pageTitle(PageTitle.flowMeter)) {
-            widget.switchDashboardPage(
-                PageTitle.flowMeter, HomeScreen.pageTitle(PageTitle.flowMeter));
-          }
-          if (title == HomeScreen.pageTitle(PageTitle.electricalEnergyMeter)) {
-            widget.switchDashboardPage(PageTitle.electricalEnergyMeter,
-                HomeScreen.pageTitle(PageTitle.electricalEnergyMeter));
-          }
-          if (title == HomeScreen.pageTitle(PageTitle.ductMeter)) {
-            widget.switchDashboardPage(
-                PageTitle.ductMeter, HomeScreen.pageTitle(PageTitle.ductMeter));
-          }
-          if (title == HomeScreen.pageTitle(PageTitle.shedMeter)) {
-            widget.switchDashboardPage(
-                PageTitle.shedMeter, HomeScreen.pageTitle(PageTitle.shedMeter));
-          }
-        },
-        child: Card(
-          elevation: 8,
-          shadowColor: Theme.of(context).colorScheme.primary,
-          color: Colors.white.withOpacity(0.65),
-          shape: RoundedRectangleBorder(borderRadius: bdRadius),
-          child: SizedBox(
-            width: cons.maxWidth * 0.275,
-            height: cons.maxHeight * 0.4,
-            child: Column(
-              children: [
-                Container(
-                  width: cons.maxWidth * 0.15,
-                  height: cons.maxHeight * 0.05,
-                  decoration: BoxDecoration(
-                      color: Colors.white, borderRadius: bdRadius),
-                  child: Center(
-                    child: Text(
-                      title,
-                      style: TextStyle(
-                          fontSize: 18.0,
-                          letterSpacing: 2.0,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.primary),
-                    ),
-                  ),
-                ),
-                Expanded(child: child ?? Container()),
-              ],
-            ),
-          ),
-        ),
-      );
-
-  Widget _gaugeView(List listData, double width) => Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: listData
-          .map(
-            (e) => Expanded(
-                child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: e['title'].toString().contains('Tank') ||
-                      e['title'].toString().contains('A.') ||
-                      e['title'].toString().contains('Irradiance')
-                  ? LinearGauge(
-                      title: e['title'],
-                      data: e['data'],
-                      min: e['minValue'],
-                      max: e['maxValue'],
-                      units: e['units'],
-                      gaugeWidth: width * 0.1,
-                    )
-                  // KdRadialGauge(
-                  //   title: e['title'],
-                  //   data: e['data'],
-                  //   gaugeHeight: height * 0.15,
-                  //   units: e['units'],
-                  //   minValue: e['minValue'],
-                  //   maxValue: e['maxValue'],
-                  //   range1Value: e['range1Value'],
-                  //   range2Value: e['range2Value'],
-                  // )
-                  : SyncfusionRadialGauge(
-                      title: e['title'],
-                      units: e['units'],
-                      data: e['data'],
-                      minValue: e['minValue'],
-                      maxValue: e['maxValue'],
-                      range1Value: e['range1Value'],
-                      range2Value: e['range2Value'],
-                    ),
-            )),
-          )
-          .toList());
+class _DashboardScreenState extends State<DashboardScreen> {
+  var _scadaView = false;
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (builder, cons) {
-      return SizedBox(
-        width: cons.maxWidth,
-        height: cons.maxHeight,
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+    return LayoutBuilder(
+        builder: (builder, cons) => Column(
               children: [
-                Switch.adaptive(
-                    activeColor: Theme.of(context).colorScheme.primary,
-                    value: _threeDView,
-                    onChanged: (val) {
-                      setState(() {
-                        _threeDView = val;
-                      });
-                    })
-              ],
-            ),
-            if (_threeDView)
-              const Expanded(
-                  child: Center(
-                child: Text("3D VIEW"),
-              )),
-            if (!_threeDView)
-              Expanded(
-                child: Consumer<MqttProvider>(
-                  builder: (context, mqttProv, child) => Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            cardView(
-                                HomeScreen.pageTitle(
-                                    PageTitle.solarHeaterMeter),
-                                _gaugeView([
-                                  {
-                                    'data': mqttProv.heatingUnitData?.tank1 ??
-                                        '0.0',
-                                    'title': 'Tank 1',
-                                    ...temperatureConfig
-                                  },
-                                  {
-                                    'data': mqttProv.heatingUnitData?.tank2 ??
-                                        '0.0',
-                                    'title': 'Tank 2',
-                                    ...temperatureConfig
-                                  },
-                                  {
-                                    'data': mqttProv.heatingUnitData?.tank3 ??
-                                        '0.0',
-                                    'title': 'Tank 3',
-                                    ...temperatureConfig
-                                  },
-                                ], cons.maxWidth),
-                                cons),
-                            cardView(
-                                HomeScreen.pageTitle(PageTitle.flowMeter),
-                                _gaugeView([
-                                  {
-                                    'data': mqttProv.heatingUnitData?.flow1 ??
-                                        '0.0',
-                                    'title': 'Flow (S.H)',
-                                    ...flowConfig
-                                  },
-                                  {
-                                    'data': mqttProv.heatingUnitData?.flow2 ??
-                                        '0.0',
-                                    'title': 'Flow (H.E)',
-                                    ...flowConfig
-                                  },
-                                ], cons.maxWidth),
-                                cons),
-                            cardView(
-                                HomeScreen.pageTitle(
-                                    PageTitle.electricalEnergyMeter),
-                                _gaugeView([
-                                  {
-                                    'data': mqttProv.electricalEnergyData
-                                            ?.outputEnergy ??
-                                        '0.0',
-                                    'title': 'Output Power',
-                                    ...powerConfig
-                                  },
-                                  {
-                                    'data': mqttProv
-                                            .electricalEnergyData?.pvEnergy ??
-                                        '0.0',
-                                    'title': 'Pv Power',
-                                    ...powerConfig
-                                  },
-                                ], cons.maxWidth),
-                                cons),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            cardView(
-                                HomeScreen.pageTitle(PageTitle.ductMeter),
-                                _gaugeView([
-                                  {
-                                    'data':
-                                        mqttProv.ductMeterData?.temperature ??
-                                            '0.0',
-                                    'title': 'Temperature',
-                                    ...temperatureConfig
-                                  },
-                                  {
-                                    'data': mqttProv.ductMeterData?.humidity ??
-                                        '0.0',
-                                    'title': 'Humidity',
-                                    ...humidityConfig
-                                  },
-                                ], cons.maxWidth),
-                                cons),
-                            cardView(
-                                HomeScreen.pageTitle(PageTitle.shedMeter),
-                                _gaugeView([
-                                  {
-                                    'data':
-                                        mqttProv.shedMeterData?.temperature ??
-                                            '0.0',
-                                    'title': 'Temperature',
-                                    ...temperatureConfig
-                                  },
-                                  {
-                                    'data': mqttProv.shedMeterData?.humidity ??
-                                        '0.0',
-                                    'title': 'Humidity',
-                                    ...humidityConfig
-                                  },
-                                ], cons.maxWidth),
-                                cons),
-                            cardView(
-                                HomeScreen.pageTitle(PageTitle.ambientMeter),
-                                _gaugeView([
-                                  {
-                                    'data':
-                                        (mqttProv.heatingUnitData?.ambientTemp)
-                                                ?.toStringAsFixed(1) ??
-                                            '0.0',
-                                    'title': 'A.Temp',
-                                    ...temperatureConfig
-                                  },
-                                  {
-                                    'data': (mqttProv.heatingUnitData
-                                                ?.ambientHumidity)
-                                            ?.toStringAsFixed(1) ??
-                                        '0.0',
-                                    'title': 'A.Humidity',
-                                    ...humidityConfig
-                                  },
-                                  {
-                                    'data': (mqttProv.heatingUnitData
-                                                ?.ambientIrradiance)
-                                            ?.toStringAsFixed(1) ??
-                                        '0.0',
-                                    'title': 'A.Irradiance',
-                                    ...irradianceConfig
-                                  },
-                                ], cons.maxWidth),
-                                cons),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Switch.adaptive(
+                        activeColor: Theme.of(context).colorScheme.primary,
+                        value: _scadaView,
+                        onChanged: (val) {
+                          setState(() {
+                            _scadaView = val;
+                          });
+                        })
+                  ],
                 ),
-              ),
-          ],
-        ),
-      );
-    });
+                if (_scadaView) DashboardScreenScada(cons: cons),
+                if (!_scadaView)
+                  DashboardScreenGaugeView(
+                      switchDashboardPage: widget.switchDashboardPage,
+                      cons: cons),
+              ],
+            ));
   }
 }

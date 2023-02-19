@@ -40,7 +40,7 @@ class SyncfusionRadialGauge extends StatelessWidget {
               color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.bold),
         ),
-        animationDuration: 4000,
+        animationDuration: 5000,
         enableLoadingAnimation: true,
         axes: <RadialAxis>[
           RadialAxis(
