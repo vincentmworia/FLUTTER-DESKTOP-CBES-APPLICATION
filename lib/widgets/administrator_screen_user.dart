@@ -18,7 +18,7 @@ class AdministratorScreenUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:   EdgeInsets.symmetric(horizontal: cons.maxWidth*0.075, vertical: cons.maxHeight*0.0025),
+      padding:   EdgeInsets.symmetric(horizontal: cons.maxWidth*0.05, vertical: cons.maxHeight*0.0025),
       child: Card(
         elevation: 6,
         shadowColor: Theme.of(context).colorScheme.primary,

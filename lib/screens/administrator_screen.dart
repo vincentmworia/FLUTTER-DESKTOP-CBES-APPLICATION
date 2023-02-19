@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 import '../models/online_user.dart';
 import '../providers/mqtt.dart';
+import '../widgets/administrator_screen_online_user.dart';
 import '../widgets/administrator_screen_user.dart';
 import '../widgets/loading_animation.dart';
 import '../models/logged_in.dart';
@@ -142,57 +143,14 @@ class _AdministratorScreenState extends State<AdministratorScreen> {
                   SizedBox(
                     width: cons.maxWidth * 0.15,
                     child: ListView(
-
                       children: [
                         _title(context, 'Online Users'),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            ...onlineUsers
-                                .map((e) => Column(
-                                      children: [
-                                        Container(
-                                          width: cons.maxWidth*0.05,
-                                          height: cons.maxHeight * 0.2,
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary),
-                                          child: Container(
-                                            margin:
-                                                const EdgeInsets.all(2),
-                                            height: cons.maxHeight * 0.1,
-                                            decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary
-                                                    .withOpacity(0.75)),
-                                            child: Center(
-                                                child: Text(
-                                              e.firstName[0],
-                                              style: const TextStyle(
-                                                  fontSize: 30,
-                                                  fontWeight:
-                                                      FontWeight.w700,
-                                                  color: Colors.white),
-                                            )),
-                                          ),
-                                        ),
-                                        Text(
-                                          '${e.firstName} ${e.lastName}',
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary),
-                                        )
-                                        // Text(e.email.substring(0,e.email.indexOf('@')))
-                                      ],
-                                    ))
-                                .toList()
-                          ],
-                        ),
+                        ...onlineUsers
+                            .map((e) => AdministratorScreenOnlineUser(
+                          cons: cons,
+                          e: e,
+                        ))
+                            .toList()
                       ],
                     ),
                   ),
