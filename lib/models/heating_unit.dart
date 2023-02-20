@@ -11,10 +11,9 @@ class HeatingUnit {
   static const density = 997.0;
   static const periodOfData = 2.0;
 
-  // static const irradiance = 700;
-
   static const solarArea = 2.0;
 
+  // todo extract fromm the API
   double get ambientIrradiance => Random().nextDouble() * (20) + 700;
 
   double get ambientTemp => (Random().nextDouble() * 5) + 20;
@@ -63,6 +62,9 @@ class HeatingUnit {
           flow1: heatingUnitData['Flow1'].toString(),
           flow2: heatingUnitData['Flow2'].toString());
 
+  final _changes = '';
+
+  // todo Add ambient data
   Map<String, String> asMap() => {
         "TankT1": tank1 ?? '0.0',
         "TankT2": tank2 ?? '0.0',

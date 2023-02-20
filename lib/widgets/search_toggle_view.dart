@@ -11,7 +11,6 @@ class SearchToggleView extends StatefulWidget {
     required this.toController,
     required this.searchDatabase,
     required this.activateExcel,
-    //todo
   }) : super(key: key);
 
   final Function? toggleOnlineStatus;
@@ -33,11 +32,6 @@ class _SearchToggleViewState extends State<SearchToggleView> {
   var _online = true;
   var _visibility = false;
   DateTime? _tempFromDate;
-  // final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
-  // todo Put a better date format
-
-  // todo Break into a separate widget named SearchDateTime or rather this whole widget???
   Widget _searchDateTime(
           {required String title, required TextEditingController controller}) =>
       Row(
@@ -55,7 +49,6 @@ class _SearchToggleViewState extends State<SearchToggleView> {
                       .titleMedium!
                       .copyWith(color: Theme.of(context).colorScheme.primary),
                 )),
-          // todo Work on this UI, Showing the from and to, and their lengths
           if (title.contains('From') ||
               (title.contains('To') && widget.fromController.text != ""))
             SizedBox(
@@ -139,9 +132,6 @@ class _SearchToggleViewState extends State<SearchToggleView> {
       _visibility = true;
       _online = false;
     }
-    // print(_visibility);
-    // todo Switching alot
-    // print(!(!_online || widget.toggleOnlineStatus != null));
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

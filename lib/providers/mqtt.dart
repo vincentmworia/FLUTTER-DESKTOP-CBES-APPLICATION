@@ -73,8 +73,6 @@ class MqttProvider with ChangeNotifier {
 
   ConnectionStatus get connectionStatus => _connStatus;
 
-  // todo set unique Id for individual devices? From Email?
-
   final platform = Platform.isAndroid
       ? "Android"
       : Platform.isWindows
@@ -137,16 +135,17 @@ class MqttProvider with ChangeNotifier {
       if (kDebugMode) {
         print('\n\nException: $e');
       }
+      const changes = '';
       // todo FORCE THE USER OFFLINE UNTIL ERROR IS ACKNOWLEDGED USING ANOTHER PROVIDER???
       // TODO PROVIDER INHERITANCE?? USE RIVER-POD
+
+      // TODO SAME USER CANNOT LOGIN TWICE, UNLESS FORCE-LOGGED OUT IN ANOTHER DEVICE
       _mqttClient.disconnect();
       _connStatus = ConnectionStatus.disconnected;
     }
 
     if (_connStatus == ConnectionStatus.connected) {
       _mqttClient.subscribe("cbes/dekut/#", MqttQos.exactlyOnce);
-
-      // todo change the duration dynamically on request from the client
       timerGraph = Timer.periodic(const Duration(seconds: 10), (timer) {
         if (_heatingUnitData != null) {
           removeFirstElement(temp1GraphData);
@@ -202,12 +201,11 @@ class MqttProvider with ChangeNotifier {
               shedHumidityGraphData.add(GraphAxis(
                   _duration(time), double.parse(_shedMeterData!.humidity!)));
             }
-            outputElectricalEnergyGraphData.add(GraphAxis(
-                _duration(time), double.parse(_electricalEnergy!.outputEnergy)));
+            outputElectricalEnergyGraphData.add(GraphAxis(_duration(time),
+                double.parse(_electricalEnergy!.outputEnergy)));
 
-              pvElectricalEnergyGraphData.add(GraphAxis(
-                  _duration(time), double.parse(_electricalEnergy!.pvEnergy)));
-
+            pvElectricalEnergyGraphData.add(GraphAxis(
+                _duration(time), double.parse(_electricalEnergy!.pvEnergy)));
           }
           notifyListeners();
         }

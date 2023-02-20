@@ -11,12 +11,6 @@ import '../widgets/firewood_moisture_search_and_add_stack.dart';
 class FirewoodMoistureScreen extends StatelessWidget {
   const FirewoodMoistureScreen({super.key});
 
-  // TODO Add Stack
-  // TODO Add item in stack
-
-  // TODO delete Stack
-  // TODO delete item in stack
-
   static Future<void> showAlertDialog(
           String title, Function yesFn, BuildContext ctx) async =>
       await showDialog(
@@ -185,11 +179,6 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
 
       _stackNameController.text = '';
     }
-
-    // print(_stackNameController.text);
-    // todo, should be a trial and error,
-    //  todo in case of any error, Display the error
-    // todo
   }
 
   Map<String, dynamic> firewoodData = {};

@@ -1,7 +1,7 @@
-import 'package:cbesdesktop/models/logged_in.dart';
 import 'package:flutter/material.dart';
 
 import '../main.dart';
+import '../models/logged_in.dart';
 
 class AdminAllowUsers extends StatefulWidget {
   const AdminAllowUsers(this.allowUsers, {Key? key}) : super(key: key);
@@ -152,8 +152,6 @@ class _AdminAllowUsersState extends State<AdminAllowUsers> {
                     ElevatedButton(
                         onPressed: () async {
                           Navigator.pop(context);
-
-                          // todo widget.allowUser(operation == true ? 1 : 0, user);
                         },
                         child: const Text('Yes')),
                   ],

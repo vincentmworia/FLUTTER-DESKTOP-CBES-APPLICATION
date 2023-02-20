@@ -62,7 +62,7 @@ class _AmbientMeterScreenState extends State<AmbientMeterScreen> {
                   'title': 'Temperature',
                   'data': (mqttProv.heatingUnitData?.ambientTemp)
                           ?.toStringAsFixed(1) ??
-                      '0.0',
+                      '_._',
                   'min': '0.0',
                   'max': '100.0',
                   'units': '°C',
@@ -71,7 +71,7 @@ class _AmbientMeterScreenState extends State<AmbientMeterScreen> {
                   'title': 'Humidity',
                   'data': (mqttProv.heatingUnitData?.ambientHumidity)
                           ?.toStringAsFixed(1) ??
-                      '0.0',
+                      '_._',
                   'min': '0.0',
                   'max': '100.0',
                   'units': '%',
@@ -80,7 +80,7 @@ class _AmbientMeterScreenState extends State<AmbientMeterScreen> {
                   'title': 'Irradiance',
                   'data': (mqttProv.heatingUnitData?.ambientIrradiance)
                           ?.toStringAsFixed(1) ??
-                      '0.0',
+                      '_._',
                   'units': 'w/m²',
                   'min': '0.0',
                   'max': '2000.0',
@@ -189,7 +189,6 @@ class _AmbientMeterScreenState extends State<AmbientMeterScreen> {
                     _isLoading = true;
                   });
                   try {
-                    // todo Get the ambient temp, humidity, irradiance of the database
                     final ambientMeterHeaterHistoricalData =
                         await HttpProtocol.queryAmbientMeter(
                             fromDate: _fromDate.text, toDate: _toDate.text);

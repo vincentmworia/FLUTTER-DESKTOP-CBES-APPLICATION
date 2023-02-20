@@ -51,14 +51,8 @@ class _FirewoodMoistureDetailedScreenState
 
   static const keyMain = "Datetime";
   static const key1 = "Moisture Level (%)";
-
-  void _searchDatabase() {
-    // todo filter the graph and setState
-  }
-
   void _generateExcel() async {
     widget.changeLoadingStatus(true);
-    // todo Get the values of the graph and convert them into a list
     List graphDataCombination = [];
     for (var element in graphData) {
       graphDataCombination.add({keyMain: element.x, key1: element.y});
@@ -100,8 +94,6 @@ class _FirewoodMoistureDetailedScreenState
     });
     graphData
         .sort((a, b) => DateTime.parse(a.x).compareTo(DateTime.parse(b.x)));
-    // todo Filter graph data by date???
-    // todo By default, get all data
     return AnimatedOpacity(
         duration: const Duration(milliseconds: 500),
         opacity: widget.op,
@@ -163,7 +155,6 @@ class _FirewoodMoistureDetailedScreenState
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Card(
-                              // todo Decorate here
                               elevation: 4,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10)),
@@ -336,7 +327,7 @@ class _FirewoodMoistureDetailedScreenState
                               generateExcel: _generateExcel,
                               fromController: _fromController,
                               toController: _toController,
-                              searchDatabase: _searchDatabase,
+                              searchDatabase: null,
                               activateExcel: graphData.isNotEmpty,
                             ),
                           ],
@@ -346,7 +337,6 @@ class _FirewoodMoistureDetailedScreenState
                         child: Column(
                           children: [
                             Expanded(
-                              // todo Break widget
                               child: Stack(
                                 children: [
                                   if (graphView)
@@ -396,8 +386,6 @@ class _FirewoodMoistureDetailedScreenState
                                                             '${e.y.toString()} %'),
                                                         trailing: IconButton(
                                                           onPressed: () async {
-                                                            // todo Remove element from the api
-                                                            // todo Try except
                                                             widget
                                                                 .changeLoadingStatus(
                                                                     true);

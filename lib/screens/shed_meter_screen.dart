@@ -56,11 +56,11 @@ class _ShedMeterScreenState extends State<ShedMeterScreen> {
         final List<Map<String, String>> heatingUnitData = [
           {
             'title': 'Temperature',
-            'data': mqttProv.shedMeterData?.temperature ?? '0.0'
+            'data': mqttProv.shedMeterData?.temperature ?? '_._'
           },
           {
             'title': 'Humidity',
-            'data': mqttProv.shedMeterData?.humidity ?? '0.0'
+            'data': mqttProv.shedMeterData?.humidity ?? '_._'
           },
         ];
         return IotPageTemplate(

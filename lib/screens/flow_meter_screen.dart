@@ -56,11 +56,11 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
         final List<Map<String, String>> heatingUnitData = [
           {
             'title': 'Flow S.H',
-            'data': mqttProv.heatingUnitData?.flow2 ?? '0.0'
+            'data': mqttProv.heatingUnitData?.flow2 ??'_._'
           },
           {
             'title': 'Flow H.E',
-            'data': mqttProv.heatingUnitData?.flow1 ?? '0.0'
+            'data': mqttProv.heatingUnitData?.flow1 ?? '_._'
           },
         ];
         return IotPageTemplate(

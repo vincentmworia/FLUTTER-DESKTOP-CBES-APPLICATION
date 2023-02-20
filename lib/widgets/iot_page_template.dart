@@ -54,9 +54,6 @@ class _IotPageTemplateState extends State<IotPageTemplate> {
                           children: [
                             SizedBox(
                               height: cons.maxHeight * 0.5,
-                              // width:  cons.maxWidth * 0.5,
-
-                              // todo Break the child into a widget
                               child: widget.gaugePart,
                             ),
                             SearchToggleView(
@@ -74,7 +71,6 @@ class _IotPageTemplateState extends State<IotPageTemplate> {
                         child: Column(
                           children: [
                             Expanded(
-                              // todo Break widget
                               child: widget.graphPart,
                             ),
                           ],

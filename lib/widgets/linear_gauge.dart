@@ -22,8 +22,8 @@ class LinearGauge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final minRange = ((max - min) * 0.3) + min;
-    final maxRange = ((max - min) * 0.6) + min;
+    final minRange = ((max - min) * 0.25) + min;
+    final maxRange = ((max - min) * 0.55) + min;
     final value = double.parse(data);
     final color = value < minRange
         ? lowColor
@@ -55,7 +55,6 @@ class LinearGauge extends StatelessWidget {
                 axisLabelStyle: TextStyle(
                     color: Theme.of(context).colorScheme.primary, fontSize: 10),
                 axisTrackStyle: const LinearAxisTrackStyle(color: Colors.grey),
-                // todo Tick styles
                 majorTickStyle: LinearTickStyle(
                     color: Theme.of(context).colorScheme.primary),
                 minorTickStyle: LinearTickStyle(

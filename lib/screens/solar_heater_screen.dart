@@ -60,15 +60,15 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
               final List<Map<String, String>> heatingUnitData = [
                 {
                   'title': 'Tank 1 ',
-                  'data': mqttProv.heatingUnitData?.tank1 ?? '0.0'
+                  'data': mqttProv.heatingUnitData?.tank1 ?? '_._'
                 },
                 {
                   'title': 'Tank 2',
-                  'data': mqttProv.heatingUnitData?.tank2 ?? '0.0'
+                  'data': mqttProv.heatingUnitData?.tank2 ?? '_._'
                 },
                 {
                   'title': 'Tank 3',
-                  'data': mqttProv.heatingUnitData?.tank3 ?? '0.0'
+                  'data': mqttProv.heatingUnitData?.tank3 ?? '_._'
                 },
               ];
               return IotPageTemplate(

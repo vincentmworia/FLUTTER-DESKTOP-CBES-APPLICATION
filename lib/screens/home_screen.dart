@@ -36,10 +36,6 @@ enum PageTitle {
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
   static const routeName = '/home_screen';
-
-  // todo Add Firewood Moisture Meter Dashboard to feed in moisture data
-  // todo request for the moisture meter API
-
   static String pageTitle(PageTitle page) {
     switch (page) {
       case PageTitle.dashboard:
@@ -104,9 +100,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _switchPage(PageTitle page, String title) {
     setState(() {
-      // todo
       _page = page;
       _pageTitle = title;
+      var decompress = '';
+      // todo DECOMPRESS WHEN???
       if(_page == PageTitle.dashboard){
       _showNavPlane = false;
       _deCompressNavPlane = true;
@@ -145,9 +142,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-    // todo SHOULD BE TRIGGERED ONCE
-    // TODO DECOMPRESSING THE NAVBAR THROWING ERROR IF MILLISECONDS IS INCREASED
     const duration = Duration(milliseconds: 20);
 
     const txtStyle = TextStyle(

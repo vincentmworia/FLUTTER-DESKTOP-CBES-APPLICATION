@@ -65,12 +65,12 @@ class _ElectricalEnergyScreenState extends State<ElectricalEnergyScreen> {
         final List<Map<String, dynamic>> heatingUnitData = [
           {
             'title': 'Output Electrical Energy',
-            'data': mqttProv.electricalEnergyData?.outputEnergy ?? '0.0',
+            'data': mqttProv.electricalEnergyData?.outputEnergy ?? '_._',
             ...gaugeConfig
           },
           {
             'title': 'Pv Electrical Energy',
-            'data': mqttProv.electricalEnergyData?.pvEnergy ?? '0.0',
+            'data': mqttProv.electricalEnergyData?.pvEnergy ??'_._',
             ...gaugeConfig
           },
         ];

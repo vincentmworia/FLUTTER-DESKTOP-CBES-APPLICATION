@@ -18,5 +18,3 @@ class ElectricalEnergy {
         "outputEnergy": outputEnergy,
       };
 }
-
-// todo Add to MQTT, add the graph, etc

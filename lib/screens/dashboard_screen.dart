@@ -40,7 +40,7 @@ class DashboardScreen extends StatefulWidget {
     'minValue': 0.0,
     'maxValue': 2000.0,
     'range1Value': 400.0,
-    'range2Value': 1000.0
+    'range2Value': 900.0
   };
 
   @override
@@ -54,22 +54,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
         builder: (builder, cons) => SizedBox(
-          width: cons.maxWidth,
-          height: cons.maxHeight,
-          child: Column(
+              width: cons.maxWidth,
+              height: cons.maxHeight,
+              child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Switch.adaptive(
-                          activeColor: Theme.of(context).colorScheme.primary,
-                          value: _scadaView,
-                          onChanged: (val) {
-                            setState(() {
-                              _scadaView = val;
-                            });
-                          })
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          _scadaView ? '3D View' : 'Gauge View',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontSize: 20.0,
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                        SizedBox(
+                          width: cons.maxWidth * 0.01,
+                        ),
+                        Switch.adaptive(
+                            activeColor: Theme.of(context).colorScheme.primary,
+                            value: _scadaView,
+                            onChanged: (val) {
+                              setState(() {
+                                _scadaView = val;
+                              });
+                            })
+                      ],
+                    ),
                   ),
                   if (_scadaView) DashboardScreenScada(cons: cons),
                   if (!_scadaView)
@@ -78,6 +90,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         cons: cons),
                 ],
               ),
-        ));
+            ));
   }
 }

@@ -54,8 +54,6 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (_, cons) {
       return Consumer<MqttProvider>(builder: (context, mqttProv, child) {
-        // Compute MCDT, Compute Av.t,
-        // todo here
         const gaugeConfig = {
           'units': 'KJ',
           'minValue': 0.0,
@@ -66,12 +64,12 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
         final List<Map<String, dynamic>> heatingUnitData = [
           {
             'title': 'Water Thermal Energy',
-            'data': mqttProv.heatingUnitData!.waterEnthalpy!.toStringAsFixed(1),
+            'data': mqttProv.heatingUnitData?.waterEnthalpy!.toStringAsFixed(1)??'_._',
             ...gaugeConfig
           },
           {
             'title': 'Pv Thermal Energy',
-            'data': mqttProv.heatingUnitData!.pvEnthalpy.toStringAsFixed(1),
+            'data': mqttProv.heatingUnitData?.pvEnthalpy.toStringAsFixed(1)??'_._',
             ...gaugeConfig
           },
         ];
