@@ -82,7 +82,6 @@ class _FirewoodMoistureDetailedScreenState
       widget.changeLoadingStatus(false);
     }
   }
-
   @override
   void dispose() {
     super.dispose();
@@ -113,7 +112,7 @@ class _FirewoodMoistureDetailedScreenState
           child: Column(
             children: [
               Row(
-                children: [
+                 children: [
                   Padding(
                     padding: const EdgeInsets.all(15.0),
                     child: IconButton(
