@@ -64,12 +64,15 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
         final List<Map<String, dynamic>> heatingUnitData = [
           {
             'title': 'Water Thermal Energy',
-            'data': mqttProv.heatingUnitData?.waterEnthalpy!.toStringAsFixed(1)??'_._',
+            'data':
+                mqttProv.heatingUnitData?.waterEnthalpy!.toStringAsFixed(1) ??
+                    '_._',
             ...gaugeConfig
           },
           {
             'title': 'Pv Thermal Energy',
-            'data': mqttProv.heatingUnitData?.pvEnthalpy.toStringAsFixed(1)??'_._',
+            'data': mqttProv.heatingUnitData?.pvEnthalpy.toStringAsFixed(1) ??
+                '_._',
             ...gaugeConfig
           },
         ];
@@ -96,7 +99,7 @@ class _ThermalEnergyScreenState extends State<ThermalEnergyScreen> {
                               height: double.infinity,
                               child: SyncfusionRadialGauge(
                                 title: e['title']!,
-                                data: e['data']!,
+                                data: e['data'] == '_._' ? '0.0' : e['data']!,
                                 minValue: e['minValue'],
                                 maxValue: e['maxValue'],
                                 range1Value: e['range1Value'],

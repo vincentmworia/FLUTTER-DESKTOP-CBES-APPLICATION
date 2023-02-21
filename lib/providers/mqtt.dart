@@ -147,24 +147,49 @@ class MqttProvider with ChangeNotifier {
     if (_connStatus == ConnectionStatus.connected) {
       _mqttClient.subscribe("cbes/dekut/#", MqttQos.exactlyOnce);
       timerGraph = Timer.periodic(const Duration(seconds: 10), (timer) {
+        final time = DateTime.now();
+        if (_shedMeterData != null) {
+          removeFirstElement(shedTempGraphData);
+          removeFirstElement(shedHumidityGraphData);
+
+          shedTempGraphData.add(GraphAxis(
+              _duration(time), double.parse(_shedMeterData!.temperature!)));
+          shedHumidityGraphData.add(GraphAxis(
+              _duration(time), double.parse(_shedMeterData!.humidity!)));
+        }
+        if (_electricalEnergy != null) {
+          removeFirstElement(pvElectricalEnergyGraphData);
+          removeFirstElement(outputElectricalEnergyGraphData);
+
+          outputElectricalEnergyGraphData.add(GraphAxis(
+              _duration(time), double.parse(_electricalEnergy!.outputEnergy)));
+
+          pvElectricalEnergyGraphData.add(GraphAxis(
+              _duration(time), double.parse(_electricalEnergy!.pvEnergy)));
+        }
+        if (_ductMeterData != null) {
+          removeFirstElement(temperatureGraphData);
+          removeFirstElement(humidityGraphData);
+
+          temperatureGraphData.add(GraphAxis(
+              _duration(time), double.parse(_ductMeterData!.temperature!)));
+          humidityGraphData.add(GraphAxis(
+              _duration(time), double.parse(_ductMeterData!.humidity!)));
+        }
         if (_heatingUnitData != null) {
           removeFirstElement(temp1GraphData);
           removeFirstElement(temp2GraphData);
           removeFirstElement(temp3GraphData);
+
           removeFirstElement(flow1GraphData);
           removeFirstElement(flow2GraphData);
-          removeFirstElement(temperatureGraphData);
-          removeFirstElement(humidityGraphData);
+
           removeFirstElement(waterEnthalpyGraphData);
           removeFirstElement(pvEnthalpyGraphData);
+
           removeFirstElement(ambientTempGraphData);
           removeFirstElement(ambientHumidityGraphData);
           removeFirstElement(ambientIrradianceGraphData);
-          removeFirstElement(shedTempGraphData);
-          removeFirstElement(shedHumidityGraphData);
-          removeFirstElement(pvElectricalEnergyGraphData);
-          removeFirstElement(outputElectricalEnergyGraphData);
-          final time = DateTime.now();
 
           temp1GraphData.add(GraphAxis(
               _duration(time), double.parse(_heatingUnitData!.tank1!)));
@@ -176,39 +201,20 @@ class MqttProvider with ChangeNotifier {
               _duration(time), double.parse(_heatingUnitData!.flow1!)));
           flow2GraphData.add(GraphAxis(
               _duration(time), double.parse(_heatingUnitData!.flow2!)));
-          if (ductMeterData != null) {
-            temperatureGraphData.add(GraphAxis(
-                _duration(time), double.parse(_ductMeterData!.temperature!)));
-            humidityGraphData.add(GraphAxis(
-                _duration(time), double.parse(_ductMeterData!.humidity!)));
-          }
-          if (_heatingUnitData != null) {
-            waterEnthalpyGraphData.add(
-                GraphAxis(_duration(time), _heatingUnitData!.waterEnthalpy!));
-            pvEnthalpyGraphData
-                .add(GraphAxis(_duration(time), _heatingUnitData!.pvEnthalpy));
-            ambientTempGraphData
-                .add(GraphAxis(_duration(time), _heatingUnitData!.ambientTemp));
-            ambientHumidityGraphData.add(
-                GraphAxis(_duration(time), _heatingUnitData!.ambientHumidity));
-            ambientIrradianceGraphData.add(GraphAxis(
-                _duration(time), _heatingUnitData!.ambientIrradiance));
-            if (_shedMeterData!.temperature != null) {
-              shedTempGraphData.add(GraphAxis(
-                  _duration(time), double.parse(_shedMeterData!.temperature!)));
-            }
-            if (_shedMeterData!.humidity != null) {
-              shedHumidityGraphData.add(GraphAxis(
-                  _duration(time), double.parse(_shedMeterData!.humidity!)));
-            }
-            outputElectricalEnergyGraphData.add(GraphAxis(_duration(time),
-                double.parse(_electricalEnergy!.outputEnergy)));
 
-            pvElectricalEnergyGraphData.add(GraphAxis(
-                _duration(time), double.parse(_electricalEnergy!.pvEnergy)));
-          }
-          notifyListeners();
+          waterEnthalpyGraphData.add(
+              GraphAxis(_duration(time), _heatingUnitData!.waterEnthalpy!));
+          pvEnthalpyGraphData
+              .add(GraphAxis(_duration(time), _heatingUnitData!.pvEnthalpy));
+
+          ambientTempGraphData
+              .add(GraphAxis(_duration(time), _heatingUnitData!.ambientTemp));
+          ambientHumidityGraphData.add(
+              GraphAxis(_duration(time), _heatingUnitData!.ambientHumidity));
+          ambientIrradianceGraphData.add(
+              GraphAxis(_duration(time), _heatingUnitData!.ambientIrradiance));
         }
+        notifyListeners();
       });
       _mqttClient.updates?.listen((List<MqttReceivedMessage<MqttMessage>> c) {
         final MqttPublishMessage recMess = c[0].payload as MqttPublishMessage;

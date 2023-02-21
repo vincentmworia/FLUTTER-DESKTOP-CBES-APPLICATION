@@ -84,7 +84,7 @@ class _ShedMeterScreenState extends State<ShedMeterScreen> {
                               height: double.infinity,
                               child: SyncfusionRadialGauge(
                                 title: e['title']!,
-                                data: e['data']!,
+                                data: e['data'] == '_._' ? '0.0' : e['data']!,
                                 minValue: 0.0,
                                 maxValue: 100.0,
                                 range1Value: 20.0,

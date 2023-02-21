@@ -34,7 +34,7 @@ class SyncfusionRadialGauge extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: SfRadialGauge(
         title: GaugeTitle(
-          text: title ,
+          text: title,
           // text: title.toUpperCase(),
           textStyle: TextStyle(
               color: Theme.of(context).colorScheme.primary,
@@ -48,7 +48,7 @@ class SyncfusionRadialGauge extends StatelessWidget {
               maximum: maxValue,
               startAngle: 140,
               endAngle: 40,
-              interval: maxValue/10,
+              interval: maxValue / 10,
               useRangeColorForAxis: true,
               axisLabelStyle:
                   GaugeTextStyle(color: Theme.of(context).colorScheme.primary),
@@ -80,10 +80,10 @@ class SyncfusionRadialGauge extends StatelessWidget {
                       decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(4)),
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 2),
                       child: Text(
-                        '$data\t$units',
+                        '${data == '0.0' ? '_._' : data}\t$units',
                         // child: Text('$data °C',
                         style: TextStyle(
                           fontSize: 16,

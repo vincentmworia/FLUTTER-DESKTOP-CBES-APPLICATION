@@ -9,6 +9,7 @@ class HttpProtocol {
   static const tank2 = 'Tank2';
   static const tank3 = 'Tank3';
 
+  static const dbLimit = 500;
   // http://52.36.201.129/cbes/tank_temp
   static List filterDbData(List data) {
     final elementsToBeRemoved = (data.length / 1000).floor();
@@ -30,7 +31,7 @@ class HttpProtocol {
         await http.get(Uri.parse('$josephDbUrl/cbes/tank_temp'),
             headers: {"fromDate": fromDate, "toDate": toDate});
     final tempData = json.decode(solarHeaterResponse.body) as List;
-    if (tempData.length > 1100) {
+    if (tempData.length > dbLimit) {
       filterDbData(tempData);
     }
     return tempData;
@@ -47,7 +48,7 @@ class HttpProtocol {
         await http.get(Uri.parse('$josephDbUrl/cbes/flow_rates'),
             headers: {"fromDate": fromDate, "toDate": toDate});
     final tempData = json.decode(flowMeterResponse.body) as List;
-    if (tempData.length > 1100) {
+    if (tempData.length > dbLimit) {
       filterDbData(tempData);
     }
     return tempData;
@@ -64,7 +65,7 @@ class HttpProtocol {
         await http.get(Uri.parse('$josephDbUrl/cbes/ubibot'),
             headers: {"fromDate": fromDate, "toDate": toDate});
     final tempData = json.decode(ductMeterResponse.body) as List;
-    if (tempData.length > 1100) {
+    if (tempData.length > dbLimit) {
       filterDbData(tempData);
     }
     return tempData;

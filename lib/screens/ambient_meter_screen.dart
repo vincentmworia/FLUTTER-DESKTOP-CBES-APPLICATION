@@ -103,7 +103,7 @@ class _AmbientMeterScreenState extends State<AmbientMeterScreen> {
                                   Theme.of(context).colorScheme.primary,
                               child: LinearGauge(
                                   title: e['title']!,
-                                  data: e['data']!,
+                                  data: e['data'] == '_._' ? '0.0' : e['data']!,
                                   min: double.parse(e['min']!),
                                   max: double.parse(e['max']!),
                                   units: e['units']!,

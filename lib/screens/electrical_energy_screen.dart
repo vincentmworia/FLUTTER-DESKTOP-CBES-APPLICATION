@@ -97,7 +97,7 @@ class _ElectricalEnergyScreenState extends State<ElectricalEnergyScreen> {
                               height: double.infinity,
                               child: SyncfusionRadialGauge(
                                 title: e['title']!,
-                                data: e['data']!,
+                                data: e['data'] == '_._' ? '0.0' : e['data']!,
                                 minValue: e['minValue'],
                                 maxValue: e['maxValue'],
                                 range1Value: e['range1Value'],

@@ -88,7 +88,7 @@ class _HeatingUnitScreenState extends State<HeatingUnitScreen> {
                                   Theme.of(context).colorScheme.primary,
                               child: LinearGauge(
                                   title: e['title']!,
-                                  data: e['data']!,
+                                  data: e['data'] == '_._' ? '0.0' : e['data']!,
                                   min: 0.0,
                                   max: 100.0,
                                   units: '°C',

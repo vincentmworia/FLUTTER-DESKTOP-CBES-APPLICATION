@@ -56,7 +56,7 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
         final List<Map<String, String>> heatingUnitData = [
           {
             'title': 'Flow S.H',
-            'data': mqttProv.heatingUnitData?.flow2 ??'_._'
+            'data': mqttProv.heatingUnitData?.flow2 ?? '_._'
           },
           {
             'title': 'Flow H.E',
@@ -84,7 +84,7 @@ class _FlowMeterScreenState extends State<FlowMeterScreen> {
                               height: double.infinity,
                               child: SyncfusionRadialGauge(
                                 title: e['title']!,
-                                data: e['data']!,
+                                data: e['data'] == '_._' ? '0.0' : e['data']!,
                                 minValue: 0.0,
                                 maxValue: 30.0,
                                 range1Value: 10.0,
