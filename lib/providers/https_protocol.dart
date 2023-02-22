@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:cbesdesktop/private_data.dart';
+import '../private_data.dart';
 import 'package:http/http.dart' as http;
 
 class HttpProtocol {
@@ -10,6 +10,7 @@ class HttpProtocol {
   static const tank3 = 'Tank3';
 
   static const dbLimit = 500;
+
   // http://52.36.201.129/cbes/tank_temp
   static List filterDbData(List data) {
     final elementsToBeRemoved = (data.length / 1000).floor();
