@@ -55,7 +55,7 @@ class MworiaGraph extends StatelessWidget {
         shadowColor: Theme.of(context).colorScheme.primary,
         child: Consumer<MqttProvider>(
           builder: (_, mqttProv, ___) => SfCartesianChart(
-            title: ChartTitle(text: graphTitle),
+            // title: ChartTitle(text: graphTitle),
             primaryXAxis: CategoryAxis(
                 title:
                     AxisTitle(text: "Time", alignment: ChartAlignment.center),

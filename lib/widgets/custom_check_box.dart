@@ -17,7 +17,7 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
         fillColor: checkValue
             ? null
             : MaterialStateColor.resolveWith(
-                (_) => Theme.of(context).colorScheme.secondary),
+                (_) => Colors.white54),
         value: checkValue,
         activeColor: Theme.of(context).colorScheme.primary,
         onChanged: (newVal) {

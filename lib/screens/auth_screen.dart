@@ -28,13 +28,6 @@ class _AuthScreenState extends State<AuthScreen> {
   var _isLoading = false;
   var _initAutoLogin = true;
   var _authMode = AuthMode.login;
-  static const borderRadius = 15.0;
-  static const bdRadius = BorderRadius.only(
-    topLeft: Radius.circular(borderRadius),
-    topRight: Radius.circular(borderRadius),
-    bottomLeft: Radius.circular(borderRadius),
-    bottomRight: Radius.circular(borderRadius),
-  );
   bool goodConnection = false;
 
   ConnectivityResult _connectionStatus = ConnectivityResult.none;
@@ -49,8 +42,8 @@ class _AuthScreenState extends State<AuthScreen> {
       Future.delayed(Duration.zero)
           .then((value) async => await _connectivity.checkConnectivity())
           .then((value) => setState(() {
-                _connectionStatus = value;
-              }));
+        _connectionStatus = value;
+      }));
     } on PlatformException catch (_) {
       return;
     }
@@ -75,7 +68,7 @@ class _AuthScreenState extends State<AuthScreen> {
         });
         final userData = User.fromLoginMap(
             json.decode(prefs.getString(RememberMeBnState.rememberMePrefName)!)
-                as Map<String, dynamic>);
+            as Map<String, dynamic>);
         if (goodConnection) {
           _performLogin(userData, true);
         }
@@ -106,25 +99,25 @@ class _AuthScreenState extends State<AuthScreen> {
   void _performLogin(User user, [bool autoLog = false]) {
     try {
       Future.delayed(Duration.zero).then((value) async =>
-          await FirebaseAuthentication.signIn(user, context)
-              .then((message) async {
-            if (mounted && goodConnection) {
-              if (message.startsWith("Welcome")) {
-                _initAutoLogin = false;
-                Future.delayed(Duration.zero).then((_) {
-                  Navigator.pushReplacementNamed(context, HomeScreen.routeName);
-                });
-              } else {
-                setState(() {
-                  _isLoading = false;
-                });
-                if(message.contains("has expired")){
-                  message='Please check your internet connection to the broker';
-                }
-                await customDialog(context, message);
-              }
+      await FirebaseAuthentication.signIn(user, context)
+          .then((message) async {
+        if (mounted && goodConnection) {
+          if (message.startsWith("Welcome")) {
+            _initAutoLogin = false;
+            Future.delayed(Duration.zero).then((_) {
+              Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+            });
+          } else {
+            setState(() {
+              _isLoading = false;
+            });
+            if(message.contains("has expired")){
+              message='Please check your internet connection to the broker';
             }
-          }));
+            await customDialog(context, message);
+          }
+        }
+      }));
     } catch (e) {
       Future.delayed(Duration.zero)
           .then((value) async => await customDialog(context, 'Login Failed'));
@@ -141,8 +134,8 @@ class _AuthScreenState extends State<AuthScreen> {
         await FirebaseAuthentication.signUp(user)
             .then((message) async => await customDialog(context, message))
             .then((_) => setState(() {
-                  _isLoading = false;
-                }));
+          _isLoading = false;
+        }));
       } catch (e) {
         await customDialog(context, 'Signing Up Failed');
       }
@@ -157,23 +150,6 @@ class _AuthScreenState extends State<AuthScreen> {
     goodConnection = _connectionStatus == ConnectivityResult.ethernet ||
         _connectionStatus == ConnectivityResult.mobile ||
         _connectionStatus == ConnectivityResult.wifi;
-    final deviceWidth = MediaQuery.of(context).size.width;
-
-    final bgImage = Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white,
-            Theme.of(context).colorScheme.primary.withOpacity(0.25),
-            // Theme.of(context).colorScheme.secondary ,
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
-    );
 
     if (!goodConnection) {
       _initAutoLogin = true;
@@ -186,39 +162,36 @@ class _AuthScreenState extends State<AuthScreen> {
 
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         body: LayoutBuilder(
           builder: (context, cons) => Stack(
             children: [
-              bgImage,
-              Align(
-                alignment: Alignment.center,
-                child: Card(
-                  elevation: 20,
-                  shape: const RoundedRectangleBorder(borderRadius: bdRadius),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 500),
-                    width: deviceWidth < 1200
-                        ? deviceWidth * 0.55
-                        : deviceWidth * 0.45,
-                    height: _authMode == AuthMode.register ? 1200 : 550,
-                    decoration: BoxDecoration(
-                        color: _isLoading
-                            ? Colors.white.withOpacity(0.4)
-                            : Colors.white,
-                        borderRadius: bdRadius),
-                    padding: const EdgeInsets.all(8),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: AuthScreenForm(
-                        authMode: _authMode,
-                        isLoading: _isLoading,
-                        submit: _submit,
-                        switchAuthMode: _switchAuthMode,
-                        isOffline: !goodConnection,
-                      ),
+              Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.white,
+                        Theme.of(context).colorScheme.secondary ,
+
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
                     ),
                   ),
-                ),
+                  child:
+                  Center(child: Padding(
+
+                    padding: const EdgeInsets.all(8.0),
+                    child: AuthScreenForm(
+                      authMode: _authMode,
+                      isLoading: _isLoading,
+                      submit: _submit,
+                      switchAuthMode: _switchAuthMode,
+                      isOffline: !goodConnection,
+                    ),
+                  ),)
               ),
               Visibility(
                 visible: _isLoading,

@@ -74,8 +74,6 @@ class HttpProtocol {
 
   // todo Switch to Joseph's Database
   // Thermal Energy
-  final _changes = '';
-
   static const waterThermal = "water";
   static const pvThermal = "pv";
 

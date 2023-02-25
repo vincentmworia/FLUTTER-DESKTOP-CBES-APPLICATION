@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/mqtt.dart';
 
-import '../widgets/search_toggle_view.dart';
 import 'loading_animation.dart';
 
 class IotPageTemplate extends StatefulWidget {
@@ -39,44 +38,24 @@ class _IotPageTemplateState extends State<IotPageTemplate> {
       children: [
         LayoutBuilder(builder: (_, cons) {
           return Consumer<MqttProvider>(
-              builder: (context, mqttProv, child) => Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.symmetric(
-                          vertical: cons.maxHeight * 0.05,
-                          horizontal: cons.maxWidth * 0.005,
+              builder: (context, mqttProv, child) => SizedBox(
+                    height: cons.maxHeight,
+                    width: cons.maxWidth,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.symmetric(
+                            vertical: cons.maxHeight * 0.05,
+                            horizontal: cons.maxWidth * 0.005,
+                          ),
+                          width: cons.maxWidth,
+                          height: cons.maxHeight * 0.3,
+                          child: widget.gaugePart,
                         ),
-                        width: cons.maxWidth * 0.4,
-                        height: double.infinity,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            SizedBox(
-                              height: cons.maxHeight * 0.5,
-                              child: widget.gaugePart,
-                            ),
-                            SearchToggleView(
-                              toggleOnlineStatus: widget.onlineBnStatus,
-                              generateExcel: widget.generateExcel,
-                              fromController: widget.fromController,
-                              toController: widget.toController,
-                              searchDatabase: widget.searchDatabase,
-                              activateExcel: widget.activateExcel,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: widget.graphPart,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                        Expanded(child: widget.graphPart),
+                      ],
+                    ),
                   ));
         }),
         if (widget.loadingStatus) const MyLoadingAnimation()

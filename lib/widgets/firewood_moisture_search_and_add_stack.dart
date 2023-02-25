@@ -30,14 +30,14 @@ final BoxConstraints cons;
       children: [
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(4.0),
             child: TextField(
               controller: searchController,
               onChanged: (value) => refreshPage(),
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.all(20),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(15),
                   borderSide: const BorderSide(width: 0.8),
                 ),
                 hintText: 'Search Stack by Id',

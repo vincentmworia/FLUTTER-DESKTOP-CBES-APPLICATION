@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../screens/home_screen.dart';
-import '../private_data.dart';
 import '../providers/login_user_data.dart';
 
 class NavBarPlane extends StatefulWidget {
@@ -34,11 +33,14 @@ class _NavBarPlaneState extends State<NavBarPlane> {
           });
 
           widget.switchPage(page, HomeScreen.pageTitle(page));
+          Navigator.pop(context);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 2),
-          height: MediaQuery.of(context).size.height * 0.125,
+          height: MediaQuery.of(context).size.height * 0.1,
           width: double.infinity,
+          color: Theme.of(context).colorScheme.secondary,
+          margin: const EdgeInsets.only(bottom: 2),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -74,18 +76,36 @@ class _NavBarPlaneState extends State<NavBarPlane> {
       {PageTitle.electricalEnergyMeter: Icons.electric_bolt},
       {PageTitle.thermalEnergyMeter: Icons.electric_meter},
       {PageTitle.firewoodMoisture: Icons.water_drop},
-      if (LoginUserData.getLoggedUser!.privilege == userSuperAdmin ||
-          LoginUserData.getLoggedUser!.privilege == userAdmin)
-        {PageTitle.admin: Icons.admin_panel_settings},
       {PageTitle.profile: Icons.settings}
     ];
     return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: planeData
-            .map((e) => _planeItem(e.keys.first, e.values.first))
-            .toList(),
+        children: [
+          UserAccountsDrawerHeader(
+            currentAccountPicture: CircleAvatar(
+              backgroundColor: Colors.white70,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    '${LoginUserData.getLoggedUser!.firstname[0]} ',
+                    style: TextStyle(
+                        fontSize: 30.0,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary),
+                  ),
+                ),
+              ),
+            ),
+            accountName: Text(
+                "${LoginUserData.getLoggedUser!.firstname} ${LoginUserData.getLoggedUser!.lastname}"),
+            accountEmail: Text(LoginUserData.getLoggedUser!.email),
+          ),
+          ...planeData
+              .map((e) => _planeItem(e.keys.first, e.values.first))
+              .toList()
+        ],
       ),
     );
   }

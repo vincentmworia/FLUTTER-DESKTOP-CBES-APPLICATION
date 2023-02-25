@@ -87,7 +87,6 @@ class _AuthScreenFormState extends State<AuthScreenForm> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // titleText,
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: Image.asset(
@@ -95,7 +94,6 @@ class _AuthScreenFormState extends State<AuthScreenForm> {
                 fit: BoxFit.cover,
               ),
             ),
-
             spacing,
             InputField(
               key: const ValueKey('email'),
@@ -209,7 +207,6 @@ class _AuthScreenFormState extends State<AuthScreenForm> {
                   ],
                 ),
               ),
-
             if ((_authMode == AuthMode.register))
               InputField(
                 key: const ValueKey('phoneNumber'),
@@ -232,10 +229,10 @@ class _AuthScreenFormState extends State<AuthScreenForm> {
                   if (double.tryParse(value) == null) {
                     return 'Invalid number';
                   }
-                  if (!value.startsWith("+254")) {
-                    return 'Use +254700000000 format';
+                  if (!value.startsWith("254")) {
+                    return 'Use 254700000000 format';
                   }
-                  if (value.length != 13) {
+                  if (value.length != 12) {
                     return 'Invalid phone number';
                   }
                   return null;
@@ -315,7 +312,7 @@ class _AuthScreenFormState extends State<AuthScreenForm> {
                 },
               ),
             spacing,
-            if (_authMode == AuthMode.login && deviceWidth > 750)
+            if (_authMode == AuthMode.login)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 28.0),
                 child: Row(
@@ -324,10 +321,8 @@ class _AuthScreenFormState extends State<AuthScreenForm> {
                     Text(
                       "Remember Me",
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                        // color: Colors.black,
+                        color: Theme.of(context).colorScheme.primary,
                         fontSize: 16.0,
-                        // fontWeight: FontWeight.w300,
                       ),
                     ),
                     const CustomCheckBox()
@@ -337,8 +332,7 @@ class _AuthScreenFormState extends State<AuthScreenForm> {
             spacing,
             ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    fixedSize:
-                        Size(deviceWidth < 1000 ? deviceWidth * 0.2 : 200, 50),
+                    fixedSize: const Size(180, 60),
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     padding: const EdgeInsets.all(10),
                     elevation: 3,
@@ -353,7 +347,6 @@ class _AuthScreenFormState extends State<AuthScreenForm> {
                           return;
                         }
                         _formKey.currentState!.save();
-                        // store the button state in shared preferences API
 
                         if (RememberMeBnState.bnState == true) {
                           final prefs = await SharedPreferences.getInstance();
@@ -375,7 +368,7 @@ class _AuthScreenFormState extends State<AuthScreenForm> {
                       ? "No Internet Connection"
                       : "Click to ${_authMode == AuthMode.login ? "Register" : "Login"}",
                   style: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
+                      color: Theme.of(context).colorScheme.primary,
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold),
                 ),

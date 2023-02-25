@@ -71,12 +71,16 @@ class _InputFieldState extends State<InputField> {
         onFieldSubmitted: widget.onFieldSubmitted,
         textInputAction: widget.textInputAction,
         decoration: InputDecoration(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: const BorderSide(width: 0.8),
+          ),
           filled: true,
           fillColor: Colors.white,
           // focusedBorder:
           //     _outlinedInputBorder(Theme.of(context).colorScheme.primary),
           // enabledBorder: _outlinedInputBorder(Colors.grey),
-          contentPadding: const EdgeInsets.symmetric(vertical: 15.0),
+          contentPadding: const EdgeInsets.symmetric(vertical: 20.0),
           constraints: BoxConstraints(
             maxWidth: inputWidth,
             minWidth: inputWidth,

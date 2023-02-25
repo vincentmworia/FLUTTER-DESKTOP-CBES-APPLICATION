@@ -236,8 +236,8 @@ class _FirewoodMoistureDataState extends State<FirewoodMoistureData> {
                     var i =Random().nextInt(3)+1;
                     return Container(
                       margin: EdgeInsets.all(cons.maxWidth * 0.02),
-                      width: cons.maxWidth * 0.155,
-                      height: cons.maxWidth * 0.155,
+                      width: cons.maxWidth * 0.5,
+                      height: cons.maxWidth * 0.5,
                       child: Card(
                         elevation: 6,
                         shadowColor: Theme.of(context).colorScheme.primary,
