@@ -4,9 +4,11 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../providers/login_user_data.dart';
 import './auth_screen.dart';
 import '../widgets/nav_bar_plane.dart';
 import './dashboard_screen.dart';
+import './administrator_screen.dart';
 import './solar_heater_screen.dart';
 import './profile_screen.dart';
 import './electrical_energy_screen.dart';
@@ -26,6 +28,7 @@ enum PageTitle {
   ductMeter,
   electricalEnergyMeter,
   thermalEnergyMeter,
+  admin,
   profile,
   firewoodMoisture
 }
@@ -33,7 +36,6 @@ enum PageTitle {
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
   static const routeName = '/home_screen';
-
   static String pageTitle(PageTitle page) {
     switch (page) {
       case PageTitle.dashboard:
@@ -44,6 +46,8 @@ class HomeScreen extends StatefulWidget {
         return "Ambient Meter";
       case PageTitle.electricalEnergyMeter:
         return "Electrical Energy";
+      case PageTitle.admin:
+        return "Administrator";
       case PageTitle.profile:
         return "My Profile";
       case PageTitle.flowMeter:
@@ -98,10 +102,12 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _page = page;
       _pageTitle = title;
-      if (_page == PageTitle.dashboard) {
-        _showNavPlane = false;
-        _deCompressNavPlane = true;
-      }
+      var decompress = '';
+      // todo DECOMPRESS WHEN???
+      if(_page == PageTitle.dashboard){
+      _showNavPlane = false;
+      _deCompressNavPlane = true;
+    }
     });
   }
 
@@ -115,6 +121,8 @@ class _HomeScreenState extends State<HomeScreen> {
         return const AmbientMeterScreen();
       case PageTitle.electricalEnergyMeter:
         return const ElectricalEnergyScreen();
+      case PageTitle.admin:
+        return const AdministratorScreen();
       case PageTitle.profile:
         return const ProfileScreen();
       case PageTitle.flowMeter:
@@ -127,23 +135,111 @@ class _HomeScreenState extends State<HomeScreen> {
         return const ThermalEnergyScreen();
       case PageTitle.firewoodMoisture:
         return const FirewoodMoistureScreen(
-            );
+          // decompressNavPlane: _deCompressNavPlane,
+        );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     const duration = Duration(milliseconds: 20);
+
+    const txtStyle = TextStyle(
+        color: Colors.white, fontWeight: FontWeight.w600, letterSpacing: 3.0);
     return SafeArea(
       child: Scaffold(
-        drawer: Drawer(
-          child: NavBarPlane(
-            switchPage: _switchPage,
-            pageTitle: _page,
-          ),
-        ),
         appBar: AppBar(
-          title: Text(_pageTitle),
+          title: AnimatedContainer(
+            duration: duration,
+            child: Padding(
+                padding: EdgeInsets.only(left: _deCompressNavPlane ? 20 : 60),
+                child: Text(_pageTitle)),
+          ),
+          actions: [
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.6,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onDoubleTap: () {
+                          _switchPage(PageTitle.dashboard,
+                              HomeScreen.pageTitle(PageTitle.dashboard));
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: Image.asset(
+                            'images/cbes_logo_cropped.PNG',
+                            fit: BoxFit.cover,
+                            width: 40,
+                            // height: 50,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        'DeKUT\tCBES',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            fontSize: 20.0,
+                            letterSpacing: 1.0),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.person,
+                        size: 30,
+                        color: Colors.white,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 25),
+                        child: Text(
+                          '${LoginUserData.getLoggedUser!.firstname} ${LoginUserData.getLoggedUser!.lastname}',
+                          overflow: TextOverflow.clip,
+                          style: txtStyle,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ],
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 25),
+            child: IconButton(
+              disabledColor: Colors.white,
+              color: Colors.white,
+              hoverColor: Theme.of(context).colorScheme.primary,
+              focusColor: Theme.of(context).colorScheme.primary,
+              onPressed: () async {
+                // print(_deCompressNavPlane);
+                if (_deCompressNavPlane) {
+                  setState(() {
+                    _showNavPlane = false;
+                    _deCompressNavPlane = !_deCompressNavPlane;
+                  });
+                  Future.delayed(duration).then((value) => setState(() {
+                        _showNavPlane = true;
+                      }));
+                } else {
+
+                  setState(() {
+                    _showNavPlane = false;
+                    _deCompressNavPlane = !_deCompressNavPlane;
+                  });
+                }
+              },
+              icon: Icon(_deCompressNavPlane ? Icons.menu : Icons.arrow_back),
+            ),
+          ),
         ),
         backgroundColor: Colors.white,
         body: Row(

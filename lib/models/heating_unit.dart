@@ -61,6 +61,9 @@ class HeatingUnit {
           tank3: heatingUnitData['TankT3'].toString(),
           flow1: heatingUnitData['Flow1'].toString(),
           flow2: heatingUnitData['Flow2'].toString());
+
+  final _changes = '';
+
   // todo Add ambient data
   Map<String, String> asMap() => {
         "TankT1": tank1 ?? '0.0',

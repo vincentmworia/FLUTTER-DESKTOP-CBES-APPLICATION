@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:provider/provider.dart';
 
 import './screens/auth_screen.dart';
@@ -7,7 +10,21 @@ import './providers/login_user_data.dart';
 import './widgets/custom_check_box.dart';
 import './providers/mqtt.dart';
 
-void main() async => runApp(const MyApp());
+void main() async {
+  runApp(const MyApp());
+
+  if (Platform.isWindows) {
+    doWhenWindowReady(() {
+      final win = appWindow;
+      win.minSize = const Size(1000, 600);
+      win.maxSize = const Size(2000,1200);
+      win.alignment = Alignment.center;
+      win.title = MyApp.appTitle;
+      win.maximize();
+      win.show();
+    });
+  }
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -24,8 +41,10 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => LoginUserData()),
         ChangeNotifierProvider(create: (_) => MqttProvider()),
-        ChangeNotifierProvider(create: (_) => DevicesProvider()),
+        ChangeNotifierProvider(create: (_) => DevicesProvider() ),
         ChangeNotifierProvider(create: (_) => RememberMeBnState()),
+
+
       ],
       child: MaterialApp(
         title: appTitle,

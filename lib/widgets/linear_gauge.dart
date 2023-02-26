@@ -43,7 +43,7 @@ class LinearGauge extends StatelessWidget {
           ),
           Expanded(
             child: SizedBox(
-              // width: gaugeWidth,
+              width: gaugeWidth,
               child: SfLinearGauge(
                 animationDuration: 5000,
                 minimum: min,

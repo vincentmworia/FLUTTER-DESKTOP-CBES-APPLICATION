@@ -28,11 +28,11 @@ class DashboardScreenGaugeView extends StatelessWidget {
                       e['title'].toString().contains('Irradiance')
                   ? LinearGauge(
                       title: e['title'],
-                      data: e['data'] == '_._' ? '0.0' : e['data']!,
+                data: e['data'] == '_._' ? '0.0' : e['data']!,
                       min: e['minValue'],
                       max: e['maxValue'],
                       units: e['units'],
-                      gaugeWidth: width * 0.15,
+                      gaugeWidth: width * 0.1,
                     )
                   : SyncfusionRadialGauge(
                       title: e['title'],
@@ -78,160 +78,168 @@ class DashboardScreenGaugeView extends StatelessWidget {
                   HomeScreen.pageTitle(PageTitle.shedMeter));
             }
           },
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(borderRadius: bdRadius),
-            margin: EdgeInsets.all(cons.maxWidth * 0.025),
-            child: Card(
-              elevation: 8,
-              shadowColor: Theme.of(context).colorScheme.primary,
-              color: Colors.white.withOpacity(0.65),
-              shape: RoundedRectangleBorder(borderRadius: bdRadius),
-              child: SizedBox(
-                width: cons.maxWidth * 0.275,
-                height: cons.maxHeight * 0.4,
-                child: Column(
-                  children: [
-                    Container(
-                      width: cons.maxWidth * 0.75,
-                      height: cons.maxHeight * 0.05,
-                      decoration: BoxDecoration(
-                          color: Colors.white, borderRadius: bdRadius),
-                      child: Center(
-                        child: Text(
-                          title,
-                          style: TextStyle(
-                              fontSize: 18.0,
-                              letterSpacing: 2.0,
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.primary),
-                        ),
+          child: Card(
+            elevation: 8,
+            shadowColor: Theme.of(context).colorScheme.primary,
+            color: Colors.white.withOpacity(0.65),
+            shape: RoundedRectangleBorder(borderRadius: bdRadius),
+            child: SizedBox(
+              width: cons.maxWidth * 0.275,
+              height: cons.maxHeight * 0.4,
+              child: Column(
+                children: [
+                  Container(
+                    width: cons.maxWidth * 0.15,
+                    height: cons.maxHeight * 0.05,
+                    decoration: BoxDecoration(
+                        color: Colors.white, borderRadius: bdRadius),
+                    child: Center(
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                            fontSize: 18.0,
+                            letterSpacing: 2.0,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.primary),
                       ),
                     ),
-                    Expanded(child: child ?? Container()),
-                  ],
-                ),
+                  ),
+                  Expanded(child: child ?? Container()),
+                ],
               ),
             ),
           ),
         );
-    return Consumer<MqttProvider>(
-      builder: (context, mqttProv, child) => SizedBox(
-        width: cons.maxWidth,
-        height: cons.maxHeight * 3,
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            children: [
-              cardView(
-                  HomeScreen.pageTitle(PageTitle.solarHeaterMeter),
-                  _gaugeView([
-                    {
-                      'data': mqttProv.heatingUnitData?.tank1 ?? '_._',
-                      'title': 'Tank 1',
-                      ...DashboardScreen.temperatureConfig
-                    },
-                    {
-                      'data': mqttProv.heatingUnitData?.tank2 ?? '_._',
-                      'title': 'Tank 2',
-                      ...DashboardScreen.temperatureConfig
-                    },
-                    {
-                      'data': mqttProv.heatingUnitData?.tank3 ?? '_._',
-                      'title': 'Tank 3',
-                      ...DashboardScreen.temperatureConfig
-                    },
-                  ], cons.maxWidth),
-                  cons),
-              cardView(
-                  HomeScreen.pageTitle(PageTitle.flowMeter),
-                  _gaugeView([
-                    {
-                      'data': mqttProv.heatingUnitData?.flow2 ?? '_._',
-                      'title': 'Flow (S.H)',
-                      ...DashboardScreen.flowConfig
-                    },
-                    {
-                      'data': mqttProv.heatingUnitData?.flow1 ?? '_._',
-                      'title': 'Flow (H.E)',
-                      ...DashboardScreen.flowConfig
-                    },
-                  ], cons.maxWidth),
-                  cons),
-              cardView(
-                  HomeScreen.pageTitle(PageTitle.electricalEnergyMeter),
-                  _gaugeView([
-                    {
-                      'data':
-                          mqttProv.electricalEnergyData?.outputEnergy ?? '_._',
-                      'title': 'Output Power',
-                      ...DashboardScreen.powerConfig
-                    },
-                    {
-                      'data': mqttProv.electricalEnergyData?.pvEnergy ?? '_._',
-                      'title': 'Pv Power',
-                      ...DashboardScreen.powerConfig
-                    },
-                  ], cons.maxWidth),
-                  cons),
-              cardView(
-                  HomeScreen.pageTitle(PageTitle.ductMeter),
-                  _gaugeView([
-                    {
-                      'data': mqttProv.ductMeterData?.temperature ?? '_._',
-                      'title': 'Temperature',
-                      ...DashboardScreen.temperatureConfig
-                    },
-                    {
-                      'data': mqttProv.ductMeterData?.humidity ?? '_._',
-                      'title': 'Humidity',
-                      ...DashboardScreen.humidityConfig
-                    },
-                  ], cons.maxWidth),
-                  cons),
-              cardView(
-                  HomeScreen.pageTitle(PageTitle.shedMeter),
-                  _gaugeView([
-                    {
-                      'data': mqttProv.shedMeterData?.temperature ?? '_._',
-                      'title': 'Temperature',
-                      ...DashboardScreen.temperatureConfig
-                    },
-                    {
-                      'data': mqttProv.shedMeterData?.humidity ?? '_._',
-                      'title': 'Humidity',
-                      ...DashboardScreen.humidityConfig
-                    },
-                  ], cons.maxWidth),
-                  cons),
-              cardView(
-                  HomeScreen.pageTitle(PageTitle.ambientMeter),
-                  _gaugeView([
-                    {
-                      'data': (mqttProv.heatingUnitData?.ambientTemp)
-                              ?.toStringAsFixed(1) ??
-                          '_._',
-                      'title': 'A.Temp',
-                      ...DashboardScreen.temperatureConfig
-                    },
-                    {
-                      'data': (mqttProv.heatingUnitData?.ambientHumidity)
-                              ?.toStringAsFixed(1) ??
-                          '_._',
-                      'title': 'A.Humidity',
-                      ...DashboardScreen.humidityConfig
-                    },
-                    {
-                      'data': (mqttProv.heatingUnitData?.ambientIrradiance)
-                              ?.toStringAsFixed(1) ??
-                          '_._',
-                      'title': 'A.Irradiance',
-                      ...DashboardScreen.irradianceConfig
-                    },
-                  ], cons.maxWidth),
-                  cons),
-            ],
-          ),
+    return Expanded(
+      child: Consumer<MqttProvider>(
+        builder: (context, mqttProv, child) => Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  cardView(
+                      HomeScreen.pageTitle(PageTitle.solarHeaterMeter),
+                      _gaugeView([
+                        {
+                          'data': mqttProv.heatingUnitData?.tank1 ?? '_._',
+                          'title': 'Tank 1',
+                          ...DashboardScreen.temperatureConfig
+                        },
+                        {
+                          'data': mqttProv.heatingUnitData?.tank2 ?? '_._',
+                          'title': 'Tank 2',
+                          ...DashboardScreen.temperatureConfig
+                        },
+                        {
+                          'data': mqttProv.heatingUnitData?.tank3 ?? '_._',
+                          'title': 'Tank 3',
+                          ...DashboardScreen.temperatureConfig
+                        },
+                      ], cons.maxWidth),
+                      cons),
+                  cardView(
+                      HomeScreen.pageTitle(PageTitle.flowMeter),
+                      _gaugeView([
+                        {
+                          'data': mqttProv.heatingUnitData?.flow2 ?? '_._',
+                          'title': 'Flow (S.H)',
+                          ...DashboardScreen.flowConfig
+                        },
+                        {
+                          'data': mqttProv.heatingUnitData?.flow1 ?? '_._',
+                          'title': 'Flow (H.E)',
+                          ...DashboardScreen.flowConfig
+                        },
+                      ], cons.maxWidth),
+                      cons),
+                  cardView(
+                      HomeScreen.pageTitle(PageTitle.electricalEnergyMeter),
+                      _gaugeView([
+                        {
+                          'data': mqttProv.electricalEnergyData?.outputEnergy ??
+                              '_._',
+                          'title': 'Output Power',
+                          ...DashboardScreen.powerConfig
+                        },
+                        {
+                          'data':
+                              mqttProv.electricalEnergyData?.pvEnergy ?? '_._',
+                          'title': 'Pv Power',
+                          ...DashboardScreen.powerConfig
+                        },
+                      ], cons.maxWidth),
+                      cons),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  cardView(
+                      HomeScreen.pageTitle(PageTitle.ductMeter),
+                      _gaugeView([
+                        {
+                          'data': mqttProv.ductMeterData?.temperature ?? '_._',
+                          'title': 'Temperature',
+                          ...DashboardScreen.temperatureConfig
+                        },
+                        {
+                          'data': mqttProv.ductMeterData?.humidity ?? '_._',
+                          'title': 'Humidity',
+                          ...DashboardScreen.humidityConfig
+                        },
+                      ], cons.maxWidth),
+                      cons),
+                  cardView(
+                      HomeScreen.pageTitle(PageTitle.shedMeter),
+                      _gaugeView([
+                        {
+                          'data': mqttProv.shedMeterData?.temperature ?? '_._',
+                          'title': 'Temperature',
+                          ...DashboardScreen.temperatureConfig
+                        },
+                        {
+                          'data': mqttProv.shedMeterData?.humidity ?? '_._',
+                          'title': 'Humidity',
+                          ...DashboardScreen.humidityConfig
+                        },
+                      ], cons.maxWidth),
+                      cons),
+                  cardView(
+                      HomeScreen.pageTitle(PageTitle.ambientMeter),
+                      _gaugeView([
+                        {
+                          'data': (mqttProv.heatingUnitData?.ambientTemp)
+                                  ?.toStringAsFixed(1) ??
+                              '_._',
+                          'title': 'A.Temp',
+                          ...DashboardScreen.temperatureConfig
+                        },
+                        {
+                          'data': (mqttProv.heatingUnitData?.ambientHumidity)
+                                  ?.toStringAsFixed(1) ??
+                              '_._',
+                          'title': 'A.Humidity',
+                          ...DashboardScreen.humidityConfig
+                        },
+                        {
+                          'data': (mqttProv.heatingUnitData?.ambientIrradiance)
+                                  ?.toStringAsFixed(1) ??
+                              '_._',
+                          'title': 'A.Irradiance',
+                          ...DashboardScreen.irradianceConfig
+                        },
+                      ], cons.maxWidth),
+                      cons),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

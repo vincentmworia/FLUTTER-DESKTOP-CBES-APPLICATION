@@ -52,17 +52,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final orientation = MediaQuery.of(context).orientation;
-    _scadaView = orientation == Orientation.landscape;
     return LayoutBuilder(
         builder: (builder, cons) => SizedBox(
               width: cons.maxWidth,
               height: cons.maxHeight,
-              child: _scadaView
-                  ? DashboardScreenScada(cons: cons)
-                  : DashboardScreenGaugeView(
-                      switchDashboardPage: widget.switchDashboardPage,
-                      cons: cons),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          _scadaView ? '3D View' : 'Gauge View',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontSize: 20.0,
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                        SizedBox(
+                          width: cons.maxWidth * 0.01,
+                        ),
+                        Switch.adaptive(
+                            activeColor: Theme.of(context).colorScheme.primary,
+                            value: _scadaView,
+                            onChanged: (val) {
+                              setState(() {
+                                _scadaView = val;
+                              });
+                            })
+                      ],
+                    ),
+                  ),
+                  if (_scadaView) DashboardScreenScada(cons: cons),
+                  if (!_scadaView)
+                    DashboardScreenGaugeView(
+                        switchDashboardPage: widget.switchDashboardPage,
+                        cons: cons),
+                ],
+              ),
             ));
   }
 }

@@ -116,7 +116,9 @@ class MqttProvider with ChangeNotifier {
       ..withWillQos(MqttQos.exactlyOnce);
 
     _mqttClient = MqttServerClient.withPort(
-        mqttHost, 'flutter_client/$_deviceId', mqttPort)
+        mqttHost,
+        'flutter_client/$_devicesClient/${DateTime.now().toIso8601String()}',
+        mqttPort)
       ..secure = true
       ..securityContext = SecurityContext.defaultContext
       ..keepAlivePeriod = 30
@@ -135,6 +137,11 @@ class MqttProvider with ChangeNotifier {
       if (kDebugMode) {
         print('\n\nException: $e');
       }
+      const changes = '';
+      // todo FORCE THE USER OFFLINE UNTIL ERROR IS ACKNOWLEDGED USING ANOTHER PROVIDER???
+      // TODO PROVIDER INHERITANCE?? USE RIVER-POD
+
+      // TODO SAME USER CANNOT LOGIN TWICE, UNLESS FORCE-LOGGED OUT IN ANOTHER DEVICE
       _mqttClient.disconnect();
       _connStatus = ConnectionStatus.disconnected;
     }
